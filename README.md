@@ -23,4 +23,5 @@ Application de saisie et de restitution des scores du championnat par équipes d
 
 # Outils
 Développement avec NativeScript
+IHM Angular/Typescript
 
