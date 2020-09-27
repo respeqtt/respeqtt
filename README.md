@@ -1,4 +1,4 @@
-# respeqtt
+# RESPEQTT
 Application de saisie et de restitution des scores du championnat par équipes de tennis de table
 
 # Exigences
