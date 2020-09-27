@@ -14,12 +14,13 @@ Application de saisie et de restitution des scores du championnat par équipes d
 # TO DO list
 - spécs détaillées de chaque module	
 - Modèle de données de la base
-- Module de production des QR Code (version 25 pour meilleur rapport compatbilité/densité d'info)
+- Module de production des QR Code (version 25 pour meilleur rapport compatibilité/densité d'info)
 - IHM Angular
 - envoi mails
 - API SPID entrante
 - production de la feuille de match en PDF
 - lecture des fichiers obtenus par flashage QRCode depuis appli tierce
+- API SPID sortante
 
 # Outils
 Développement avec NativeScript
