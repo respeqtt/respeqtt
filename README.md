@@ -13,7 +13,6 @@ Application de saisie et de restitution des scores du championnat par équipes d
 
 # TO DO list
 - spécs détaillées de chaque module	
-- Modèle de données de la base
 - Module de production des QR Code (version 25 pour meilleur rapport compatibilité/densité d'info)
 - IHM Angular
 - envoi mails
@@ -25,4 +24,5 @@ Application de saisie et de restitution des scores du championnat par équipes d
 # Outils
 Développement avec NativeScript
 IHM Angular/Typescript
+BDD SQLite
 
