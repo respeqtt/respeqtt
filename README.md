@@ -9,7 +9,7 @@ Application de saisie et de restitution des scores du championnat par équipes d
 - conf mini : seul le capitaine qui reçoit  dispose d'un mobile avec l'appli
 - conf maxi : tous les joueurs disposent d'un mobile avec l'appli
 - pas besoin de liaison internet pendant les rencontres (uniquement avant pour télégharger les infos et après pour envoyer les résultats à SPID)
-- pouvoir fonctionner avec un envoi centralisé  par club vers SPID
+- peut fonctionner indifféremment avec un envoi centralisé  par club vers SPID ou avec un envoi par capitaine
 
 # TO DO list
 - spécs détaillées de chaque module	
