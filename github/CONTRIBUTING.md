@@ -15,8 +15,9 @@ Actuellement, nous recherchons des contributeurs pour finaliser la conception et
 Merci de ne pas soumettre ici de Faits Techniques concernant GIRPE ou SPID.
 
 # Règles de base
-### Set expectations for behavior (yours, and theirs).
+
 Merci de respecter les contributions de chacun et de rester courtois en toutes circonstances. 
+Merci également de bien lire et prendre en compte la licence utilisée.
 
 > Responsabilités
 Il est de la responsabilité de chacun de tester les modules qui sont livrés. Idéalement, il est souhaité qu’un module soit pris en charge de sa conception jusqu’à sa finalisation. Un module est un composant Angular.
@@ -27,10 +28,10 @@ Créer des Faits Techniques (issues) pour toute demande de modification signific
 Merci d’accueillir les nouveaux contributeurs avec bienveillance et encouragements !
 
 # Comment contribuer ?
-Créer un fork sur GitHub
-Cloner le projet sur votre PC
-Commiter votre travail
-Envoyer une Pull request pour qu’on puisse réviser et accepter les modifications effectuées
+1. Créer un fork sur GitHub
+2. Cloner le projet sur votre PC
+3. Commiter votre travail
+4. Envoyer une Pull request pour qu’on puisse réviser et accepter les modifications effectuées
 
 
 NOTE: faites attention à bien faire un merge sur le code le plus récent avant de faire la pull request !
