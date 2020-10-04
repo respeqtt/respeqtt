@@ -23,9 +23,9 @@ Merci de recopier le fichier AVIS_LICENCE.txt en tête de chaque fichier source.
 ### Responsabilités
 > Tout d'abord, il est nécessaire de prendre en compte la licence utilisée : LGPL v3. En résumé, c'est une licence open source/copyleft non virale, c'est à dire que :
 
-> 1. il est possible d'utiliser RESPEQTT intégralement et sans modification en dehors de projets open sources à condition que RESPEQTT soit clairement identifié comme sous licence LGPL ;
-> 2. toute modification apportée à RESPEQTT est nécessairement sous licence LGPL ;
-> 3. la diffusion et l'utilisation de RESPEQTT doivent être libres et gratuites ;
+> 1. la diffusion et l'utilisation de RESPEQTT doivent être libres et gratuites ;
+> 2. il est possible d'utiliser RESPEQTT intégralement et sans modification en dehors de projets open sources à condition que RESPEQTT soit clairement identifié comme sous licence LGPL et de respecter le point précédent ;
+> 3. toute modification apportée à RESPEQTT est nécessairement sous licence LGPL ;
 > 4. les sources sont publics et peuvent être réutilisés par n'importe qui sous les trois conditions précédentes.
 
 Il est de la responsabilité de chacun de tester les modules qui sont livrés. Idéalement, il est souhaité qu’un module soit pris en charge de sa conception jusqu’à sa finalisation. Un module est un composant Angular.
