@@ -45,8 +45,15 @@ Merci d’accueillir les nouveaux contributeurs avec bienveillance et encouragem
 > NOTE: faites attention à bien faire un merge sur le code le plus récent avant de faire la pull request !
 ### Par où commencer ? 
 >Jeter un œil sur les tâches de la TODO LIST dans les projets
+> Si vous ne connaissez pas NativeScript :
+>*  pour comprendre les principes :
+> https://docs.nativescript.org/core-concepts/technical-overview
+> * pour installer (quick setup puis full setup nécessaire):
+> https://docs.nativescript.org/start/quick-setup
+> * pour commencer :
+> https://docs.nativescript.org/start/cli-basics
 
-### Bonus pour ceux qui n’ont jamais contribué à un développement open source auparavant 
+### Bonus : pour ceux qui n’ont jamais contribué à un développement open source auparavant 
 http://makeapullrequest.com/
 http://www.firsttimersonly.com/
 https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github
