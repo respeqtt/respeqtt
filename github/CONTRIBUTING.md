@@ -18,8 +18,16 @@ Merci de ne pas soumettre ici de Faits Techniques concernant GIRPE ou SPID.
 
 Merci de respecter les contributions de chacun et de rester courtois en toutes circonstances. 
 Merci également de bien lire et prendre en compte la licence utilisée.
+Merci de recopier le fichier AVIS_LICENCE.txt en tête de chaque fichier source.
 
 > Responsabilités
+Tout d'abord, il est nécessaire de prendre en compte la licence utilisée : LGPL v3. En résumé, c'est une licence open source/copyleft non virale, c'est à dire que :
+
+1. il est possible d'utiliser RESPEQTT intégralement et sans modification en dehors de projets open sources à condition que RESPEQTT soit clairement identifié comme sous licence LGPL ;
+2. toute modification apportée à RESPEQTT est nécessairement sous licence LGPL ;
+3. la diffusion et l'utilisation de RESPEQTT doivent être libres et gratuites ;
+4. les sources sont publics et peuvent être réutilisés par n'importe qui sous les trois conditions précédentes.
+
 Il est de la responsabilité de chacun de tester les modules qui sont livrés. Idéalement, il est souhaité qu’un module soit pris en charge de sa conception jusqu’à sa finalisation. Un module est un composant Angular.
 De même, il est demandé de commenter le code au niveau de chaque interface (paramètres et valeurs retournées par les méthodes, attributs des classes). Des commentaires ailleurs sont également les bienvenus !
 
@@ -69,6 +77,8 @@ Vous pouvez les signaler sur le site (menu : « issues »). Bien préciser AMELI
 Toutes les « pull request » sont revues avant acceptation. Si possible, un test rapide est effectué. Un retour est effectué dans les meilleurs délais (compter 1 semaine max).
 
 # Communauté
+
+à développer : site web, chat, visio, ...
 
 
 
