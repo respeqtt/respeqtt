@@ -48,6 +48,7 @@ Merci d’accueillir les nouveaux contributeurs avec bienveillance et encouragem
 > Si vous ne connaissez pas NativeScript :
 >*  pour comprendre les principes :
 > https://docs.nativescript.org/core-concepts/technical-overview
+>* en vidéo : https://www.youtube.com/watch?v=DcCSq2Y9bow
 > * pour installer (quick setup puis full setup nécessaire):
 > https://docs.nativescript.org/start/quick-setup
 > * pour commencer :
