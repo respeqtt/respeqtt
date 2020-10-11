@@ -53,6 +53,12 @@ Merci d’accueillir les nouveaux contributeurs avec bienveillance et encouragem
 > * pour commencer :
 > https://docs.nativescript.org/start/cli-basics
 
+Ensuite : 
+* en ligne de commande, se placer à la racine du projet
+* taper code . (nécessite Visual Studio Code)
+* dans la fenêtre "Terminal", taper "tns run android" ou "tns run ios"
+* connecter son téléphone au PC pour télécharger l'application
+
 ### Bonus : pour ceux qui n’ont jamais contribué à un développement open source auparavant 
 http://makeapullrequest.com/
 http://www.firsttimersonly.com/
