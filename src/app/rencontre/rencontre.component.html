@@ -13,16 +13,32 @@ The theme also provides a set of helper class names such as p-20, h1, h2, and te
 You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
 -->
 
+<!--        <CheckBox text="Reçoit coté A"   row="3" col="0" colspan="2" backgroundColor="lightgray" id="CBRecoitA" checked="{{ recoitA }}" (tap)="onCheckBoxTap()"></CheckBox>
+-->
 
-    <GridLayout columns="auto, auto" rows="auto, auto, auto, auto" backgroundColor="lightblue">
-        <Button text="Choisir une rencontre" row="0" col="0" colspan="2" backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Label text="table des rencontres" row="1" col="0" colspan="2" backgroundColor="lightgray"></Label>
-        <CheckBox text="Reçoit coté A"   row="2" col="0" colspan="2" backgroundColor="lightgray" id="CBRecoitA" checked="{{ recoitA }}" (tap)="onCheckBoxTap()"></CheckBox>
-        <Button text="Composer équipe A" row="3" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Button text="Composer équipe X" row="3" col="1" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-        <Button text="Charger équipe A"  row="4" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Button text="Charger équipe X"  row="4" col="1" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-        <Button text="Valider la feuille de match" row="5" col="0" colspan="2" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-    </GridLayout>
+
+
+    <StackLayout>orientation="vertical">
+        <Button text="Choisir une rencontre"       backgroundColor="blue" (tap)="onTap($event)"></Button>
+        <Label text="Liste des rencontres"         backgroundColor="lightgray"></Label>
+        <ListView [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
+                    <Label class="list-text"  [text]="item.division + ' ' + item.journee + ' ' + item.date"></Label>
+                </StackLayout>
+            </ng-template>
+        </ListView>
+        <CheckBox text="Reçoit coté A"             backgroundColor="lightgray" id="CBRecoitA" checked="false" (tap)="onCheckBoxTap()"></CheckBox>
+        <StackLayout orientation = "horizontal">
+            <Button text="Composer équipe A"       backgroundColor="blue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
+            <Button text="Composer équipe X"       backgroundColor="darkblue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
+        </StackLayout>
+        <StackLayout orientation = "horizontal">
+            <Button text="Charger équipe A"        backgroundColor="blue" [width]="demiLargeur"  (tap)="onTap($event)"></Button>
+            <Button text="Charger équipe X"        backgroundColor="darkblue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
+        </StackLayout>
+        <Button text="Valider la feuille de match" backgroundColor="darkblue" (tap)="onValiderFeuille($event)"></Button>
+        <Label [text]="this.trace"                 backgroundColor="lightgray"></Label>
+    </StackLayout>
 
 </Page>

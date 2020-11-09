@@ -1,0 +1,28 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd"
+>
+<!--
+The GridLayout arranges its child elements in a table structure of rows and columns.
+A cell can contain multiple child elements, they can span over multiple rows and columns,
+and even overlap each other. The GridLayout has one column and one row by default.
+You can learn more about NativeScript layouts at https://docs.nativescript.org/ui/layout-containers.
+
+These components make use of the NativeScript core theme, which styles them with element selectors.
+The theme also provides a set of helper class names such as p-20, h1, h2, and text-center to enhance styling.
+You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
+-->
+
+
+
+
+    <GridLayout columns="*, *" rows="auto, auto, auto, auto, auto, auto" backgroundColor="lightblue">
+        <Label text="Rencontre PRD 04/10/2020"      row="0" col="0" colspan="2" backgroundColor="lightgray"></Label>
+        <Label text="Valenc'In Pierre TT - Bron TT" row="1" col="0" colspan="2" backgroundColor="lightgray"></Label>
+        <Button text="Lancer une partie"            row="2" col="0" colspan="2" backgroundColor="blue" (tap)="onTap($event)"></Button>
+        <Label text="Liste des parties"             row="3" col="0" colspan="2" backgroundColor="lightgray"></Label>
+        <Button text="Scan résultat"                row="4" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
+        <Button text="Saisir résultat"              row="4" col="1" backgroundColor="darkblue" [nsRouterLink]="['../resultat']"></Button>
+        <Button text="Valider la feuille de match"  row="5" col="0" colspan="2" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
+    </GridLayout>
+
+</Page>

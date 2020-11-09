@@ -1,17 +1,61 @@
+/*******************************************************************************/
+/* This program is free software: you can redistribute it and/or modify        */
+/*     it under the terms of the Lesser GNU General Public License as          */
+/*     published by the Free Software Foundation, either version 3 of the      */
+/*     License, or (at your option) any later version.                         */
+/*                                                                             */
+/*     This program is distributed in the hope that it will be useful,         */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/*     GNU General Public License for more details.                            */
+/*                                                                             */
+/*     You should have received a copy of the GNU General Public License       */
+/*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+/*                                                                             */
+/*******************************************************************************/
+
 import { Component, OnInit } from "@angular/core";
 import { Label, Button, EventData } from "@nativescript/core";
+import { RespeqttDb } from "../db/dbRespeqtt";
+import { Rencontre } from "../db/RespeqttDAO";
 
+var Sqlite = require ("nativescript-sqlite");
 
 @Component({
     templateUrl: "./actions.component.html",
-    moduleId:module.id
+    moduleId:module.id,
+    styleUrls: ["../global.css"]
 })
 export class ActionsComponent{
-    onTap(args: EventData) {
+
+
+    constructor() {
+        // Init de la BDD
+        RespeqttDb.Init();
+    }
+
+    // Charge la simulation si besoin
+    ngOnInit(): void {
+
+        // création/ouverture de la base de données
+        if (RespeqttDb.db) {
+            // simuler les rencontres dans la BDD
+            Rencontre.SIM_LoadListe();
+            Rencontre.getListe();
+        }
+        else
+            alert("Actions/Pas de BDD");
+    console.log("Simu chargée");
+    }
+
+    onValiderScore(args: EventData) {
         let button = args.object as Button;
-        // execute your custom logic here...
-        // >> (hide)
-        alert("Tapped ");
-        // << (hide)
+        // charger les rencontres en mémoire
+        alert(Rencontre.getListe().length + " rencontres chargées");
+    }
+
+    onDropDB(args: EventData) {
+        RespeqttDb.Drop();
+        alert("BDD supprimée");
     }
 }

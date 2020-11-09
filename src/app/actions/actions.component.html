@@ -5,7 +5,6 @@ http://docs.nativescript.org/ui/action-bar
 -->
 <ActionBar title="RespeqTT">
 </ActionBar>
-
 <!--
 The GridLayout arranges its child elements in a table structure of rows and columns.
 A cell can contain multiple child elements, they can span over multiple rows and columns,
@@ -23,6 +22,7 @@ You can learn more about the NativeScript core theme at https://github.com/nativ
     <Button text="Preparer la rencontre" [nsRouterLink]="['../rencontre']"></Button>
     <Button text="Preparer la feuille de match"  [nsRouterLink]="['../preparation']"></Button>
     <Button text="Lancer les matchs"  [nsRouterLink]="['../lancement']"></Button>
-    <Button text="Valider le score"  (tap)="onTap($event)"></Button>
+    <Button text="Valider le score"  (tap)="onValiderScore($event)"></Button>
     <Button text="Envoyer à SPID"  [nsRouterLink]="['../envoi']"></Button>
+    <Button text="DROP DB" (tap)="onDropDB($event)" backgroungColor="red"></Button>
 </StackLayout>
