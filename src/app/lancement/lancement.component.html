@@ -15,14 +15,21 @@ You can learn more about the NativeScript core theme at https://github.com/nativ
 
 
 
-    <GridLayout columns="*, *" rows="auto, auto, auto, auto, auto, auto" backgroundColor="lightblue">
-        <Label text="Rencontre PRD 04/10/2020"      row="0" col="0" colspan="2" backgroundColor="lightgray"></Label>
-        <Label text="Valenc'In Pierre TT - Bron TT" row="1" col="0" colspan="2" backgroundColor="lightgray"></Label>
-        <Button text="Lancer une partie"            row="2" col="0" colspan="2" backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Label text="Liste des parties"             row="3" col="0" colspan="2" backgroundColor="lightgray"></Label>
-        <Button text="Scan résultat"                row="4" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Button text="Saisir résultat"              row="4" col="1" backgroundColor="darkblue" [nsRouterLink]="['../resultat']"></Button>
-        <Button text="Valider la feuille de match"  row="5" col="0" colspan="2" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-    </GridLayout>
+    <StackLayout alignment="vertical">
+        <Label class="titre" [text]="this.titre"></Label>
+        <Button text="FERMER" backgroundColor="darkblue" (tap)="onFermer($event)"></Button>
+        <Label class="sous-titre" text="Liste des parties"></Label>
+        <ListView [items]="listeLignes"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
+                    <StackLayout orientation="horizontal">
+                        <Label [class.odd]="odd" [class.even]="even" [text]="item.desc"
+                            [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                        </Label>
+                    </StackLayout>
+                </StackLayout>
+            </ng-template>
+        </ListView>
+    </StackLayout>
 
 </Page>

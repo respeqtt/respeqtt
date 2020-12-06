@@ -18,6 +18,9 @@ import { Component, OnInit } from "@angular/core";
 import { Label, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { Rencontre } from "../db/RespeqttDAO";
+import { Mobile } from "../outils/outils";
+import { SessionAppli } from "../session/session";
+import { RouterExtensions } from "@nativescript/angular";
 
 var Sqlite = require ("nativescript-sqlite");
 
@@ -27,31 +30,41 @@ var Sqlite = require ("nativescript-sqlite");
     styleUrls: ["../global.css"]
 })
 export class ActionsComponent{
+    routerExt: RouterExtensions;            // pour navigation
+    lancer: boolean;                        // activation du bouton : lancer les parties
 
 
-    constructor() {
+    constructor(private _routerExtensions: RouterExtensions) {
+        this.routerExt = _routerExtensions;
+
         // Init de la BDD
         RespeqttDb.Init();
+
+        // on ne lance les parties que si la compo est figée
+        this.lancer = SessionAppli.compoFigee;
+
     }
 
-    // Charge la simulation si besoin
     ngOnInit(): void {
 
-        // création/ouverture de la base de données
-        if (RespeqttDb.db) {
-            // simuler les rencontres dans la BDD
-            Rencontre.SIM_LoadListe();
-            Rencontre.getListe();
-        }
-        else
-            alert("Actions/Pas de BDD");
-    console.log("Simu chargée");
+        // calcul de la largeur de l'écran
+        var mobile:Mobile= new Mobile;
+        SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
     }
 
     onValiderScore(args: EventData) {
         let button = args.object as Button;
         // charger les rencontres en mémoire
-        alert(Rencontre.getListe().length + " rencontres chargées");
+        alert("Validation du score");
+    }
+
+    onLancement(args: EventData) {
+        let button = args.object as Button;
+        // vérifier si on peut passer sur la page de lancement des parties
+        // inutile : le bouton est inactif si pas this.lancer
+        if(this.lancer) {
+            this.routerExt.navigate(["lancement"]);
+        }
     }
 
     onDropDB(args: EventData) {

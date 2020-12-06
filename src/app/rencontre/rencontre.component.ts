@@ -14,118 +14,110 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
-import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
+import { Component, OnInit } from "@angular/core";
+import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
+
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
-
-import { Mobile } from "../mobile/mobile";
-
+import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
+import { SessionAppli } from "../session/session";
 
 
 @Component({
     templateUrl: "./rencontre.component.html",
     moduleId:module.id,
-    styleUrls: ["../global.css"],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ["../global.css"]
 })
 export class RencontreComponent{
-    recoitA:boolean
     listeRencontres:Array<EltListeRencontre>;
-    trace:string;
-    mobile:Mobile;
-    demiLargeur:number;
-
-
-    @ViewChild('CBRecoitA') CBRecoitA:ElementRef;
+    maListe:ListView;
 
     constructor() {
-        this.recoitA=false
-        this.listeRencontres = Rencontre.liste;
-        this.trace = "";
-
-        this.mobile = new Mobile;
-        // calcul de la demi largeur pour les boutons
-        this.demiLargeur = Math.floor(this.mobile.largeurEcran /2) - 5;
-        console.log("Demi-largeur = " + this.demiLargeur);
+        Rencontre.getListe().then(liste => {
+            this.listeRencontres = liste as Array<EltListeRencontre>;
+        }, error => {
+            console.log("Impossible de lire la liste des rencontres : " + error.toString());
+        });
     }
 
-    // Charge la liste des rencontres pour affichage
     ngOnInit(): void {
+    }
 
-        this.trace = this.listeRencontres[1].division + " " + this.listeRencontres[1].journee + " " + this.listeRencontres[1].date;
-        for(var e in this.listeRencontres) {
-            console.log("élt[" + e + "] = "
-                    + this.listeRencontres[e].id + " "
-                    + this.listeRencontres[e].division + " "
-                    + this.listeRencontres[e].journee + " "
-                    + this.listeRencontres[e].date);
+    onDelTap(args: EventData) {
+        let button = args.object as Button;
+        let sql = "delete from Rencontre where id in (";
+        let del = "";
+
+        // construit la requête SQL des éléments à supprimer
+        for(let i=0; i < this.listeRencontres.length; i++) {
+            if(this.listeRencontres[i].sel) {
+                if(del != "") {
+                    del = del + ", "
+                }
+                else {
+                    del = sql;
+                }
+                del = del + this.listeRencontres[i].id.toString();
+            }
+        }
+        // finaliser la requête
+        if(del != "")  {
+            del = del + ")";
+            // trace la requête avant exécution
+            console.log(del);
+/*
+            RespeqttDb.db.execSQL(del).then(id=>{
+                console.log("Rencontres supprimées");
+            }, error => {
+                console.log("Impossible de supprimer les rencontres : " + error.toString());
+            });
+*/
+            // relire la table
+            Rencontre.getListe().then(liste => {
+                this.listeRencontres = liste as Array<EltListeRencontre>;
+            }, error => {
+                console.log("Impossible de lire la liste des rencontres : " + error.toString());
+            });
+        }
+        else {
+            alert("Aucun élément n'est sélectionné.")
         }
     }
 
+    onLoadTap(args: EventData) {
+        let button = args.object as Button;
+        // charger la BDD avec la simulation
+        Rencontre.SIM_LoadListe();
+        Formule.LoadFormules();
+        // charger la liste en mémoire avec la BDD
+        Rencontre.getListe().then(liste => {
+            this.listeRencontres = liste as Array<EltListeRencontre>;
+            // si la liste n'est pas vide, on initialise le tableau associé
+            if(this.listeRencontres != null) {
+                console.log(this.listeRencontres.length.toString() + " rencontres dans la liste");
+            }
+            else
+                console.log("Liste de rencontres vide");
+            // il faudrait appeler SPID à la place
+            alert("Appel à SPID... ");
+            // rafraichir l'affichage
+            this.maListe.refresh();
+        }, error =>{
+            console.log("Impossible de lire la liste des rencontres : " + error.toString());
+        });
+    }
 
     onListViewLoaded(args: EventData) {
-        const listView = <ListView>args.object;
+        this.maListe = <ListView>args.object;
     }
 
     onItemTap(args: ItemEventData) {
         const index = args.index;
+
+        // chercher si l'item est sélectionné
+        console.log("listeRencontres:" + this.listeRencontres[index].id.toString());
+        this.listeRencontres[index].sel = !this.listeRencontres[index].sel;
         console.log("Rencontre choisie : " + index);
-    }
-
-    onTap(args: EventData) {
-        let button = args.object as Button;
-        // execute your custom logic here...
-        // >> (hide)
-        alert("Tapped ");
-        // << (hide)
-    }
-
-    onValiderFeuille(args: EventData) {
-        let button = args.object as Button;
-
-        if (RespeqttDb.db) {
-            // SIMULATION : chargement des données
-            RespeqttDb.db.get("select count(*) from Rencontre").then(res => {
-                // si la table est vide, on l'initialise
-                alert("Nb rencontres =" + res);
-                if(res == 0) {
-                    Rencontre.SIM_LoadListe();
-                }
-            }, error => {
-                alert("Impossible de compter la table Rencontre:" + error.toString());
-            });
-            // fin SIMULATION
-        }
-    }
-
-    public toggleCheck() {
-        if (this.recoitA) {
-            this.recoitA = false;
-        } else {
-            this.recoitA = true;
-        }
-        this.CBRecoitA.nativeElement.toggle();
-    }
-    public getCheckProp() {
-        console.log(
-          'checked prop value = ' + this.CBRecoitA.nativeElement.checked
-        );
-      }
-
-    public onCheckBoxTap() {
-        if(this.recoitA) {
-            this.recoitA = false
-        } else {
-            this.recoitA = true
-        }
-        alert("Checked : " + this.recoitA);
 
     }
-
-
 
 }
-
-
-

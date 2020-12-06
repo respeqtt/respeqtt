@@ -1,10 +1,6 @@
-
-<!--
-The ActionBar is the NativeScript common abstraction over the Android ActionBar and iOS NavigationBar.
-http://docs.nativescript.org/ui/action-bar
-<ActionBar title="RespeqTT">
-</ActionBar>
--->
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd"
+    xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
 <!--
 The GridLayout arranges its child elements in a table structure of rows and columns.
@@ -17,11 +13,29 @@ The theme also provides a set of helper class names such as p-20, h1, h2, and te
 You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
 -->
 
-<GridLayout columns="auto, auto" rows="auto, auto, auto,22 auto" backgroundColor="lightblue">
-    <Button text="Rencontres enregistrées" row="0" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
-    <Button text="Charger une rencontre" row="0" col="1" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-    <Label text="table des rencontres" row="1" col="0" colspan="2" backgroundColor="lightgray"></Label>
-    <Button text="Joueurs enregistrées" row="2" col="0" backgroundColor="blue" (tap)="onTap($event)"></Button>
-    <Button text="Charger les joueurs" row="2" col="1" backgroundColor="darkblue" (tap)="onTap($event)"></Button>
-    <Label text="table des joueurs" row="3" col="0" colspan="2" backgroundColor="lightgray"></Label>
-</GridLayout>
+<!--        <CheckBox text="Reçoit coté A"   row="3" col="0" colspan="2" backgroundColor="lightgray" id="CBRecoitA" checked="{{ recoitA }}" (tap)="onCheckBoxTap()"></CheckBox>
+-->
+
+
+
+    <StackLayout orientation="vertical">
+        <Label class="titre" text="RENCONTRE EN COURS"></Label>
+        <Label class="sous-titre" [text]="this.titreRencontre"></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between">
+            <Label class = "switch-label" text="Reçoit coté A" flexGrow="1"></Label>
+            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" [isenabled]="this.modif"></Switch>
+            <Label class = "switch-label" text="Reçoit coté X"  flexGrow="1"></Label>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between">
+            <Button text="Composer équipe A"       flexGrow="1" backgroundColor="blue" [nsRouterLink]="['../compo/A']" [isenabled]="this.modif"></Button>
+            <Button text="Composer équipe X"       flexGrow="1" backgroundColor="darkblue" [nsRouterLink]="['../compo/X']" [isenabled]="this.modif"></Button>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between">
+            <Button text="Charger équipe A"        flexGrow="1" backgroundColor="blue" (tap)="onTap($event)" [isenabled]="this.modif"></Button>
+            <Button text="Charger équipe X"        flexGrow="1" backgroundColor="darkblue" (tap)="onTap($event)" [isenabled]="this.modif"></Button>
+        </FlexboxLayout>
+        <Button text="Valider la feuille de match"      backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.modif"></Button>
+        <Button text="FERMER"                           backgroundColor="darkblue" [nsRouterLink]="['../actions']"></Button>
+    </StackLayout>
+
+</Page>

@@ -5,24 +5,14 @@ http://docs.nativescript.org/ui/action-bar
 -->
 <ActionBar title="RespeqTT">
 </ActionBar>
-<!--
-The GridLayout arranges its child elements in a table structure of rows and columns.
-A cell can contain multiple child elements, they can span over multiple rows and columns,
-and even overlap each other. The GridLayout has one column and one row by default.
-You can learn more about NativeScript layouts at https://docs.nativescript.org/ui/layout-containers.
 
-These components make use of the NativeScript core theme, which styles them with element selectors.
-The theme also provides a set of helper class names such as p-20, h1, h2, and text-center to enhance styling.
-You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
--->
+
 <StackLayout>
-     <!--    <Button text="Preparer la rencontre" (tap)="onTap($event)"></Button>
- -->
-
-    <Button text="Preparer la rencontre" [nsRouterLink]="['../rencontre']"></Button>
-    <Button text="Preparer la feuille de match"  [nsRouterLink]="['../preparation']"></Button>
-    <Button text="Lancer les matchs"  [nsRouterLink]="['../lancement']"></Button>
+    <Button text="Preparer la rencontre"         [nsRouterLink]="['../rencontre']"></Button>
+    <Button text="Charger les joueurs"           [nsRouterLink]="['../joueurs']"></Button>
+    <Button text="Preparer la feuille de match"  [nsRouterLink]="['../choixrencontre']"></Button>
+    <Button text="Lancer les parties"            (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
     <Button text="Valider le score"  (tap)="onValiderScore($event)"></Button>
-    <Button text="Envoyer à SPID"  [nsRouterLink]="['../envoi']"></Button>
-    <Button text="DROP DB" (tap)="onDropDB($event)" backgroungColor="red"></Button>
+    <Button text="Envoyer à SPID"                [nsRouterLink]="['../envoi']"></Button>
+    <Button text="!!! DROP DB !!!" (tap)="onDropDB($event)" backgroungColor="red"></Button>
 </StackLayout>

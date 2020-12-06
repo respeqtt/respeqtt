@@ -1,6 +1,10 @@
-<Page
-    xmlns="http://schemas.nativescript.org/tns.xsd"
-    xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
+
+<!--
+The ActionBar is the NativeScript common abstraction over the Android ActionBar and iOS NavigationBar.
+http://docs.nativescript.org/ui/action-bar
+<ActionBar title="RespeqTT">
+</ActionBar>
+-->
 
 <!--
 The GridLayout arranges its child elements in a table structure of rows and columns.
@@ -13,32 +17,21 @@ The theme also provides a set of helper class names such as p-20, h1, h2, and te
 You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
 -->
 
-<!--        <CheckBox text="Reçoit coté A"   row="3" col="0" colspan="2" backgroundColor="lightgray" id="CBRecoitA" checked="{{ recoitA }}" (tap)="onCheckBoxTap()"></CheckBox>
--->
+<StackLayout alignment="vertical" backgroundColor="lightblue">
+    <Label class="titre" text="PREPARATION RENCONTRE"></Label>
+    <Button text="Charger les rencontres" backgroundColor="darkblue" (tap)="onLoadTap($event)"></Button>
+    <ListView [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+            <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
+                <StackLayout orientation="horizontal">
+                    <Label text="&#xf45d;" class="fas" [color]="(item.sel) ? '#0000FF' : '#000000'" stretch="none"></Label>
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.journee + ' ' + item.date">
+                           [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                    </Label>
 
-
-
-    <StackLayout>orientation="vertical">
-        <Button text="Choisir une rencontre"       backgroundColor="blue" (tap)="onTap($event)"></Button>
-        <Label text="Liste des rencontres"         backgroundColor="lightgray"></Label>
-        <ListView [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
-            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
-                    <Label class="list-text"  [text]="item.division + ' ' + item.journee + ' ' + item.date"></Label>
                 </StackLayout>
-            </ng-template>
-        </ListView>
-        <CheckBox text="Reçoit coté A"             backgroundColor="lightgray" id="CBRecoitA" checked="false" (tap)="onCheckBoxTap()"></CheckBox>
-        <StackLayout orientation = "horizontal">
-            <Button text="Composer équipe A"       backgroundColor="blue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
-            <Button text="Composer équipe X"       backgroundColor="darkblue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
-        </StackLayout>
-        <StackLayout orientation = "horizontal">
-            <Button text="Charger équipe A"        backgroundColor="blue" [width]="demiLargeur"  (tap)="onTap($event)"></Button>
-            <Button text="Charger équipe X"        backgroundColor="darkblue" [width]="demiLargeur" (tap)="onTap($event)"></Button>
-        </StackLayout>
-        <Button text="Valider la feuille de match" backgroundColor="darkblue" (tap)="onValiderFeuille($event)"></Button>
-        <Label [text]="this.trace"                 backgroundColor="lightgray"></Label>
-    </StackLayout>
-
-</Page>
+            </StackLayout>
+        </ng-template>
+    </ListView>
+    <Button text="Supprimer les rencontres sélectionnées" backgroundColor="blue" (tap)="onDelTap($event)"></Button>
+</StackLayout>

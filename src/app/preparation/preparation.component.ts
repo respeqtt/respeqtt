@@ -14,15 +14,56 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData } from "@nativescript/core";
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
+import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData, Switch, Observable } from "@nativescript/core";
+
+
+import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
+import { SessionAppli } from "../session/session";
+
+import { Mobile } from "../outils/outils";
+
 
 
 @Component({
     templateUrl: "./preparation.component.html",
-    moduleId:module.id
+    moduleId:module.id,
+    styleUrls: ["../global.css"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PreparationComponent{
+    recoitCoteX:boolean
+    titreRencontre:string;
+    trace:string;
+    modif:boolean;
+
+    constructor() {
+        this.recoitCoteX=false
+        this.titreRencontre = SessionAppli.titreRencontre;
+        console.log("Rencontre : " + this.titreRencontre);
+        this.trace = "";
+
+        this.modif = !SessionAppli.compoFigee;
+        console.log("Compo figée :" + SessionAppli.compoFigee);
+    }
+
+    // Charge la liste des rencontres pour affichage
+    ngOnInit(): void {
+    }
+
+    onCheckedChange(args: EventData) {
+        let sw = args.object as Switch;
+        this.recoitCoteX = sw.checked; // boolean
+        let c = SessionAppli.clubA;
+        let e = SessionAppli.equipeA;
+        // échanger les clubs et les équipes
+        SessionAppli.clubA = SessionAppli.clubX;
+        SessionAppli.clubX = c;
+        SessionAppli.equipeA = SessionAppli.equipeX;
+        SessionAppli.equipeX = e;
+        console.log("Recoit cote X = " + this.recoitCoteX.toString());
+    }
+
     onTap(args: EventData) {
         let button = args.object as Button;
         // execute your custom logic here...
@@ -30,4 +71,26 @@ export class PreparationComponent{
         alert("Tapped ");
         // << (hide)
     }
+
+    onValiderFeuille(args: EventData) {
+        let button = args.object as Button;
+
+        // vérifier que les deux équipes ont été saisies
+        if(!SessionAppli.equipeA || !SessionAppli.equipeX) {
+            alert("Les deux équipes n'ont pas été renseignées.");
+            return;
+        } else {
+            // on fige la composition des deux équipes
+            SessionAppli.compoFigee = true;
+            this.modif = !SessionAppli.compoFigee;
+        }
+    }
+
+    // ouvrir la page de consultation de la feuille de match
+    onVoirFeuille(args: EventData) {
+
+    }
 }
+
+
+
