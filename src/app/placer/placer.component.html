@@ -1,0 +1,27 @@
+
+    <script src="https://kit.fontawesome.com/4ac1ebb706.js" crossorigin="anonymous"></script>
+
+    <StackLayout alignment="vertical" backgroundColor="lightblue">
+        <Label class="titre" text="PLACEMENT JOUEURS"></Label>
+        <Label class = "sous-titre" [text] = "this.clubChoisi.nom"> </Label>
+        <Label class = "sous-titre" text = "EQUIPE"> </Label>
+        <ListView [items]="equipe"   (itemTap)="onJoueurTap($event)" (loaded)="onEquipeLoaded($event)">
+            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item.place + '/ ' + item.nom + ' ' + item.prenom + ' ' + item.points"
+                           [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                    </Label>
+                </StackLayout>
+            </ng-template>
+        </ListView>
+        <FlexboxLayout flexDirection="row" alignItems="stretch" justifyContent="space-around">
+            <Button text="&#xf139;" class="fas" flex-grow="1" backgroundColor="blue" (tap)="onUp($event)"></Button>
+            <Button text="&#xf13a;" class="fas" flex-grow="1" backgroundColor="blue" (tap)="onDown($event)"></Button>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" alignItems="stretch" justifyContent="space-around">
+            <Button text="ANNULER" flex-grow="1" backgroundColor="blue"     (tap)="onAnnulerTap($event)"></Button>
+            <Button text="QR CODE" flex-grow="1" backgroundColor="darkblue" (tap)="onQRCodeTap($event)"></Button>
+            <Button text="VALIDER" flex-grow="1" backgroundColor="blue"     (tap)="onValiderTap($event)"></Button>
+        </FlexboxLayout>
+    </StackLayout>
+
