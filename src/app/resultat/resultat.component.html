@@ -1,0 +1,38 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd"
+>
+<!--
+The GridLayout arranges its child elements in a table structure of rows and columns.
+A cell can contain multiple child elements, they can span over multiple rows and columns,
+and even overlap each other. The GridLayout has one column and one row by default.
+You can learn more about NativeScript layouts at https://docs.nativescript.org/ui/layout-containers.
+
+These components make use of the NativeScript core theme, which styles them with element selectors.
+The theme also provides a set of helper class names such as p-20, h1, h2, and text-center to enhance styling.
+You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
+-->
+
+
+
+
+    <GridLayout columns="*, *" rows="*, auto, auto, auto, auto, auto, auto, auto, auto" backgroundColor="lightblue">
+        <Label class="titre" [text]="this.titre"    row="0" col="0" colspan="2"></Label>
+        <Button text="QRC"                          row="1" col="0" (tap)="onTapQRCode($event)"></Button>
+        <Button text="Scan résultat"                row="1" col="1" backgroundColor="darkblue" (tap)="onTapScan($event)"></Button>
+        <Label text="Résultats"                     row="2" col="0" colspan="2" ></Label>
+
+        <Label text="1er set"                       row="3" col="0" lineHeight="2em"></Label>
+        <TextField hint="1er set"                   row="3" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set1' ></TextField>
+        <Label text="2e set"                        row="4" col="0" lineHeight="2em"></Label>
+        <TextField hint="2e set"                    row="4" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
+        <Label text="3e set"                        row="5" col="0" lineHeight="3em"></Label>
+        <TextField hint="3e set"                    row="5" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
+        <Label text="4e set"                        row="6" col="0" lineHeight="3em"></Label>
+        <TextField hint="4e set"                    row="6" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
+        <Label text="5e set"                        row="7" col="0" ></Label>
+        <TextField hint="5e set"                    row="7" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
+
+         <Button text="Valider le résultat"         row="8" col="0" colspan="2"  (tap)="onTapValidate($event)"></Button>
+    </GridLayout>
+
+</Page>
