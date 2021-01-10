@@ -1,0 +1,14 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd"
+    xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
+
+    <FlexboxLayout flexDirection="column">
+        <Label class="titre" text="JUGE ARBITRE" textWrap="true" flexGrow="1" flexShrink="1"></Label>
+        <TextField hint="Nom JA"  flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.nomJA' ></TextField>
+        <TextField hint="Prénom"  flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.prenomJA' ></TextField>
+        <TextView hint="Adresse"  flexGrow="1" flexShrink="1" secure="false" maxLength="100" [(ngModel)]='this.adresseJA' ></TextView>
+        <TextField hint="Licence" flexGrow="1" flexShrink="1" secure="false" maxLength="10" keyboardType="number" (focus)="onFocus($event)" [(ngModel)]='this.licenceJA' ></TextField>
+        <Button text="VALIDER" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1" [isenabled]="this.valider"></Button>
+        <Button text="FERMER" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
+    </FlexboxLayout>
+</Page>
