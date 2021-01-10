@@ -22,12 +22,21 @@ import { NativeScriptModule, NativeScriptFormsModule } from "@nativescript/angul
 import { AppComponent } from "./app.component";
 import { ActionsComponent } from "./actions/actions.component";
 import { RencontreComponent } from "./rencontre/rencontre.component";
+import { ChoixRencontreComponent } from "./choixrencontre/choixrencontre.component";
+import { JoueursComponent } from "./joueurs/joueurs.component";
+import { ClubComponent } from "./club/club.component";
 import { PreparationComponent } from "./preparation/preparation.component";
+import { CompoComponent } from "./compo/compo.component";
+import { CompoDoubleComponent } from "./compodouble/compodouble.component";
+import { PlacerComponent } from "./placer/placer.component";
 import { LancementComponent } from "./lancement/lancement.component";
 import { ResultatComponent } from "./resultat/resultat.component";
 import { TNSCheckBoxModule } from '@nstudio/nativescript-checkbox/angular';
 import { QRMontrerComponent } from "./qrmontrer/qrmontrer.component";
 import { QRScanComponent } from "./qrscan/qrscan.component";
+import { SaisieCommentaireComponent } from "./saisiecommentaire/saisiecommentaire.component";
+import { ValiderComponent } from "./valider/valider.component";
+import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 
 
 
@@ -48,11 +57,20 @@ import { AppRoutingModule } from "./app-routing.module";
         AppComponent,
         ActionsComponent,
         PreparationComponent,
+        CompoComponent,
+        CompoDoubleComponent,
+        PlacerComponent,
         RencontreComponent,
+        ChoixRencontreComponent,
+        JoueursComponent,
+        ClubComponent,
         LancementComponent,
         ResultatComponent,
         QRMontrerComponent,
-        QRScanComponent
+        QRScanComponent,
+        SaisieCommentaireComponent,
+        ValiderComponent,
+        JugeArbitreComponent
     ],
     providers: [],
     schemas: [

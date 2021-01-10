@@ -1,0 +1,120 @@
+.fas {
+    font-family: "Font Awesome 5 Free", "fa-solid-900";
+    font-weight: 900;
+    background-color: yellow;
+  }
+
+label, button, .liste {
+    font-family: arial, helvetica, sans-serif;
+}
+
+label.sous-titre {
+    background-color: rgb(44, 89, 141);
+    color:white;
+    font-weight: bold;
+    padding: 20px;
+    vertical-align: middle;
+}
+
+label {
+    font-size: 1.5em;
+    color: darkblue;
+    background-color: lightslategray;
+    margin: 5px;
+    padding: 0;
+    text-align: center;
+}
+
+TextField {
+    font-size: 1.5em;
+    color: darkblue;
+    background-color: whitesmoke;
+    margin: 5px;
+    padding: 0;
+    text-align: center;
+}
+
+label.titre {
+    background-color: blue;
+    color:white;
+    font-weight: bold;
+    padding: 50px;
+}
+
+label.switch-label {
+    text-align: center;
+    background-color: white;
+    color:darkblue;
+    padding: 50px;
+
+}
+
+label.club {
+    text-align: center;
+    background-color: royalblue;
+    color:white;
+    font-weight: bold;
+    padding: 10px;
+}
+
+
+button {
+    font-size: 2em;
+    font-style: normal;
+    font-weight: bold;
+    color: whitesmoke;
+    background-color: blue;
+    text-align: center;
+    margin: 10px;
+    padding: 0;
+    border-bottom-style: solid;
+    border-bottom-width: 0.5em;
+    border-bottom-color: darkblue;
+}
+textarea {
+    Height: 1em
+}
+
+.list-text {
+    font-size: 200%;
+    color: #131313;
+    background-color: #FFFFFF;
+    margin-top: 8;
+    padding: 0;
+    text-align: left;
+}
+
+.selected {
+    font-size: 1em;
+    color: #131313;
+    background-color: greenyellow;
+    margin: 5px;
+    padding: 5px;
+    text-align: left;
+    height: 40;
+}
+
+.even {
+    font-size: 2em;
+    color: #131313;
+    background-color: white;
+    margin: 5px;
+    padding: 5px;
+    text-align: left;
+    height: 40;
+}
+
+.odd {
+    font-size: 2em;
+    color: #131313;
+    background-color: paleturquoise;
+    margin: 5px;
+    padding: 5px;
+    text-align: left;
+    height: 40;
+}
+
+.title {
+    font-size: 25;
+    margin: 20;
+}

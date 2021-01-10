@@ -12,24 +12,24 @@ The theme also provides a set of helper class names such as p-20, h1, h2, and te
 You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
 -->
 
-
-
-
-    <StackLayout alignment="vertical">
-        <Label class="titre" [text]="this.titre"></Label>
-        <Button text="FERMER" backgroundColor="darkblue" (tap)="onFermer($event)"></Button>
-        <Label class="sous-titre" text="Liste des parties"></Label>
-        <ListView [items]="listeLignes"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+    <FlexboxLayout flexDirection="column">
+        <Label class="titre" [text]="this.titre" flexGrow="0" flexShrink="0" ></Label>
+        <Label class="sous-titre" text="Liste des parties" flexGrow="0" flexShrink="0" ></Label>
+        <ListView [items]="listeLignes" flexGrow="1" flexShrink="1"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
-                    <StackLayout orientation="horizontal">
-                        <Label [class.odd]="odd" [class.even]="even" [text]="item.desc"
-                            [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                <StackLayout orientation="vertical" [class.odd]="odd" [class.even]="even">
+                    <FlexboxLayout flexDirection="row" justifyContent="flex-start">
+                        <Label horizontalAlignment="left" flexGrow="1" [class.odd]="odd" [class.even]="even" [text]="item.desc"
+                            [color]="(item.sel) ? '#0000FF' : '#000000'" textWrap="true">
                         </Label>
-                    </StackLayout>
+                        <Label horizontalAlignment="right" flexGrow="0" [class.odd]="odd" [class.even]="even" [text]="item.scoreAX"
+                            [color]="(item.sel) ? '#0000FF' : '#000000'">
+                        </Label>
+                    </FlexboxLayout>
                 </StackLayout>
             </ng-template>
         </ListView>
-    </StackLayout>
+        <Button text="FERMER" backgroundColor="darkblue" (tap)="onFermer($event)" flexGrow="0" flexShrink="0" ></Button>
+    </FlexboxLayout>
 
 </Page>

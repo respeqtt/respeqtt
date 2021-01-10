@@ -45,7 +45,7 @@ export class LancementComponent{
 
         // construire les parties
         if(SessionAppli.listeParties.length==0) {
-            this.listeLignes = Partie.InitListeParties(SessionAppli.rencontre, SessionAppli.equipeA, SessionAppli.equipeX);
+            this.listeLignes = Partie.InitListeParties(SessionAppli.rencontre, SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
             this.nbParties = this.listeLignes.length;
         } else {
             this.listeLignes = SessionAppli.listeParties;
@@ -76,10 +76,37 @@ export class LancementComponent{
         this.listeLignes[index].sel = true;
         this.partieSel = index;
 
-        // ouvrir la page de saisie des résultats
-        console.log("vers page " + "resultat/" + index);
-        this.routerExt.navigate(["resultat/" + index]);
+        // si on a un score de forfait, pas de saisie possible
+        if(this.listeLignes[index].score == -1 || this.listeLignes[index].score == 0 || this.listeLignes[index].score == 3) {
+            alert("Ce score correspond à un forfait, il n'est pas modifiable");
+            return;
+        };
 
+        // si c'est un double on demande d'abord les compos
+        console.log("Partie : " + this.listeLignes[index].desc);
+        if(this.listeLignes[index].desc.charAt(0) == "*") {
+            var nbDoubles:number = 0;
+            var numDouble:number = 0;
+            console.log("!!! C'est un double");
+            // compter les doubles
+            for(var i = 0; i < this.listeLignes.length; i++) {
+                // si c'est un double, on le compte
+                if(this.listeLignes[i].desc.charAt(0) == "*") nbDoubles++;
+                // si c'est le double qu'on cherche, on mémorise son rang dans la liste des doubles
+                if(this.listeLignes[i].desc == SessionAppli.listeParties[index].desc) numDouble = nbDoubles;
+            }
+            // est-ce qu'on a déjà renseigné un coté ?
+            if(SessionAppli.listeParties[index].desc.charAt(1) =="*") {
+                this.routerExt.navigate(["compoDouble/" + (SessionAppli.recoitCoteX ? "X" : "A") + "/" + numDouble + "/" + nbDoubles]);
+            } else {
+                this.routerExt.navigate(["compoDouble/" + (SessionAppli.recoitCoteX ? "A" : "X") + "/" + numDouble + "/" + nbDoubles]);
+            }
+        } else {
+            console.log("!!! C'est un simple ou un double déjà composé");
+            // ouvrir la page de saisie des résultats
+            console.log("vers page " + "resultat/" + index);
+            this.routerExt.navigate(["resultat/" + index]);
+            }
     }
 
     onQRCode(args: EventData) {

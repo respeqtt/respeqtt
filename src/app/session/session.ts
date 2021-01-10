@@ -1,19 +1,32 @@
-import { Club, EltListeLicencie, Partie, Rencontre } from "../db/RespeqttDAO";
+import { Club, EltListeLicencie, Partie, Rencontre, EltListeRencontre } from "../db/RespeqttDAO";
 
 export class SessionAppli {
 
-    // club choisi par l'utilisateur
+    public static listeRencontres:Array<EltListeRencontre>=[];
+    public static recoitCoteX = false;
     public static clubChoisi:number = -1;
     public static rencontreChoisie = -1;
     public static titreRencontre = "";
     public static rencontre:Rencontre;
     public static clubA:Club;
     public static clubX:Club;
-    public static equipeA:Array<EltListeLicencie>;
-    public static equipeX:Array<EltListeLicencie>;
+    public static equipeA:Array<EltListeLicencie>=[];
+    public static equipeX:Array<EltListeLicencie>=[];
+    public static forfaitA:boolean=false;
+    public static forfaitX:boolean=false;
     public static dimEcran:number=0;    // plus petite dimension de l'écran
     public static compoFigee:boolean=false;
+    public static scoreValide:boolean=false;
     public static listeParties:Array<Partie>=[];
+    public static reserveClubA:string="";
+    public static reserveClubX:string="";
+    public static reclamationClubA:string="";
+    public static reclamationClubX:string="";
+    public static rapportJA:string="";
+    public static nomJA:string="";
+    public static prenomJA:string="";
+    public static adresseJA:string="";
+    public static licenceJA:number=0;
 
     // sleep
     public static delay(ms: number){

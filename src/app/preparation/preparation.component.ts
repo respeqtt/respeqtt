@@ -16,6 +16,8 @@
 
 import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
 import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData, Switch, Observable } from "@nativescript/core";
+import { ActivatedRoute } from "@angular/router";
+import { RouterExtensions } from "@nativescript/angular";
 
 
 import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
@@ -36,8 +38,10 @@ export class PreparationComponent{
     titreRencontre:string;
     trace:string;
     modif:boolean;
+    routeur:RouterExtensions;
 
-    constructor() {
+    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+        this.routeur = routerExtensions;
         this.recoitCoteX=false
         this.titreRencontre = SessionAppli.titreRencontre;
         console.log("Rencontre : " + this.titreRencontre);
@@ -56,27 +60,33 @@ export class PreparationComponent{
         this.recoitCoteX = sw.checked; // boolean
         let c = SessionAppli.clubA;
         let e = SessionAppli.equipeA;
-        // échanger les clubs et les équipes
+        // échanger les clubs et les équipes et mémoriser dans la session
         SessionAppli.clubA = SessionAppli.clubX;
         SessionAppli.clubX = c;
         SessionAppli.equipeA = SessionAppli.equipeX;
         SessionAppli.equipeX = e;
+        SessionAppli.recoitCoteX = this.recoitCoteX;
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
     }
 
-    onTap(args: EventData) {
+    onReserveA(args: EventData) {
         let button = args.object as Button;
-        // execute your custom logic here...
-        // >> (hide)
-        alert("Tapped ");
-        // << (hide)
+        // Ouvrir la page de saisie des réserves
+        this.routeur.navigate(["saisiecommentaire/RESERVE/A"]);
+    }
+
+    onReserveX(args: EventData) {
+        let button = args.object as Button;
+        // Ouvrir la page de saisie des réserves
+        this.routeur.navigate(["saisiecommentaire/RESERVE/X"]);
     }
 
     onValiderFeuille(args: EventData) {
         let button = args.object as Button;
 
-        // vérifier que les deux équipes ont été saisies
-        if(!SessionAppli.equipeA || !SessionAppli.equipeX) {
+        // vérifier que les deux équipes ont été saisies ou forfait
+        if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
+        || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
             alert("Les deux équipes n'ont pas été renseignées.");
             return;
         } else {

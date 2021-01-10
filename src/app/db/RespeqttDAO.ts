@@ -290,6 +290,7 @@ export class EltListeLicencie {
     feminin:boolean;
     sel:boolean;
     place:string;
+    double:number;
 
 }
 export class Licencie{
@@ -379,12 +380,13 @@ export class Partie{
     joueurX:number;             // numéro de licence joueur de l'équipe X
     simple:boolean;             // VRAI si c'est un simple
     score:number;               // 2 si A a gagné, 1 si X a gagné, 0 si X forfait, 3 si A forfait
+    scoreAX:string="";             // score de A et X séparé par un -
     sets:Array<Set>=[];         // liste des sets disputés
     desc:string;                // description pour la liste
     sel:boolean;                // sélection si dans une liste
 
     // crée la liste des parties
-    static InitListeParties(r:Rencontre, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>):Array<Partie> {
+    static InitListeParties(r:Rencontre, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean):Array<Partie> {
         var liste:Array<Partie>=[];
 
         // récuperer la formule
@@ -397,10 +399,10 @@ export class Partie{
             n = formule.getNbParties();
             console.log("Nb parties=" + n);
             for(var i:number=0; i < r.nbJoueurs; i++) {
-                console.log("J" + (i+1) + " A = " + eqA[i].nom + "/ J" + (i+1) + " X = " + eqX[i].nom);
+                console.log("J" + (i+1) + " A = " + (forfaitA ? "(forfait)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(forfait)" : eqX[i].nom));
             }
             for(var i:number = 0; i<n; i++) {
-                partie = new Partie(formule.getPartie(i+1), eqA, eqX);
+                partie = new Partie(formule.getPartie(i+1), eqA, eqX, forfaitA, forfaitX);
                 liste.push(partie);
             }
         },error =>{
@@ -411,7 +413,7 @@ export class Partie{
     }
 
     // crée une partie à partir de son modèle p (ex : AW) et des deux équipes
-    constructor(p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>) {
+    constructor(p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean) {
 
         var joueur:EltListeLicencie;
 
@@ -423,19 +425,49 @@ export class Partie{
         if(p.charCodeAt(0) < 65) {
             // c'est un double
             this.desc = "*** double" + this.desc + " *** = ";
+            // mettre le score en cas de forfait
+            if(forfaitA) {
+                this.score = 0;
+                this.scoreAX = "0-2";
+            }
+            if(forfaitX) {
+                this.score = 3;
+                this.scoreAX = "2-0";
+            }
         } else {
             // c'est un simple
             // coté A
-            joueur = eqA[p.charCodeAt(0)-65];
-            console.log("Rang A =" + (p.charCodeAt(0)-65));
-            this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
+            if(!forfaitA) {
+                joueur = eqA[p.charCodeAt(0)-65];
+                console.log("Rang A =" + (p.charCodeAt(0)-65));
+                this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
+            }
             // coté X
-            this.desc = this.desc + p.charAt(1) + "/";
-            console.log("Rang X =" + (p.charCodeAt(1)-87));
-            joueur = eqX[p.charCodeAt(1)-87];
-            this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
-        }
+            if(!forfaitX) {
+                this.desc = this.desc + p.charAt(1) + "/";
+                console.log("Rang X =" + (p.charCodeAt(1)-87));
+                joueur = eqX[p.charCodeAt(1)-87];
+                this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
+            }
+            // mettre le score en cas de forfait
+            if(forfaitA || eqA[p.charCodeAt(0)-65].nom == "(absent)") {
+                this.score = 0;
+                this.scoreAX = "0-2";
+            }
+            if(forfaitX || eqX[p.charCodeAt(1)-87].nom == "(absent)") {
+                this.score = 3;
+                this.scoreAX = "2-0";
+            }
 
+            // corriger si double forfait
+            if((forfaitA && eqX[p.charCodeAt(1)-87].nom == "(absent)")
+            || (forfaitX && eqA[p.charCodeAt(0)-65].nom == "(absent)")
+            || (eqX[p.charCodeAt(1)-87].nom == "(absent)" && eqA[p.charCodeAt(0)-65].nom == "(absent)")
+            ) {
+                this.score = -1;
+                this.scoreAX = "0-0";
+            }
+        }
     }
 
     // met à jour le score des parties disputées ; renvoie TRUE si le score est valide
@@ -462,6 +494,7 @@ export class Partie{
             // vérifier que si un joueur a gagné il n'y a pas de set à suivre
             if((ptsA == r.nbSets || ptsX == r.nbSets) && i+1 < result.length) {
                 console.log("!!! Score incorrect : des sets ont été joués après le résultat acquis");
+                console.log("ptsA=" + ptsA + ", ptsX=" + ptsX + ", i+1=" + (i+1) + ", length=" + result.length);
                 return false;
             }
         }
@@ -481,13 +514,15 @@ export class Partie{
         }
         if(ptsA > ptsX) {
             this.score = 2;
+            this.scoreAX = "2-1";
             // mettre à jour la description
             console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substr(0, this.desc.search("=")));
-            this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "2-1";
+            // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "2-1";
         } else {
             this.score = 1;
+            this.scoreAX = "1-2";
             // mettre à jour la description
-            this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "1-2";
+            // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "1-2";
         }
         console.log("Partie=" + this.desc);
         return true;

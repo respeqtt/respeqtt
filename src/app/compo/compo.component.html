@@ -1,23 +1,28 @@
 
     <script src="https://kit.fontawesome.com/4ac1ebb706.js" crossorigin="anonymous"></script>
 
-    <StackLayout alignment="vertical" backgroundColor="lightblue">
-        <Label class="titre" text="COMPOSITION D'EQUIPE"></Label>
-        <Label class = "sous-titre" [text] = "this.clubChoisi.nom"> </Label>
-        <Button text="SCANNER" backgroundColor="blue" (tap)="onScanTap($event)"></Button>
-        <Button text="ANNULER" backgroundColor="blue" (tap)="onAnnulerTap($event)"></Button>
-        <Button text="VALIDER"   backgroundColor="darkblue" (tap)="onValiderTap($event)"></Button>
+    <FlexboxLayout flexDirection="column" justifyContent="flex-start" backgroundColor="lightblue">
+        <Label class="titre" text="COMPOSITION D'EQUIPE"  flexGrow="0" flexShrink="0"></Label>
+        <Label class = "sous-titre" [text] = "this.clubChoisi.nom"  flexGrow="0" flexShrink="0"> </Label>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Button text="SCANNER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onScanTap($event)"></Button>
+            <Button text="FORFAIT" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onForfaitTap($event)"></Button>
+        </FlexboxLayout>
         <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-                <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
-                    <StackLayout orientation="horizontal">
-                        <Label text="&#xf45d;" class="fas" [color]="(item.sel) ? '#0000FF' : '#000000'" stretch="none"></Label>
+                <FlexboxLayout flexDirection="column" justifyContent="flex-start" [class.odd]="odd" [class.even]="even">
+                    <FlexboxLayout flexDirection="row" justifyContent="flex-start">
+                        <Label text="&#xf45d;" class="fas" [color]="(item.sel) ? '#0000FF' : '#000000'" flexGrow="0" ></Label>
                         <Label [class.odd]="odd" [class.even]="even" [text]="' ' + item.nom + ' ' + item.prenom + ' ' + item.points"
-                            [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                            [color]="(item.sel) ? '#0000FF' : '#000000'" flexGrow="1">
                         </Label>
-                    </StackLayout>
-                </StackLayout>
+                    </FlexboxLayout>
+                </FlexboxLayout>
             </ng-template>
         </ListView>
-    </StackLayout>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Button text="FERMER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onAnnulerTap($event)"></Button>
+            <Button text="VALIDER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onValiderTap($event)"></Button>
+        </FlexboxLayout>
+    </FlexboxLayout>
 

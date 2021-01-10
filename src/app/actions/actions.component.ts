@@ -22,6 +22,8 @@ import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
 
+var dialogs = require("tns-core-modules/ui/dialogs");
+
 var Sqlite = require ("nativescript-sqlite");
 
 @Component({
@@ -31,7 +33,10 @@ var Sqlite = require ("nativescript-sqlite");
 })
 export class ActionsComponent{
     routerExt: RouterExtensions;            // pour navigation
+    preparer:boolean;                       // activation du bouton : préparer la feuille de match
     lancer: boolean;                        // activation du bouton : lancer les parties
+    valider:boolean;                        // activation du bouton : valider le score
+    spid:boolean;                           // activation du bouton : envoyer à SPID
 
 
     constructor(private _routerExtensions: RouterExtensions) {
@@ -40,8 +45,17 @@ export class ActionsComponent{
         // Init de la BDD
         RespeqttDb.Init();
 
+        // on ne prépare la feuille de match que si on a chargé les rencontres
+        this.preparer = SessionAppli.listeRencontres.length > 0;
+
         // on ne lance les parties que si la compo est figée
         this.lancer = SessionAppli.compoFigee;
+
+        // on ne valide le score que si les parties ont été lancées
+        this.valider = SessionAppli.listeParties.length > 0;
+
+        // on n'envoie à SPID que si le scoré a été validé
+        this.spid = SessionAppli.scoreValide;
 
     }
 
@@ -54,8 +68,112 @@ export class ActionsComponent{
 
     onValiderScore(args: EventData) {
         let button = args.object as Button;
-        // charger les rencontres en mémoire
-        alert("Validation du score");
+        // Vérifier que toutes les rencontres ont été disputées
+        let scoreA:number = 0;
+        let scoreX:number = 0;
+        let scoreComplet:boolean=true;
+
+        if(SessionAppli.listeParties.length == 0) {
+            alert("Les parties n'ont pas encore été lancées, vous ne pouvez pas valider le score");
+            return;
+        }
+        console.log("Calcul du score");
+        for(var i = 0; i < SessionAppli.listeParties.length; i++) {
+            if(SessionAppli.listeParties[i].scoreAX != "") {
+                switch(SessionAppli.listeParties[i].score) {
+                    case -1: // joueurs A et X forfaits
+                    break;
+                    case 0: // forfait joueur A
+                        scoreX = scoreX + 2;
+                    break;
+                    case 1: // victoire joueur X
+                        scoreA = scoreA + 1;
+                        scoreX = scoreX + 2;
+                    break;
+                    case 2: // victoire joueur A
+                        scoreA = scoreA + 2;
+                        scoreX = scoreX + 1;
+                    break;
+                    case 3: // forfait joueur A
+                        scoreA = scoreA + 2;
+                    break;
+                    default:
+                        console.log("Score incorrect :" + SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].score);
+                }
+            } else {
+                console.log(SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].score);
+                scoreComplet = false;
+            }
+        }
+        console.log("*** Score final =" + scoreA.toString() + "-" + scoreX.toString() + " ***");
+        console.log("ScoreComplet :" + scoreComplet.toString());
+
+        let cr:boolean;
+        // si tout n'a pas été joué, on demande confirmation
+        if(!scoreComplet) {
+            dialogs.prompt({title:"Confirmation",
+                message:"Toutes les rencontres n'ont pas été disputées, êtes vous sûr de vouloir valider en l'état ?",
+                okButtonText:"VALIDER",
+                cancelButtonText:"ANNULER"
+                }).then(r => {
+                    if(r.result) {
+                        this.routerExt.navigate(["valider/"+scoreA+"/"+scoreX]);
+                } else {
+                    console.log("VALIDATION ANNULEE");
+                    return;
+                }
+            });
+        } else {
+            this.routerExt.navigate(["valider/"+scoreA+"/"+scoreX]);
+        }
+    }
+
+    onEnvoyerASPID(args: EventData) {
+        let button = args.object as Button;
+        if(this.spid) {
+            this.routerExt.navigate(["envoi"]);
+        }
+
+    }
+
+    onAbandonner(args: EventData) {
+        let button = args.object as Button;
+
+        dialogs.prompt({title:"Confirmation",
+            message:"Etes vous sûr de vouloir abandonner la rencontre " + SessionAppli.titreRencontre
+                    + " ? Les compositions et les résultats seront effacés.",
+            okButtonText:"ABANDONNER LA RENCONTRE",
+            cancelButtonText:"ANNULER"
+            }).then(r => {
+                if(r.result) {
+                    // tout effacer dans la session sauf la liste des rencontres
+                    SessionAppli.rencontreChoisie = null;
+                    SessionAppli.compoFigee = false;
+                    SessionAppli.scoreValide = false;
+                    SessionAppli.titreRencontre = "";
+                    SessionAppli.clubA = null;
+                    SessionAppli.clubX = null;
+                    SessionAppli.clubChoisi = -1;
+                    SessionAppli.equipeA = [];
+                    SessionAppli.equipeX = [];
+                    SessionAppli.forfaitA = false;
+                    SessionAppli.forfaitX = false;
+                    SessionAppli.listeParties = [];
+                    SessionAppli.recoitCoteX = false;
+
+                    this.preparer = SessionAppli.listeRencontres.length > 0;
+                    // on ne lance les parties que si la compo est figée
+                    this.lancer = SessionAppli.compoFigee;
+                    // on ne valide le score que si les parties ont été lancées
+                    this.valider = SessionAppli.listeParties.length > 0;
+                    // on n'envoie à SPID que si le scoré a été validé
+                    this.spid = SessionAppli.scoreValide;
+
+                    alert("Rencontre abandonnée");
+                } else {
+                    console.log("Abandon ANNULE");
+                }
+            });
     }
 
     onLancement(args: EventData) {

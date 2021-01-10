@@ -96,7 +96,6 @@ export class PlacerComponent{
     }
 
     ngOnInit(): void {
-        this.cote = Boolean(this._route.snapshot.paramMap.get("cote"));
 
     }
 

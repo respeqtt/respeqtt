@@ -34,6 +34,8 @@ export class RencontreComponent{
     constructor() {
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;
+            SessionAppli.listeRencontres = this.listeRencontres;
+            console.log("Nb de rencontres :" + SessionAppli.listeRencontres.length);
         }, error => {
             console.log("Impossible de lire la liste des rencontres : " + error.toString());
         });

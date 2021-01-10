@@ -20,25 +20,43 @@ import { NativeScriptRouterModule } from "@nativescript/angular";
 
 import { ActionsComponent } from "./actions/actions.component";
 import { RencontreComponent } from "./rencontre/rencontre.component";
+import { ChoixRencontreComponent } from "./choixrencontre/choixrencontre.component";
+import { JoueursComponent } from "./joueurs/joueurs.component";
+import { ClubComponent } from "./club/club.component";
 import { PreparationComponent } from "./preparation/preparation.component";
+import { CompoComponent } from "./compo/compo.component";
+import { CompoDoubleComponent } from "./compodouble/compodouble.component";
+import { PlacerComponent } from "./placer/placer.component";
 import { LancementComponent } from "./lancement/lancement.component";
 import { FinComponent } from "./fin/fin.component";
 import { EnvoiComponent } from "./envoi/envoi.component";
 import { ResultatComponent } from "./resultat/resultat.component";
 import { QRMontrerComponent } from "./qrmontrer/qrmontrer.component";
 import { QRScanComponent } from "./qrscan/qrscan.component";
+import { SaisieCommentaireComponent, } from "./saisiecommentaire/saisiecommentaire.component";
+import { ValiderComponent } from "./valider/valider.component";
+import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 
 const routes: Routes = [
     { path: "", redirectTo: "/actions", pathMatch: "full" },
     { path: "actions", component: ActionsComponent },
     { path: "rencontre", component: RencontreComponent },
+    { path: "choixrencontre", component: ChoixRencontreComponent },
+    { path: "joueurs", component: JoueursComponent },
+    { path: "clubs", component: ClubComponent },
     { path: "preparation", component: PreparationComponent },
+    { path: "compo/:cote", component: CompoComponent },
+    { path: "compoDouble/:cote/:numDouble/:nbDoubles", component: CompoDoubleComponent },  // coté = A ou X ; numDouble = numéro du double à composer ; nbDoubles = nb de doubles
+    { path: "placer/:cote", component: PlacerComponent },
     { path: "lancement", component: LancementComponent },
     { path: "fin", component: FinComponent },
     { path: "envoi", component: EnvoiComponent },
-    { path: "resultat", component: ResultatComponent },
-    { path: "qrmontrer/:quoi/:dim/:titre", component: QRMontrerComponent },
-    { path: "qrscan", component: QRScanComponent },
+    { path: "resultat/:partie", component: ResultatComponent },
+    { path: "qrmontrer/:quoi/:dim/:titre", component: QRMontrerComponent }, // dim = dimension du QRCode en pixels écran
+    { path: "qrscan/:quoi/:param", component: QRScanComponent },    // quoi = COMPO ou PARTIE ; param = numPartie
+    { path: "saisiecommentaire/:quoi/:auteur", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA
+    { path: "valider/:scoreA/:scoreX", component: ValiderComponent },    // scoreA = score du club A ; scoreX = score du club X
+    { path: "jugearbitre", component: JugeArbitreComponent },
 ];
 
 @NgModule({

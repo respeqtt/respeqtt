@@ -38,13 +38,20 @@ export class ResultatComponent{
     routeur:RouterExtensions;
     numPartie:number;
 
+    txfSet1:TextField;
+
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
         this.dim = SessionAppli.dimEcran;
         this.routeur = routerExtensions;
         this.numPartie = Number(_route.snapshot.paramMap.get("partie"));
         console.log("Saisie résultats partie " + _route.snapshot.paramMap.get("partie"));
 
-        this.titre = SessionAppli.listeParties[this.numPartie].desc;
+        // supprimer le 1er caractère des doubles et le dernier pour tous
+        if(SessionAppli.listeParties[this.numPartie].desc.charAt(0) == "#") {
+            this.titre = SessionAppli.listeParties[this.numPartie].desc.substring(1,SessionAppli.listeParties[this.numPartie].desc.length-1);
+        } else {
+            this.titre = SessionAppli.listeParties[this.numPartie].desc.substring(0,SessionAppli.listeParties[this.numPartie].desc.indexOf("="));
+        }
         console.log("Titre = " + this.titre);
 
         // init des sets si déjà saisis
@@ -60,7 +67,6 @@ export class ResultatComponent{
             if(SessionAppli.listeParties[this.numPartie].sets.length > 4)
                 this.set5 = SessionAppli.listeParties[this.numPartie].sets[4].score;
         }
-
     }
 
     ngOnInit() {
@@ -76,6 +82,19 @@ export class ResultatComponent{
         listeRes.push(score);
 
         return true;
+    }
+
+    onReclamA(args: EventData) {
+        let button = args.object as Button;
+        // Ouvrir la page de saisie des réclamations
+        this.routeur.navigate(["saisiecommentaire/RECLAMATION/A"]);
+    }
+
+
+    onReclamX(args: EventData) {
+        let button = args.object as Button;
+        // Ouvrir la page de saisie des réclamations
+        this.routeur.navigate(["saisiecommentaire/RECLAMATION/X"]);
     }
 
     onTapValidate(args: EventData) {
@@ -95,13 +114,15 @@ export class ResultatComponent{
                     if(!isNaN(this.set4)) {
                         console.log("Set4=" + this.set4);
                         this.AjouteRes(resPartie, this.set4);
-                        if(!isNaN(this.set5))
-                        console.log("Set5=" + this.set5);
-                        this.AjouteRes(resPartie, this.set5);
+                        if(!isNaN(this.set5)) {
+                            console.log("Set5=" + this.set5);
+                            this.AjouteRes(resPartie, this.set5);
+                        }
                     }
                 }
             }
         }
+        console.log(resPartie.length + " sets dans le résultat");
 
         if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.rencontre)) {
             this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontre);
@@ -120,6 +141,11 @@ export class ResultatComponent{
 
         // Afficher le résultat
          console.log("Resultat = " + this.quoi);
+        // Navigation
+        this.routeur.navigate(["lancement"]);
+}
+
+onTapClose(args: EventData) {
         // Navigation
         this.routeur.navigate(["lancement"]);
 }

@@ -22,6 +22,8 @@ import { EltListeLicencie, Licencie, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
+var dialogs = require("tns-core-modules/ui/dialogs");
+
 
 @Component({
     templateUrl: "./compo.component.html",
@@ -56,10 +58,31 @@ export class CompoComponent{
         }
         // recherche de la liste des joueurs du club
         Licencie.getListe(this.clubChoisi.id).then(liste => {
+            // Ajouter un joueur "Absent" pour les forfaits
+            let abs = new EltListeLicencie;
+            abs.nom = "(absent)";
+            abs.prenom = "";
+            abs.id = 0;
+            abs.points = 0;
+            abs.sel = false;
+
             this.listeJoueurs = liste as Array<EltListeLicencie>;
             if(this.listeJoueurs != null) {
                 console.log(this.listeJoueurs.length.toString() + " joueurs");
             }
+
+            this.listeJoueurs.push(abs);
+
+            // permettre deux forfaits ?
+            let abs2 = new EltListeLicencie;
+            abs2.nom = "(absent)";
+            abs2.prenom = "";
+            abs2.id = 1;
+            abs2.points = 0;
+            abs2.sel = false;
+            this.listeJoueurs.push(abs2);
+
+
             this.maListe = new Observable();
             this.maListe.set("listeJoueurs", new ObservableArray(this.listeJoueurs));
         }, error => {
@@ -81,6 +104,29 @@ export class CompoComponent{
     onScanTap(args: EventData) {
         // appeler la page de scan
         this.routerExt.navigate(["/qrscan/COMPO/" + this._route.snapshot.paramMap.get("cote")]);
+    }
+
+    onForfaitTap($event){
+        dialogs.prompt({title:"Confirmation",
+            message:"Etes vous sûr que l'équipe de " + this.clubChoisi.nom + " est bien forfait ?",
+            okButtonText:"VALIDER",
+            cancelButtonText:"ANNULER"
+            }).then(r => {
+                if(r.result) {
+                    if(this.cote) {
+                        SessionAppli.forfaitX = true;
+                        console.log("FORFAIT EQUIPE " + SessionAppli.clubX.nom);
+                    } else {
+                        SessionAppli.forfaitA = true;
+                        console.log("FORFAIT EQUIPE " + SessionAppli.clubA.nom);
+                    }
+                    // Revenir à la page de préparation de la feuille
+                    this.routerExt.navigate(["preparation"]);
+                } else {
+                    console.log("FORFAIT ANNULE");
+                }
+            });
+
     }
 
     onValiderTap(args: EventData) {
@@ -135,7 +181,7 @@ export class CompoComponent{
                     this.equipe[j] = this.equipe[this.equipe.length - 1];
                     this.equipe.pop();
                 }
-                console.log("Joueur désélectionné : " + joueur.id);
+                console.log("Joueur désélectionné : " + joueur.id + "(index=" + index + ")");
             }
             j++;
         }
