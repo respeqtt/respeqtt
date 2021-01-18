@@ -36,26 +36,41 @@ import { Mobile } from "../outils/outils";
 export class PreparationComponent{
     recoitCoteX:boolean
     titreRencontre:string;
-    trace:string;
     modif:boolean;
     routeur:RouterExtensions;
+    btnResA:string;
+    btnResX:string;
+    clubA:string;
+    clubX:string;
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
         this.routeur = routerExtensions;
-        this.recoitCoteX=false
+        this.recoitCoteX=false;
         this.titreRencontre = SessionAppli.titreRencontre;
         console.log("Rencontre : " + this.titreRencontre);
-        this.trace = "";
+        if(SessionAppli.reserveClubA == "") {
+            this.btnResA = "0 réserve club A";
+        } else {
+            this.btnResA = "1 réserve club A";
+        }
+        if(SessionAppli.reserveClubX == "") {
+            this.btnResX = "0 réserve club X";
+        } else {
+            this.btnResX = "1 réserve club X";
+        }
+
+        this.clubA = SessionAppli.clubA.nom;
+        this.clubX = "";
 
         this.modif = !SessionAppli.compoFigee;
         console.log("Compo figée :" + SessionAppli.compoFigee);
     }
 
-    // Charge la liste des rencontres pour affichage
     ngOnInit(): void {
     }
 
     onCheckedChange(args: EventData) {
+        var s:string;
         let sw = args.object as Switch;
         this.recoitCoteX = sw.checked; // boolean
         let c = SessionAppli.clubA;
@@ -66,6 +81,14 @@ export class PreparationComponent{
         SessionAppli.equipeA = SessionAppli.equipeX;
         SessionAppli.equipeX = e;
         SessionAppli.recoitCoteX = this.recoitCoteX;
+        s = SessionAppli.reserveClubA;
+        SessionAppli.reserveClubA = SessionAppli.reserveClubX;
+        SessionAppli.reserveClubX = s;
+
+        this.clubA = SessionAppli.clubA.nom;
+        this.clubX = SessionAppli.clubX.nom;
+
+
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
     }
 

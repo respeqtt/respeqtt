@@ -32,21 +32,25 @@ import { Mobile } from "../outils/outils";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChoixRencontreComponent {
-    listeRencontres:Array<EltListeRencontre>;
+    listeRencontres:Array<EltListeRencontre> = [];
     mobile:Mobile;
     demiLargeur:number;
+    titre:string;
+    sousTitre:string;
 
     constructor(private router: Router) {
+        this.mobile = new Mobile;
+        // calcul de la demi largeur pour les boutons
+        this.demiLargeur = Math.floor(this.mobile.largeurEcran /2) - 5;
+        console.log("Demi-largeur = " + this.demiLargeur);
+
+        this.titre = "CHOIX DE LA RENCONTRE";
+        this.sousTitre = "dans la liste ci-dessous";
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;
         }, error => {
             console.log("Impossible de lire la liste des rencontres : " + error.toString());
         });
-
-        this.mobile = new Mobile;
-        // calcul de la demi largeur pour les boutons
-        this.demiLargeur = Math.floor(this.mobile.largeurEcran /2) - 5;
-        console.log("Demi-largeur = " + this.demiLargeur);
     }
 
     // Charge la liste des rencontres pour affichage
@@ -67,9 +71,11 @@ export class ChoixRencontreComponent {
             // récupérer le club 1 placé en A en attendant de savoir
             Club.getClub(SessionAppli.rencontre.club1).then(club => {
                 SessionAppli.clubA = club as Club;
+                console.log("ClubA = " + SessionAppli.clubA.nom);
                 // récupérer le club 2 placé en X en attendant de savoir
                 Club.getClub(SessionAppli.rencontre.club2).then(club => {
                     SessionAppli.clubX = club as Club;
+                    console.log("ClubX = " + SessionAppli.clubX.nom);
                 }, error => {
                     console.log("Impossible de trouver le club " + SessionAppli.rencontre.club2.toString() + ": " + error.toString());
                 });

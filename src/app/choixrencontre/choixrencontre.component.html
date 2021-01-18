@@ -2,15 +2,17 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
-    <StackLayout orientation="vertical">
-        <Label class="titre" text="RENCONTRE EN COURS"></Label>
-        <Label class="sous-titre" text="Choisir une rencontre"></Label>
+    <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
+        <Label class="titre" [text]="this.titre"></Label>
+        <Label class="sous-titre" [text]="this.sousTitre"></Label>
         <ListView class ="liste" [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
-                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.journee + ' ' + item.date"></Label>
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.journee + ' ' + item.date">
+                           [color]="(item.sel) ? '#0000FF' : '#000000'"
+                    </Label>
                 </StackLayout>
             </ng-template>
         </ListView>
-    </StackLayout>
+    </FlexboxLayout>
 </Page>

@@ -37,23 +37,34 @@ export class SaisieCommentaireComponent {
         this.router = _routerExtensions;
         this.titre =  this._route.snapshot.paramMap.get("quoi");
         this.auteur =  this._route.snapshot.paramMap.get("auteur");
+
+        console.log("Objet= " + this.titre);
+        console.log("Auteur >" + this.auteur + "<");
+
         console.log("Saisie de commentaire pour le club coté " + this.auteur);
         if(this.auteur == "A") {
             this.sousTitre = "posée par " + SessionAppli.clubA.nom + " sur la rencontre " + SessionAppli.titreRencontre;
-            if(SessionAppli.reserveClubA != "") {
+            if(this.titre == "RESERVE" && SessionAppli.reserveClubA != "") {
                 this.saisie = SessionAppli.reserveClubA;
+            }
+            if(this.titre == "RECLAMATION" && SessionAppli.reclamationClubA != "") {
+                this.saisie = SessionAppli.reclamationClubA;
             }
         }
         if(this.auteur == "X") {
+            console.log("Auteur coté X");
             this.sousTitre = "posée par " + SessionAppli.clubX.nom + " sur la rencontre " + SessionAppli.titreRencontre;
-            if(SessionAppli.reserveClubX != "") {
+            if(this.titre == "RESERVE" && SessionAppli.reserveClubX != "") {
                 this.saisie = SessionAppli.reserveClubX;
             }
-            else {
-                this.sousTitre = this.auteur;
+            if(this.titre == "RECLAMATION" && SessionAppli.reclamationClubX != "") {
+                this.saisie = SessionAppli.reclamationClubX;
             }
+        } else {
+            this.sousTitre = this.auteur;
         }
-       }
+    }
+
 
      onTapValidate(args: EventData) {
         let button = args.object as Button;
@@ -72,7 +83,7 @@ export class SaisieCommentaireComponent {
             alert("Texte de la réserve posée par le club " + auteur + ": " + this.saisie);
 
             // retour à la page de préparation de la feuille
-            this.router.backToPreviousPage();
+            this.router.navigate(["preparation"]);
         }
         if(this.titre == "RECLAMATION") {
             // mémoriser la réclamation de l'équipe indiquée
@@ -86,7 +97,7 @@ export class SaisieCommentaireComponent {
             alert("Texte de la réclamation posée par le club " + auteur + ": " + this.saisie);
 
             // retour à la page de préparation de validation du score
-            this.router.backToPreviousPage();
+            this.router.navigate(["valider/?/?"]);
         }
         if(this.titre == "RAPPORT") {
             // mémoriser le rapport du JA (RAS par défaut)

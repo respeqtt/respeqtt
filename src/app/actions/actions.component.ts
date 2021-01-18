@@ -77,36 +77,12 @@ export class ActionsComponent{
             alert("Les parties n'ont pas encore été lancées, vous ne pouvez pas valider le score");
             return;
         }
-        console.log("Calcul du score");
-        for(var i = 0; i < SessionAppli.listeParties.length; i++) {
-            if(SessionAppli.listeParties[i].scoreAX != "") {
-                switch(SessionAppli.listeParties[i].score) {
-                    case -1: // joueurs A et X forfaits
-                    break;
-                    case 0: // forfait joueur A
-                        scoreX = scoreX + 2;
-                    break;
-                    case 1: // victoire joueur X
-                        scoreA = scoreA + 1;
-                        scoreX = scoreX + 2;
-                    break;
-                    case 2: // victoire joueur A
-                        scoreA = scoreA + 2;
-                        scoreX = scoreX + 1;
-                    break;
-                    case 3: // forfait joueur A
-                        scoreA = scoreA + 2;
-                    break;
-                    default:
-                        console.log("Score incorrect :" + SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].score);
-                }
-            } else {
-                console.log(SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].score);
-                scoreComplet = false;
-            }
-        }
-        console.log("*** Score final =" + scoreA.toString() + "-" + scoreX.toString() + " ***");
-        console.log("ScoreComplet :" + scoreComplet.toString());
+
+        // calcul du score final
+        scoreComplet = SessionAppli.MajScore();
+
+        console.log("*** Score final =" + SessionAppli.score + " ***");
+        console.log("*** ScoreComplet :" + scoreComplet.toString() + " ***");
 
         let cr:boolean;
         // si tout n'a pas été joué, on demande confirmation
@@ -117,7 +93,7 @@ export class ActionsComponent{
                 cancelButtonText:"ANNULER"
                 }).then(r => {
                     if(r.result) {
-                        this.routerExt.navigate(["valider/"+scoreA+"/"+scoreX]);
+                        this.routerExt.navigate(["valider/"+ SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
                 } else {
                     console.log("VALIDATION ANNULEE");
                     return;
@@ -147,7 +123,8 @@ export class ActionsComponent{
             }).then(r => {
                 if(r.result) {
                     // tout effacer dans la session sauf la liste des rencontres
-                    SessionAppli.rencontreChoisie = null;
+                    SessionAppli.rencontre = null;
+                    SessionAppli.rencontreChoisie = -1;
                     SessionAppli.compoFigee = false;
                     SessionAppli.scoreValide = false;
                     SessionAppli.titreRencontre = "";
@@ -160,6 +137,18 @@ export class ActionsComponent{
                     SessionAppli.forfaitX = false;
                     SessionAppli.listeParties = [];
                     SessionAppli.recoitCoteX = false;
+                    SessionAppli.titreRencontre = "";
+                    SessionAppli.listeParties=[];
+                    SessionAppli.reserveClubA="";
+                    SessionAppli.reserveClubX="";
+                    SessionAppli.reclamationClubA="";
+                    SessionAppli.reclamationClubX="";
+                    SessionAppli.rapportJA="";
+                    SessionAppli.nomJA="";
+                    SessionAppli.prenomJA="";
+                    SessionAppli.adresseJA="";
+                    SessionAppli.licenceJA=0;
+                    SessionAppli.score="";
 
                     this.preparer = SessionAppli.listeRencontres.length > 0;
                     // on ne lance les parties que si la compo est figée
@@ -182,6 +171,14 @@ export class ActionsComponent{
         // inutile : le bouton est inactif si pas this.lancer
         if(this.lancer) {
             this.routerExt.navigate(["lancement"]);
+        }
+    }
+
+    onPreparer(args: EventData) {
+        if(SessionAppli.rencontre) {
+            this.routerExt.navigate(["preparation"]);
+        } else {
+            this.routerExt.navigate(["choixrencontre"]);
         }
     }
 

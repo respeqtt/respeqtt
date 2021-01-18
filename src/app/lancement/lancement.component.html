@@ -14,7 +14,10 @@ You can learn more about the NativeScript core theme at https://github.com/nativ
 
     <FlexboxLayout flexDirection="column">
         <Label class="titre" [text]="this.titre" flexGrow="0" flexShrink="0" ></Label>
-        <Label class="sous-titre" text="Liste des parties" flexGrow="0" flexShrink="0" ></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="0" flexShrink="0">
+            <Label class="sous-titre" text="Liste des parties" flexGrow="1" flexShrink="1" ></Label>
+            <Label class="score" [text]="this.score" flexGrow="0" flexShrink="0" ></Label>
+        </FlexboxLayout>
         <ListView [items]="listeLignes" flexGrow="1" flexShrink="1"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" [class.odd]="odd" [class.even]="even">

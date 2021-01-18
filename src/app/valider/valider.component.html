@@ -14,8 +14,8 @@
             <Label [text]="this.scoreX" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="1" flexShrink="1">
-            <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamA($event)"></Button>
-            <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamX($event)"></Button>
+            <Button [text]="this.btnRecA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamA($event)"></Button>
+            <Button [text]="this.btnRecX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
         <Button text="Juge Arbitre" horizontalAlignment="stretch" (tap)="onJA($event)" flexGrow="1" flexShrink="1"></Button>
         <Button text="Valider la rencontre" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1"></Button>

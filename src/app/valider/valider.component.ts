@@ -41,7 +41,8 @@ export class ValiderComponent{
     nomClubA:string;
     nomClubX:string;
     sousTitre:string;
-
+    btnRecA:string;
+    btnRecX:string;
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
         this.routeur = routerExtensions;
@@ -51,6 +52,17 @@ export class ValiderComponent{
         this.scoreA = _route.snapshot.paramMap.get("scoreA");
         this.scoreX = _route.snapshot.paramMap.get("scoreX");
         this.sousTitre = SessionAppli.titreRencontre;
+
+        if(SessionAppli.reclamationClubA == "") {
+            this.btnRecA = "0 réclamation club A";
+        } else {
+            this.btnRecA = "1 réclamation club A";
+        }
+        if(SessionAppli.reclamationClubX == "") {
+            this.btnRecX = "0 réclamation club X";
+        } else {
+            this.btnRecX = "1 réclamation club X";
+        }
     }
 
     onReclamA(args: EventData) {
@@ -84,6 +96,6 @@ export class ValiderComponent{
 
     onTapClose(args: EventData) {
         // retour sur la page précédente
-        this.routeur.backToPreviousPage();
+        this.routeur.navigate(["actions"]);
     }
 }

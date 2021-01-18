@@ -34,6 +34,7 @@ export class LancementComponent{
     titre:string;                           // titre de la page
     partieSel:number=-1;                    // partie sélectionnée
     nbParties:number;                       // nb de parties dans la rencontre
+    score:string;                           // score en cours
     routerExt: RouterExtensions;            // pour navigation
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
@@ -59,11 +60,15 @@ export class LancementComponent{
         SessionAppli.listeParties = this.listeLignes;
 
         this.routerExt = _routerExtensions;
-
     }
 
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;
+
+        // construire le score
+        SessionAppli.MajScore();
+        console.log("Score=" + SessionAppli.score);
+        this.score = SessionAppli.score;
     }
 
     onItemTap(args: ItemEventData) {

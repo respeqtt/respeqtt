@@ -1,4 +1,3 @@
-
 <!--
 The ActionBar is the NativeScript common abstraction over the Android ActionBar and iOS NavigationBar.
 http://docs.nativescript.org/ui/action-bar
@@ -6,15 +5,14 @@ http://docs.nativescript.org/ui/action-bar
 <ActionBar title="RespeqTT">
 </ActionBar>
 
-
 <FlexboxLayout flexDirection="column" justifyContent="flex-start">
     <Button text="Preparer la rencontre"         flexGrow="1" [nsRouterLink]="['../rencontre']"></Button>
     <Button text="Charger les joueurs"           flexGrow="1" [nsRouterLink]="['../joueurs']"></Button>
-    <Button text="Preparer la feuille de match"  flexGrow="1" [nsRouterLink]="['../choixrencontre']" [isenabled]="this.preparer"></Button>
+    <Button text="Preparer la feuille de match"  flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
     <Button text="Lancer les parties"            flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
     <Button text="Valider le score"              flexGrow="1" (tap)="onValiderScore($event)" [isenabled]="this.valider"></Button>
     <Button text="Envoyer à SPID"                flexGrow="1" (tap)="onEnvoyerASPID($event)" [isenabled]="this.spid"></Button>
-    <Button text="Abandonner la rencontre en cours" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.lancer"></Button>
+    <Button text="Abandonner la rencontre en cours" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.preparer"></Button>
 <!--    <Button text="!!! DROP DB !!!"               flexGrow="1" (tap)="onDropDB($event)" backgroungColor="red"></Button>
 -->
 </FlexboxLayout>

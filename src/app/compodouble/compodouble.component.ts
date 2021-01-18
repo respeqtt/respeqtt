@@ -35,7 +35,7 @@ export class CompoDoubleComponent{
     numDouble:number;
     routerExt: RouterExtensions;
     cote:string;
-    titreRencontre:string;
+    sousTitre:string;
     nbDoubles:number;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
@@ -53,8 +53,10 @@ export class CompoDoubleComponent{
         if(this.cote == "X") {
             // récup de la liste des joueurs de l'équipe
             this.listeJoueurs = SessionAppli.equipeX;
+            this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubX.nom;
         } else {
             this.listeJoueurs = SessionAppli.equipeA;
+            this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubA.nom;
         }
 
         // désélectionner tout le monde et compter les joueurs pas déjà dans un double
@@ -157,7 +159,12 @@ export class CompoDoubleComponent{
         if(this.numDouble < this.nbDoubles) {
             console.log("Saisie compo double suivant");
             this.numDouble++;
-        } else {
+            if(this.cote =="X") {
+                this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubX.nom;
+            } else {
+                this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubA.nom;
+            }
+ } else {
             // si numDouble = nbDoubles et club qui reçoit : demander compo autre club
             if(this.numDouble == this.nbDoubles
                 && ((this.cote == "X" && SessionAppli.recoitCoteX) || (this.cote == "A" && !SessionAppli.recoitCoteX)) ) {
@@ -166,9 +173,11 @@ export class CompoDoubleComponent{
                     if(this.cote =="X") {
                         this.cote = "A"
                         this.listeJoueurs = SessionAppli.equipeA;
+                        this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubA.nom;
                     } else {
                         this.cote = "X"
                         this.listeJoueurs = SessionAppli.equipeX;
+                        this.sousTitre = "Double " + this.numDouble.toString() + "/" + SessionAppli.clubX.nom;
                     }
             } else {
                 // numDouble = nbDoubles et club qui se déplace : retour au lancement

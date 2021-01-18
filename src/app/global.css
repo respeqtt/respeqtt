@@ -16,6 +16,14 @@ label.sous-titre {
     vertical-align: middle;
 }
 
+label.score {
+    background-color: rgb(44, 89, 141);
+    color:yellow;
+    font-weight: bold;
+    padding: 20px;
+    vertical-align: middle;
+}
+
 label {
     font-size: 1.5em;
     color: darkblue;
