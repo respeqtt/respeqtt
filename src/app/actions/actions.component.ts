@@ -66,6 +66,13 @@ export class ActionsComponent{
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
     }
 
+    onFeuille(args: EventData) {
+        let button = args.object as Button;
+
+        // consulter ou envoyer la feuille de match
+        this.routerExt.navigate(["feuille"]);
+    }
+
     onValiderScore(args: EventData) {
         let button = args.object as Button;
         // Vérifier que toutes les rencontres ont été disputées
@@ -85,8 +92,8 @@ export class ActionsComponent{
         console.log("*** ScoreComplet :" + scoreComplet.toString() + " ***");
 
         let cr:boolean;
-        // si tout n'a pas été joué, on demande confirmation
-        if(!scoreComplet) {
+        // si tout n'a pas été joué, on demande confirmation (la 1e fois)
+        if(!scoreComplet && SessionAppli.licenceJA == 0) {
             dialogs.prompt({title:"Confirmation",
                 message:"Toutes les rencontres n'ont pas été disputées, êtes vous sûr de vouloir valider en l'état ?",
                 okButtonText:"VALIDER",

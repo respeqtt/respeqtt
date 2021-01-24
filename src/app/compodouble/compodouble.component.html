@@ -6,7 +6,6 @@
         <Label class = "sous-titre" [text] = "this.sousTitre"> </Label>
         <Button text="SCANNER" backgroundColor="blue" (tap)="onScanTap($event)"></Button>
         <Button text="QRCODE" backgroundColor="darkblue" (tap)="onQRCodeTap($event)"></Button>
-        <Button text="ANNULER" backgroundColor="blue" (tap)="onAnnulerTap($event)"></Button>
         <Button text="VALIDER"   backgroundColor="darkblue" (tap)="onValiderTap($event)"></Button>
         <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">

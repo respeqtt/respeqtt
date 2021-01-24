@@ -37,11 +37,11 @@ export class SaisieCommentaireComponent {
         this.router = _routerExtensions;
         this.titre =  this._route.snapshot.paramMap.get("quoi");
         this.auteur =  this._route.snapshot.paramMap.get("auteur");
+        this.saisie = SessionAppli.rapportJA;
 
         console.log("Objet= " + this.titre);
         console.log("Auteur >" + this.auteur + "<");
 
-        console.log("Saisie de commentaire pour le club coté " + this.auteur);
         if(this.auteur == "A") {
             this.sousTitre = "posée par " + SessionAppli.clubA.nom + " sur la rencontre " + SessionAppli.titreRencontre;
             if(this.titre == "RESERVE" && SessionAppli.reserveClubA != "") {
@@ -101,12 +101,13 @@ export class SaisieCommentaireComponent {
         }
         if(this.titre == "RAPPORT") {
             // mémoriser le rapport du JA (RAS par défaut)
+            console.log("Saisie :" + this.saisie);
             if(this.saisie != "") {
                 SessionAppli.rapportJA = this.saisie;
             } else {
                 SessionAppli.rapportJA = "RAS";
             }
-            alert("Texte du rapport du JA " + this.auteur + ": " + this.saisie);
+            alert("Texte du rapport du JA " + this.auteur + ": " + SessionAppli.rapportJA);
             // retour à la page de préparation de validation du score
             this.router.backToPreviousPage();
         }

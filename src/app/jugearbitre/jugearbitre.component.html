@@ -8,7 +8,10 @@
         <TextField hint="Prénom"  flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.prenomJA' ></TextField>
         <TextView hint="Adresse"  flexGrow="1" flexShrink="1" secure="false" maxLength="100" [(ngModel)]='this.adresseJA' ></TextView>
         <TextField hint="Licence" flexGrow="1" flexShrink="1" secure="false" maxLength="10" keyboardType="number" (focus)="onFocus($event)" [(ngModel)]='this.licenceJA' ></TextField>
-        <Button text="VALIDER" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1" [isenabled]="this.valider"></Button>
-        <Button text="FERMER" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
+        <Button text="RAPPORT" horizontalAlignment="stretch" (tap)="onTapRapport($event)" flexGrow="1" flexShrink="1" [isenabled]="this.valider"></Button>
+        <FlexboxLayout flexDirection="row">
+            <Button text="FERMER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onTapFermer($event)"></Button>
+            <Button text="VALIDER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onTapValider($event)"></Button>
+        </FlexboxLayout>
     </FlexboxLayout>
 </Page>

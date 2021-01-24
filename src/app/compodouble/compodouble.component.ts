@@ -38,6 +38,7 @@ export class CompoDoubleComponent{
     sousTitre:string;
     nbDoubles:number;
 
+
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // récupération du coté et du numéro de double en paramètre
         this.cote = this._route.snapshot.paramMap.get("cote");
@@ -187,11 +188,6 @@ export class CompoDoubleComponent{
     }
 
     ngOnInit(): void {
-    }
-
-    onAnnulerTap(args: EventData) {
-        let button = args.object as Button;
-        this.routerExt.navigate(["lancement"]);
     }
 
     onScanTap(args: EventData) {

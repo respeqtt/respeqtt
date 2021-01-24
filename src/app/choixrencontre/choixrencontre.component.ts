@@ -76,25 +76,24 @@ export class ChoixRencontreComponent {
                 Club.getClub(SessionAppli.rencontre.club2).then(club => {
                     SessionAppli.clubX = club as Club;
                     console.log("ClubX = " + SessionAppli.clubX.nom);
+                    // récupérer le titre de la rencontre
+                    Rencontre.getDescriptionRencontre(SessionAppli.rencontreChoisie).then(desc => {
+                        SessionAppli.titreRencontre = desc as string;
+                        console.log("Rencontre =" + SessionAppli.titreRencontre);
+
+                        // aller sur la page de préparation de la feuille de match
+                        const button: Button = <Button>args.object;
+                        const page: Page = button.page;
+                        this.router.navigate(["preparation"]);
+                    }, error => {
+                        console.log("Impossible de lire le titre de la rencontre" + error.toString());
+                    });
                 }, error => {
                     console.log("Impossible de trouver le club " + SessionAppli.rencontre.club2.toString() + ": " + error.toString());
                 });
             }, error => {
                 console.log("Impossible de trouver le club " + SessionAppli.rencontre.club1.toString() + ": " + error.toString());
             });
-            // récupérer le titre de la rencontre
-            Rencontre.getDescriptionRencontre(SessionAppli.rencontreChoisie).then(desc => {
-                SessionAppli.titreRencontre = desc as string;
-                console.log("Rencontre =" + SessionAppli.titreRencontre);
-
-                // aller sur la page de préparation de la feuille de match
-                const button: Button = <Button>args.object;
-                const page: Page = button.page;
-                this.router.navigate(["preparation"]);
-            }, error => {
-                console.log("Impossible de lire le titre de la rencontre" + error.toString());
-            });
-
         }, error => {
             console.log("Impossible de lire la rencontre choisie : " + error.toString())
         });

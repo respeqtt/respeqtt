@@ -6,9 +6,9 @@
         <Label class="titre" text="RENCONTRE EN COURS" flexGrow="0" flexShrink="0"></Label>
         <Label class="sous-titre" [text]="this.titreRencontre" flexGrow="0" flexShrink="0"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
-            <Label class = "switch-label" [text]="this.clubA" flexGrow="1"></Label>
-            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" [isenabled]="this.modif"></Switch>
-            <Label class = "switch-label" [text]="this.clubX" flexGrow="1"></Label>
+            <Label class = "switch-label" [text]="this.clubA" flexGrow="1" flexShrink="1"></Label>
+            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" [isenabled]="this.modif"></Switch>
+            <Label class = "switch-label" [text]="this.clubX" flexGrow="1" flexShrink="1"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
             <Button text="Composer équipe A"       flexGrow="1" backgroundColor="blue" [nsRouterLink]="['../compo/A']" [isenabled]="this.modif"></Button>
@@ -18,7 +18,7 @@
             <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)" [isenabled]="this.modif"></Button>
             <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)" [isenabled]="this.modif"></Button>
         </FlexboxLayout>
-        <Button text="Valider la feuille de match" flexGrow="0" flexShrink="0" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.modif"></Button>
+        <Button text="Valider la composition des équipes" flexGrow="0" flexShrink="0" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.modif"></Button>
         <Button text="FERMER"                      flexGrow="0" flexShrink="0" backgroundColor="blue" [nsRouterLink]="['../actions']"></Button>
     </FlexboxLayout>
 </Page>

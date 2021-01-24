@@ -20,6 +20,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Label, Button, EventData, TextField } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
 
+var dialogs = require("tns-core-modules/ui/dialogs");
 
 @Component({
     templateUrl: "./jugearbitre.component.html",
@@ -38,7 +39,14 @@ export class JugeArbitreComponent {
 
         this.routeur = _routerExtensions;
 
+        this.nomJA = SessionAppli.nomJA;
+        this.prenomJA = SessionAppli.prenomJA;
+        this.adresseJA = SessionAppli.adresseJA;
+        this.licenceJA = SessionAppli.licenceJA;
 
+        if(this.licenceJA> 0) {
+            this.valider=true;
+        }
     }
 
     onFocus(args: EventData) {
@@ -46,8 +54,15 @@ export class JugeArbitreComponent {
         this.valider = true;
       };
 
-    onTapValidate(args: EventData) {
+    onTapRapport(args: EventData) {
         let button = args.object as Button;
+
+        // Ouvrir la page de saisie de saisie du rapport du JA
+        this.routeur.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA]);
+    }
+
+    onTapValider(args: EventData) {
+        let button = args.object as Button;0
 
         // mémoriser les coordonnées du JA
         SessionAppli.nomJA = this.nomJA;
@@ -55,13 +70,31 @@ export class JugeArbitreComponent {
         SessionAppli.adresseJA = this.adresseJA;
         SessionAppli.licenceJA = this.licenceJA;
 
-        // Ouvrir la page de saisie de saisie du rapport du JA
-        this.routeur.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA]);
+        this.routeur.navigate(["actions"]);
     }
 
-    onTapClose(args: EventData) {
+    onTapFermer(args: EventData) {
         let button = args.object as Button;
 
-        this.routeur.backToPreviousPage();
+        // si pas de JA, pas de rapport
+        if(SessionAppli.licenceJA == 0) {
+            // demande de confirmation
+            dialogs.prompt({title:"Confirmation",
+            message:"Etes vous sûr de ne pas valider le JA et son rapport ?",
+            okButtonText:"PAS DE JA",
+            cancelButtonText:"ANNULER"
+            }).then(r => {
+                if(r.result) {
+                    SessionAppli.rapportJA = "";
+                    this.routeur.navigate(["actions"]);
+                    } else {
+                return;
+                }
+        });
+        } else {
+            this.routeur.navigate(["actions"]);
+        }
+
     }
+
 }

@@ -59,8 +59,8 @@ export class PreparationComponent{
             this.btnResX = "1 réserve club X";
         }
 
-        this.clubA = SessionAppli.clubA.nom;
-        this.clubX = "";
+        this.clubA = "A/" + SessionAppli.clubA.nom;
+        this.clubX = "X/" + SessionAppli.clubX.nom;
 
         this.modif = !SessionAppli.compoFigee;
         console.log("Compo figée :" + SessionAppli.compoFigee);
@@ -85,8 +85,8 @@ export class PreparationComponent{
         SessionAppli.reserveClubA = SessionAppli.reserveClubX;
         SessionAppli.reserveClubX = s;
 
-        this.clubA = SessionAppli.clubA.nom;
-        this.clubX = SessionAppli.clubX.nom;
+        this.clubA = "A/" + SessionAppli.clubA.nom;
+        this.clubX = "X/" + SessionAppli.clubX.nom;
 
 
         console.log("Recoit cote X = " + this.recoitCoteX.toString());

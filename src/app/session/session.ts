@@ -1,5 +1,7 @@
 import { Club, EltListeLicencie, Partie, Rencontre, EltListeRencontre } from "../db/RespeqttDAO";
 
+import { Feuille18 } from "./feuille18";
+
 export class SessionAppli {
 
     public static listeRencontres:Array<EltListeRencontre>=[];
@@ -30,6 +32,7 @@ export class SessionAppli {
     public static score:string="";
     public static scoreA:number=0;
     public static scoreX:number=0;
+    public static feuilleDeMatch:string="";
 
     // sleep
     public static delay(ms: number){
@@ -132,6 +135,28 @@ export class SessionAppli {
         return equipe;
     }
 
+    // remplir la feuille de match avec les infos de la session
+    public static RemplirLaFeuille() {
 
+        var feuille:string;
+
+        switch(SessionAppli.rencontre.formule) {
+            case 18:
+                feuille = Feuille18.FeuilleVide();
+            break;
+            default: console.log("!!!!!!! Formule " + SessionAppli.rencontre.formule + " inconnue !!!!!!!!!");
+        }
+
+        // remplacer les éléments dans la feuille
+
+        // Juge Arbitre (nom, prénom, adresse)
+        var JA:string;
+        if(SessionAppli.nomJA != "") {
+            JA = SessionAppli.nomJA + " " + SessionAppli.prenomJA;
+        }
+        feuille = feuille.replace(/#JA/g, JA);
+         SessionAppli.feuilleDeMatch = feuille;
+
+    }
 
 }
