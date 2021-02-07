@@ -139,6 +139,9 @@ export class ResultatComponent{
             return;
         }
 
+        // sauvegarder la session en BDD
+        SessionAppli.Persiste();
+
         // Afficher le résultat
          console.log("Resultat = " + this.quoi);
         // Navigation

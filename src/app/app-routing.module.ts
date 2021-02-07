@@ -28,7 +28,6 @@ import { CompoComponent } from "./compo/compo.component";
 import { CompoDoubleComponent } from "./compodouble/compodouble.component";
 import { PlacerComponent } from "./placer/placer.component";
 import { LancementComponent } from "./lancement/lancement.component";
-import { FinComponent } from "./fin/fin.component";
 import { EnvoiComponent } from "./envoi/envoi.component";
 import { ResultatComponent } from "./resultat/resultat.component";
 import { QRMontrerComponent } from "./qrmontrer/qrmontrer.component";
@@ -36,6 +35,7 @@ import { QRScanComponent } from "./qrscan/qrscan.component";
 import { SaisieCommentaireComponent, } from "./saisiecommentaire/saisiecommentaire.component";
 import { ValiderComponent } from "./valider/valider.component";
 import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
+import { FeuilleComponent } from "./feuille/feuille.component";
 
 const routes: Routes = [
     { path: "", redirectTo: "/actions", pathMatch: "full" },
@@ -49,7 +49,6 @@ const routes: Routes = [
     { path: "compoDouble/:cote/:numDouble/:nbDoubles", component: CompoDoubleComponent },  // coté = A ou X ; numDouble = numéro du double à composer ; nbDoubles = nb de doubles
     { path: "placer/:cote", component: PlacerComponent },
     { path: "lancement", component: LancementComponent },
-    { path: "fin", component: FinComponent },
     { path: "envoi", component: EnvoiComponent },
     { path: "resultat/:partie", component: ResultatComponent },
     { path: "qrmontrer/:quoi/:dim/:titre", component: QRMontrerComponent }, // dim = dimension du QRCode en pixels écran
@@ -57,6 +56,7 @@ const routes: Routes = [
     { path: "saisiecommentaire/:quoi/:auteur", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA
     { path: "valider/:scoreA/:scoreX", component: ValiderComponent },    // scoreA = score du club A ; scoreX = score du club X
     { path: "jugearbitre", component: JugeArbitreComponent },
+    { path: "feuille", component: FeuilleComponent },
 ];
 
 @NgModule({

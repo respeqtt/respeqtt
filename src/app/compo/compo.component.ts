@@ -148,6 +148,9 @@ export class CompoComponent{
                 SessionAppli.equipeA = this.equipe;
                 console.log("Joueurs équipe A choisis");
             }
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste();
+
             // passer à la page de placement des joueurs sur la feuille de match
             this.routerExt.navigate(["placer/" + this._route.snapshot.paramMap.get("cote")]);
         }

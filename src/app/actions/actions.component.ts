@@ -17,7 +17,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Label, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { Rencontre } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
 import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
@@ -33,29 +33,52 @@ var Sqlite = require ("nativescript-sqlite");
 })
 export class ActionsComponent{
     routerExt: RouterExtensions;            // pour navigation
-    preparer:boolean;                       // activation du bouton : préparer la feuille de match
-    lancer: boolean;                        // activation du bouton : lancer les parties
-    valider:boolean;                        // activation du bouton : valider le score
-    spid:boolean;                           // activation du bouton : envoyer à SPID
+    preparer:boolean=false;                       // activation du bouton : préparer la feuille de match
+    lancer: boolean=false;                        // activation du bouton : lancer les parties
+    valider:boolean=false;                        // activation du bouton : valider le score
+    spid:boolean=false;                           // activation du bouton : envoyer à SPID
+    abandonner:boolean=false;                     // activation du bouton : abandonner la rencontre en cours
 
 
     constructor(private _routerExtensions: RouterExtensions) {
         this.routerExt = _routerExtensions;
 
         // Init de la BDD
-        RespeqttDb.Init();
+        RespeqttDb.Init().then(ok => {
+            // on ne prépare la feuille de match que si on a téléchargé les rencontres
+            if(SessionAppli.listeRencontres.length == 0) {
+                Rencontre.getListe().then(liste => {
+                    if(liste) {
+                        SessionAppli.listeRencontres = liste as Array<EltListeRencontre>;
+                        console.log("Liste rencontres chargées = " + SessionAppli.listeRencontres.length + " éléments");
+                        this.preparer = SessionAppli.listeRencontres.length > 0;
+                    } else {
+                        this.preparer = false;
+                    }
+                }, error => {
+                    console.log(error);
+                    this.preparer = false;
+                });
+            } else {
+                this.preparer = true;
+            }
+            // on ne lance les parties que si la compo est figée
+            this.lancer = SessionAppli.compoFigee;
 
-        // on ne prépare la feuille de match que si on a chargé les rencontres
-        this.preparer = SessionAppli.listeRencontres.length > 0;
+            // on ne valide le score que si les parties ont été lancées
+            this.valider = SessionAppli.listeParties.length > 0;
 
-        // on ne lance les parties que si la compo est figée
-        this.lancer = SessionAppli.compoFigee;
+            // on n'envoie à SPID que si le scoré a été validé
+            this.spid = SessionAppli.scoreValide;
 
-        // on ne valide le score que si les parties ont été lancées
-        this.valider = SessionAppli.listeParties.length > 0;
+            // on ne peut abandonner que si on a commencé et pas validé le score
+            this.abandonner = this.preparer && !SessionAppli.scoreValide;
 
-        // on n'envoie à SPID que si le scoré a été validé
-        this.spid = SessionAppli.scoreValide;
+        }, error => {
+            console.log(error);
+            this.preparer = false;
+        });
+
 
     }
 
@@ -113,8 +136,21 @@ export class ActionsComponent{
 
     onEnvoyerASPID(args: EventData) {
         let button = args.object as Button;
+
         if(this.spid) {
-            this.routerExt.navigate(["envoi"]);
+            // to do : envoi à SPID
+            // on RAZ (temporaire)
+            SessionAppli.Efface(SessionAppli.rencontreChoisie);
+            SessionAppli.Raz();
+            alert("La rencontre a bien été envoyée, vous pouvez la consulter sur http://www.fftt.com");
+
+            this.preparer = SessionAppli.listeRencontres.length > 0;
+            this.lancer = false;
+            this.valider = false;
+            this.spid = false;
+            this.abandonner = false;
+
+//            this.routerExt.navigate(["envoi"]);
         }
 
     }
@@ -129,41 +165,15 @@ export class ActionsComponent{
             cancelButtonText:"ANNULER"
             }).then(r => {
                 if(r.result) {
-                    // tout effacer dans la session sauf la liste des rencontres
-                    SessionAppli.rencontre = null;
-                    SessionAppli.rencontreChoisie = -1;
-                    SessionAppli.compoFigee = false;
-                    SessionAppli.scoreValide = false;
-                    SessionAppli.titreRencontre = "";
-                    SessionAppli.clubA = null;
-                    SessionAppli.clubX = null;
-                    SessionAppli.clubChoisi = -1;
-                    SessionAppli.equipeA = [];
-                    SessionAppli.equipeX = [];
-                    SessionAppli.forfaitA = false;
-                    SessionAppli.forfaitX = false;
-                    SessionAppli.listeParties = [];
-                    SessionAppli.recoitCoteX = false;
-                    SessionAppli.titreRencontre = "";
-                    SessionAppli.listeParties=[];
-                    SessionAppli.reserveClubA="";
-                    SessionAppli.reserveClubX="";
-                    SessionAppli.reclamationClubA="";
-                    SessionAppli.reclamationClubX="";
-                    SessionAppli.rapportJA="";
-                    SessionAppli.nomJA="";
-                    SessionAppli.prenomJA="";
-                    SessionAppli.adresseJA="";
-                    SessionAppli.licenceJA=0;
-                    SessionAppli.score="";
+                    // effacement en BDD
+                    SessionAppli.Efface(SessionAppli.rencontreChoisie);
+                    SessionAppli.Raz();
 
                     this.preparer = SessionAppli.listeRencontres.length > 0;
-                    // on ne lance les parties que si la compo est figée
-                    this.lancer = SessionAppli.compoFigee;
-                    // on ne valide le score que si les parties ont été lancées
-                    this.valider = SessionAppli.listeParties.length > 0;
-                    // on n'envoie à SPID que si le scoré a été validé
-                    this.spid = SessionAppli.scoreValide;
+                    this.lancer = false;
+                    this.valider = false;
+                    this.spid = false;
+                    this.abandonner = false;
 
                     alert("Rencontre abandonnée");
                 } else {
@@ -189,8 +199,4 @@ export class ActionsComponent{
         }
     }
 
-    onDropDB(args: EventData) {
-        RespeqttDb.Drop();
-        alert("BDD supprimée");
-    }
 }

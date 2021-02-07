@@ -38,3 +38,20 @@ export class StringListElt {
     }
 }
 
+// double les ' dans le SQL et ajoute les ' en début et fin de chaine
+export function toSQL(s:string):string {
+    const pattern:RegExp = /'/g;
+    const insert:string = "''";
+    return "'" + s.replace(pattern, insert) + "'";
+}
+
+// traduit un booléen en entier (VRAI = 1, FAUX = 0)
+export function bool2SQL(b:boolean):number {
+    return b ? 1: 0;
+}
+
+// traduit un booléen en entier (0 = FAUX, autres = VRAI)
+export function SQL2bool(n:number):boolean {
+    return n != 0;
+}
+

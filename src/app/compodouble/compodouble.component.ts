@@ -101,15 +101,12 @@ export class CompoDoubleComponent{
 
         if(forfaitA) {
             if(forfaitX) {
-                SessionAppli.listeParties[iPartie].score = -1;
                 SessionAppli.listeParties[iPartie].scoreAX = "0-0";
             } else {
-                SessionAppli.listeParties[iPartie].score = 0;
                 SessionAppli.listeParties[iPartie].scoreAX = "0-2";
             }
         } else {
             if(forfaitX) {
-                SessionAppli.listeParties[iPartie].score = 3;
                 SessionAppli.listeParties[iPartie].scoreAX = "2-0";
             }
         }
@@ -242,9 +239,10 @@ export class CompoDoubleComponent{
         // mémoriser le double dans la liste des parties
         this.MemoriseDouble(double);
 
+        // sauvegarder la session en BDD
+        SessionAppli.Persiste();
+
     }
-
-
 
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;

@@ -20,7 +20,7 @@ import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
-
+import {Router} from "@angular/router";
 
 @Component({
     templateUrl: "./rencontre.component.html",
@@ -31,7 +31,7 @@ export class RencontreComponent{
     listeRencontres:Array<EltListeRencontre>;
     maListe:ListView;
 
-    constructor() {
+    constructor(private router: Router) {
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;
             SessionAppli.listeRencontres = this.listeRencontres;
@@ -120,6 +120,11 @@ export class RencontreComponent{
         this.listeRencontres[index].sel = !this.listeRencontres[index].sel;
         console.log("Rencontre choisie : " + index);
 
+    }
+
+    onFermerTap(args: ItemEventData) {
+        SessionAppli.listeRencontres = this.listeRencontres;
+        this.router.navigate(["actions"]);
     }
 
 }

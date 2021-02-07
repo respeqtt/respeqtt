@@ -112,6 +112,9 @@ export class SaisieCommentaireComponent {
             this.router.backToPreviousPage();
         }
 
+        // sauvegarder la session en BDD
+        SessionAppli.Persiste();
+
     }
 
     onTapClose(args: EventData) {

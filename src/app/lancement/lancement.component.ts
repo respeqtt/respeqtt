@@ -45,6 +45,7 @@ export class LancementComponent{
         this.titre = SessionAppli.titreRencontre;
 
         // construire les parties
+        console.log("Nb de parties dans la session : " + SessionAppli.listeParties.length);
         if(SessionAppli.listeParties.length==0) {
             this.listeLignes = Partie.InitListeParties(SessionAppli.rencontre, SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
             this.nbParties = this.listeLignes.length;
@@ -74,6 +75,11 @@ export class LancementComponent{
     onItemTap(args: ItemEventData) {
         const index = args.index;
 
+        // on ne modifie pas les scores après validation
+        if(SessionAppli.scoreValide) {
+            return;
+        }
+
         // sélectionner la partie et déselectionner les autres
         for(var i = 0; i < this.nbParties; i++) {
             this.listeLignes[i].sel = false;
@@ -82,7 +88,7 @@ export class LancementComponent{
         this.partieSel = index;
 
         // si on a un score de forfait, pas de saisie possible
-        if(this.listeLignes[index].score == -1 || this.listeLignes[index].score == 0 || this.listeLignes[index].score == 3) {
+        if(this.listeLignes[index].scoreAX == "0-0" || this.listeLignes[index].scoreAX == "2-0" || this.listeLignes[index].scoreAX == "0-2") {
             alert("Ce score correspond à un forfait, il n'est pas modifiable");
             return;
         };

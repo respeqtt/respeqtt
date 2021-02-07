@@ -117,6 +117,9 @@ export class PreparationComponent{
             SessionAppli.compoFigee = true;
             this.modif = !SessionAppli.compoFigee;
         }
+
+        // sauvegarder la session en BDD
+        SessionAppli.Persiste();
     }
 
     // ouvrir la page de consultation de la feuille de match

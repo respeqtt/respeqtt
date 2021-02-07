@@ -15,6 +15,8 @@
 /*******************************************************************************/
 import { textAlignmentProperty } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
+import { SessionAppli} from "../session/session";
+import { bool2SQL, SQL2bool, toSQL } from "../outils/outils";
 
 export class EltListeRencontre {
     id:number;
@@ -47,8 +49,6 @@ export class Rencontre{
     scoreA:number;
     scoreX:number;
 
-    // requêtes SQL
-    private static selListe = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
 
     // liste des rencontres
     public static liste:Array<any>;
@@ -57,9 +57,12 @@ export class Rencontre{
     public static getListe() {
         var liste:Array<any>;
         var n:number;
+        // requêtes SQL
+        var selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
+
         let promise = new Promise(function(resolve, reject) {
 
-            RespeqttDb.db.all(Rencontre.selListe).then(rows => {
+            RespeqttDb.db.all(selListe).then(rows => {
                 liste = [];
                 n = 0;
                 for(var row in rows) {
@@ -375,11 +378,10 @@ export class Licencie{
 
 export class Partie{
     id:number;                  // clé
-    rencontre:Rencontre;        // rencontre associée
     joueurA:number;             // numéro de licence joueur de l'équipe A ; 2 numéros séparés par la virgule pour les doubles
     joueurX:number;             // numéro de licence joueur de l'équipe X
     simple:boolean;             // VRAI si c'est un simple
-    score:number;               // 2 si A a gagné, 1 si X a gagné, 0 si X forfait, 3 si A forfait
+//    score:number;               // 2 si A a gagné, 1 si X a gagné, -2 si X forfait, -1 si A forfait, 0 si pas joué
     scoreAX:string="";             // score de A et X séparé par un -
     sets:Array<Set>=[];         // liste des sets disputés
     desc:string;                // description pour la liste
@@ -413,59 +415,62 @@ export class Partie{
     }
 
     // crée une partie à partir de son modèle p (ex : AW) et des deux équipes
+    // p vide -> partie créée vide
     constructor(p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean) {
 
         var joueur:EltListeLicencie;
 
-        // pas sélectionnée
-        this.sel = false;
-        // description = A/nom prénom vs X/nom prénom = points
-        this.desc = p.charAt(0) + "/";
-        console.log(p);
-        if(p.charCodeAt(0) < 65) {
-            // c'est un double
-            this.desc = "*** double" + this.desc + " *** = ";
-            // mettre le score en cas de forfait
-            if(forfaitA) {
-                this.score = 0;
-                this.scoreAX = "0-2";
-            }
-            if(forfaitX) {
-                this.score = 3;
-                this.scoreAX = "2-0";
-            }
-        } else {
-            // c'est un simple
-            // coté A
-            if(!forfaitA) {
-                joueur = eqA[p.charCodeAt(0)-65];
-                console.log("Rang A =" + (p.charCodeAt(0)-65));
-                this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
-            }
-            // coté X
-            if(!forfaitX) {
-                this.desc = this.desc + p.charAt(1) + "/";
-                console.log("Rang X =" + (p.charCodeAt(1)-87));
-                joueur = eqX[p.charCodeAt(1)-87];
-                this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
-            }
-            // mettre le score en cas de forfait
-            if(forfaitA || eqA[p.charCodeAt(0)-65].nom == "(absent)") {
-                this.score = 0;
-                this.scoreAX = "0-2";
-            }
-            if(forfaitX || eqX[p.charCodeAt(1)-87].nom == "(absent)") {
-                this.score = 3;
-                this.scoreAX = "2-0";
-            }
+        if(p != ""){
+            // pas sélectionnée
+            this.sel = false;
+            // description = A/nom prénom vs X/nom prénom = points
+            this.desc = p.charAt(0) + "/";
+            console.log(p);
+            if(p.charCodeAt(0) < 65) {
+                // c'est un double
+                this.desc = "*** double" + this.desc + " *** = ";
+                // mettre le score en cas de forfait
+                if(forfaitA && !forfaitX) {
+                    this.scoreAX = "0-2";
+                }
+                if(forfaitX && !forfaitA) {
+                    this.scoreAX = "2-0";
+                }
+                if(forfaitA && forfaitX) {
+                    this.scoreAX = "0-0";
+                }
+            } else {
+                // c'est un simple
+                // coté A
+                if(!forfaitA) {
+                    joueur = eqA[p.charCodeAt(0)-65];
+                    console.log("Rang A =" + (p.charCodeAt(0)-65));
+                    this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
+                    this.joueurA = joueur.id;
+                }
+                // coté X
+                if(!forfaitX) {
+                    this.desc = this.desc + p.charAt(1) + "/";
+                    console.log("Rang X =" + (p.charCodeAt(1)-87));
+                    joueur = eqX[p.charCodeAt(1)-87];
+                    this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
+                    this.joueurX = joueur.id;
+                }
+                // mettre le score en cas de forfait
+                if(forfaitA || eqA[p.charCodeAt(0)-65].nom == "(absent)") {
+                    this.scoreAX = "0-2";
+                }
+                if(forfaitX || eqX[p.charCodeAt(1)-87].nom == "(absent)") {
+                    this.scoreAX = "2-0";
+                }
 
-            // corriger si double forfait
-            if((forfaitA && eqX[p.charCodeAt(1)-87].nom == "(absent)")
-            || (forfaitX && eqA[p.charCodeAt(0)-65].nom == "(absent)")
-            || (eqX[p.charCodeAt(1)-87].nom == "(absent)" && eqA[p.charCodeAt(0)-65].nom == "(absent)")
-            ) {
-                this.score = -1;
-                this.scoreAX = "0-0";
+                // corriger si double forfait
+                if((forfaitA && eqX[p.charCodeAt(1)-87].nom == "(absent)")
+                || (forfaitX && eqA[p.charCodeAt(0)-65].nom == "(absent)")
+                || (eqX[p.charCodeAt(1)-87].nom == "(absent)" && eqA[p.charCodeAt(0)-65].nom == "(absent)")
+                ) {
+                    this.scoreAX = "0-0";
+                }
             }
         }
     }
@@ -487,7 +492,6 @@ export class Partie{
                 ptsA++;
             }
             // compléter le set
-            result[i].partie = this;
             result[i].numSet = i;
             // mémoriser le set
             this.sets.push(result[i]);
@@ -513,13 +517,11 @@ export class Partie{
             return false;
         }
         if(ptsA > ptsX) {
-            this.score = 2;
             this.scoreAX = "2-1";
             // mettre à jour la description
             console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substr(0, this.desc.search("=")));
             // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "2-1";
         } else {
-            this.score = 1;
             this.scoreAX = "1-2";
             // mettre à jour la description
             // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "1-2";
@@ -569,18 +571,169 @@ export class Partie{
             alert("Ce n'est pas le résultat de la partie ou de la rencontre attendue");
             return false;
         }
+    }
+
+    // écrit une partie d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
+    private static PersistePartie(rencontre:number, partie:Partie, rang:number) {
+        var update:string;
+        var insertP: string  = `insert into Partie (par_ren_kn, par_vn_num, par_va_desc,
+                               par_vn_jouA, par_vn_jouX, par_vn_double, par_va_score) values (`;
+        var insertS: string  = "insert into Set_ren (set_par_kn, set_vn_num, set_vn_score) values (";
+        var values:string;
+
+        // détection des doubles
+        var double:boolean = partie.joueurA > 0 ? false : true;
+        update = "update Partie set par_va_desc = " + toSQL(partie.desc) + ", "
+        + "par_vn_jouA = " + (double ? 0 : partie.joueurA) + ", "
+        + "par_vn_jouX = " + (double ? 0 : partie.joueurX) + ", "
+        + "par_vn_double = " + bool2SQL(double) + ", "
+        + "par_va_score = " + toSQL(partie.scoreAX) + " "
+        + "where par_ren_kn = " + rencontre
+        + " and par_vn_num = " + rang;
+
+        console.log(update);
+        RespeqttDb.db.execSQL(update).then(n => {
+            if(n > 0) {
+                console.log("Partie " + rang + " mise à jour en BDD");
+            } else {
+                // la partie n'existe pas => insert
+                values = rencontre + ", "
+                        + rang + ", "
+                        + toSQL(partie.desc) + ", "
+                        + (double ? 0 : partie.joueurA) + ", "
+                        + (double ? 0 : partie.joueurX) + ", "
+                        + bool2SQL(double) + ", "
+                        + toSQL(partie.scoreAX) + ")";
+
+                RespeqttDb.db.execSQL(insertP + values).then(id => {
+                    console.log("Partie " + rang + " | " + insertP + values);
+                }, error2 => {
+                    console.log("Echec insertion dans la table Partie ", error2);
+                });
+            }
+        }, error => {
+            console.log("Echec update dans la table Partie ", error);
+        });
+    }
+
+    // écrit la liste des parties d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
+    public static PersisteListeParties(rencontre:number, parties:Array<Partie>) {
+
+        // écriture de la liste des parties en BDD
+        for(var i = 0; i < parties.length; i++) {
+            Partie.PersistePartie(rencontre, parties[i], i);
+        }
+
+        // écriture des sets en BDD
+        Set.PersisteSets(rencontre, parties);
 
     }
+
+    // recharge les parties de la rencontre dans la session en cours
+    public static RechargeParties(rencontre:number) {
+
+        var sql:string = `select par_vn_num integer, par_va_desc,par_vn_jouA, par_vn_jouX, par_vn_double, par_va_score
+              from Partie where par_ren_kn = ` + rencontre;
+        RespeqttDb.db.all(sql).then(rows => {
+            for(var row in rows) {
+                var rang = Number(rows[row][0]);
+                var elt:Partie = new Partie("", null, null, false, false);
+
+                elt.id = rang;
+                elt.desc = rows[row][1];
+                elt.joueurA = Number(rows[row][2]);
+                elt.joueurX = Number(rows[row][3]);
+                elt.simple = !SQL2bool(Number(rows[row][4]));
+                elt.scoreAX = rows[row][5];
+                elt.sel = false;
+                elt.sets = [];
+                SessionAppli.listeParties.push(elt);
+
+                console.log("partie relue (" + elt.id + ") = " + elt.desc + ", " + elt.joueurA + " vs " + elt.joueurX + " : "
+                        + elt.scoreAX + " [" + (elt.simple ? "S":"D") + "]");
+            }
+        }, error => {
+            console.log("Impossible de trouver en BDD les parties de la rencontre " + rencontre, error);
+        });
+
+    }
+
 };
 
 
 export class Set{
-    partie:Partie;
     numSet:number;
     score:number;
 
     constructor(res:number) {
         this.score = res;
+    }
+
+    // écrit un set d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
+    private static PersisteSet(rencontre:number, partie:number, set:Set, rang:number) {
+        var update:string;
+        var values:string;
+        var insert:string = `insert into Set_ren (set_ren_kn, set_par_kn, set_vn_num, set_vn_score) values (`;
+
+        update = "update Set_ren set set_vn_score = " + set.score + " "
+        + "where set_par_kn = " + partie
+        + " and set_vn_num = " + rang
+        + " and set_ren_kn = " + rencontre;
+
+        console.log(update);
+        RespeqttDb.db.execSQL(update).then(nSet => {
+            if(nSet > 0) {
+                    console.log("Set " + rang + " de la partie " + partie + " mis à jour en BDD");
+            } else {
+                // le set n'existe pas => insert
+                values = rencontre + ", "
+                    + partie + ", "
+                    + rang + ", "
+                    + set.score + ")";
+                RespeqttDb.db.execSQL(insert + values).then(id => {
+                console.log("Set " + rang + " de la partie " + partie + " inséré en BDD");
+                }, error2 => {
+                    console.log("Echec insertion dans la table Set_ren ", error2);
+                });
+            }
+        }, error => {
+            console.log("Echec update de la table Set_ren ", error);
+        });
+
+    }
+
+
+    // écrit la liste des sets d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
+    public static PersisteSets(rencontre:number, parties:Array<Partie>) {
+
+
+        for(var i=0; i < parties.length; i++) {
+            for(var j=0; j < parties[i].sets.length; j++) {
+                Set.PersisteSet(rencontre, i, parties[i].sets[j], j);
+            }
+        }
+    }
+
+    // recharge les sets de la rencontre dans la session en cours
+    public static RechargeSets(rencontre:number) {
+
+        var sql:string = `select set_par_kn, set_vn_num, set_vn_score from Set_ren where set_ren_kn = ` + rencontre;
+        RespeqttDb.db.all(sql).then(rows => {
+            for(var row in rows) {
+                var numPartie:number;
+                var elt:Set = new Set(999);
+
+                numPartie = Number(rows[row][0]);
+                elt.numSet = rows[row][1];
+                elt.score = Number(rows[row][2]);
+
+                SessionAppli.listeParties[numPartie].sets.push(elt);
+                console.log("set relu " + elt.numSet + " dans partie " + numPartie);
+            }
+        }, error => {
+            console.log("Impossible de trouver en BDD les sets de la rencontre " + rencontre, error);
+        });
+
     }
 
 };
@@ -655,14 +808,90 @@ export class Formule{
     }
 };
 
-export class Cartons{
+export class Compo{
 
-};
+    // écrit une équipe en BDD ; essaie update, si ne marche pas essaie insert
+    public static PersisteEquipe(rencontre:number, equipe:Array<EltListeLicencie>, coteX:boolean) {
 
-export class Reserves{
+        console.log("Equipe de " + equipe.length + " joueurs");
+        for(var i = 0; i < equipe.length; i++) {
+            Compo.PersisteJoueur(equipe[i], (coteX ? 10 : 0) + i, rencontre);
+        }
+    }
 
-};
+    public static PersisteJoueur(joueur:EltListeLicencie, rang:number, rencontre:number) {
 
-export class RapportJA{
+        var insert: string  = `insert into compo (cpo_ren_kn, cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points,
+            cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin) values (`;
+        var values:string;
+        var update:string  = "update Compo set cpo_lic_kn = " + joueur.id + ", "
+        + "cpo_va_nom = " + toSQL(joueur.nom) + ", "
+        + "cpo_va_prenom = " + toSQL(joueur.prenom) + ", "
+        + "cpo_vn_points = " + joueur.points + ", "
+        + "cpo_vn_mute = " + bool2SQL(joueur.mute) +", "
+        + "cpo_vn_etranger = " + bool2SQL(joueur.etranger) + ", "
+        + "cpo_vn_feminin = " + bool2SQL(joueur.feminin)
+        + " where cpo_ren_kn = " + rencontre
+        + " and cpo_vn_rang = " + rang;
+
+        console.log(update);
+        RespeqttDb.db.execSQL(update).then(n => {
+            if(n > 0) {
+                console.log("Joueur " + rang + " mis à jour en BDD");
+            } else {
+                // le joueur n'existe pas => insert
+                values = rencontre + ", "
+                       + rang + ", "  // l'équipe X commence à 10
+                       + joueur.id + ", "
+                       + toSQL(joueur.nom) + ", "
+                       + toSQL(joueur.prenom) + ", "
+                       + joueur.points + ", "
+                       + bool2SQL(joueur.mute) +", "
+                       + bool2SQL(joueur.etranger) + ", "
+                       + bool2SQL(joueur.feminin) + ")";
+
+                RespeqttDb.db.execSQL(insert + values).then(id => {
+                    console.log("Joueur " + rang + " inséré en BDD");
+                }, error2 => {
+                    console.log("Echec insertion dans la table Compo", error2);
+                });
+            }
+        }, error => {
+            console.log("Echec update dans la table Compo", error);
+        });
+    }
+
+
+    // recharge les équipes de la rencontre dans la session en cours
+    public static RechargeEquipes(rencontre:number) {
+
+        var sql:string = `select cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin
+               from Compo where cpo_ren_kn = ` + rencontre; + " order by cpo_vn_num asc"
+        RespeqttDb.db.all(sql).then(rows => {
+            for(var row in rows) {
+                var rang = Number(rows[row][0]);
+                var elt:EltListeLicencie = new EltListeLicencie();
+
+                elt.id = Number(rows[row][1]);
+                elt.nom = rows[row][2];
+                elt.prenom = rows[row][3];
+                elt.points = Number(rows[row][4]);
+                elt.mute = SQL2bool(Number(rows[row][5]));
+                elt.etranger = SQL2bool(Number(rows[row][6]));
+                elt.feminin = SQL2bool(Number(rows[row][7]));
+                if(rang > 9) {
+                    // équipe X
+                    SessionAppli.equipeX.push(elt);
+                } else {
+                    // équipe A
+                    SessionAppli.equipeA.push(elt);
+                }
+                console.log("joueur " + rang + " nom " + elt.nom + " prenom " + elt.prenom + " licence=" + elt.id);
+            }
+        }, error => {
+            console.log("Impossible de trouver en BDD les équipes de la rencontre " + rencontre, error);
+        });
+
+    }
 
 };

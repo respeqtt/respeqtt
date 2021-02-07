@@ -37,6 +37,7 @@ import { QRScanComponent } from "./qrscan/qrscan.component";
 import { SaisieCommentaireComponent } from "./saisiecommentaire/saisiecommentaire.component";
 import { ValiderComponent } from "./valider/valider.component";
 import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
+import { FeuilleComponent } from "./feuille/feuille.component";
 
 
 
@@ -70,7 +71,8 @@ import { AppRoutingModule } from "./app-routing.module";
         QRScanComponent,
         SaisieCommentaireComponent,
         ValiderComponent,
-        JugeArbitreComponent
+        JugeArbitreComponent,
+        FeuilleComponent
     ],
     providers: [],
     schemas: [

@@ -21,7 +21,7 @@ var Sqlite = require ("nativescript-sqlite");
 export class RespeqttDb {
 
     private static dbName = "respeqtt.db";
-    public static db:any;
+    public static db:any=null;      // SQLite database
 
     // Ordres SQL de création des tables
     // Particularité SQLite : les colonnes déclarées de type integer PRIMARY KEY sont des alias de la colonne implicite ROWID qui est indexée
@@ -47,39 +47,53 @@ export class RespeqttDb {
                 FOREIGN KEY (ren_for_kn) REFERENCES Formule (for_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTableCompo:string = `create table if not exists Compo (cpo_lic_kn integer, cpo_ren_kn integer, cpo_va_rang text,
-                PRIMARY KEY(cpo_ren_kn, cpo_va_rang),
+    private static creeTableCompo:string = `create table if not exists Compo (cpo_lic_kn integer, cpo_ren_kn integer, cpo_vn_rang integer,
+                cpo_va_nom text, cpo_va_prenom text, cpo_vn_points integer, cpo_vn_mute integer, cpo_vn_etranger integer,
+                cpo_vn_feminin integer,
+                PRIMARY KEY(cpo_ren_kn, cpo_vn_rang),
                 FOREIGN KEY (cpo_lic_kn) REFERENCES Licencie (lic_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
                 FOREIGN KEY (cpo_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTablePartie:string = `create table if not exists Partie (par_kn integer PRIMARY KEY, par_ren_kn integer, par_vn_ordreinteger,
-                par_vn_jou1 integer, par_vn_jou2 integer, par_vn_simple integer, par_vn_score integer,
+    private static creeTablePartie:string = `create table if not exists Partie (par_vn_num integer, par_ren_kn integer, par_va_desc text,
+                par_vn_jouA integer, par_vn_jouX integer, par_vn_double integer, par_va_score text,
+                PRIMARY KEY(par_ren_kn, par_vn_num)
                 FOREIGN KEY (par_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTableSet:string = `create table if not exists Set_ren (set_par_kn integer, set_vn_num integer, set_vn_score integer,
-                PRIMARY KEY(set_par_kn, set_vn_num),
-                FOREIGN KEY (set_par_kn) REFERENCES Partie (par_kn) ON DELETE CASCADE ON UPDATE NO ACTION
+    private static creeTableSet:string = `create table if not exists Set_ren (set_ren_kn, set_par_kn integer, set_vn_num integer, set_vn_score integer,
+                PRIMARY KEY(set_ren_kn, set_par_kn, set_vn_num),
+                FOREIGN KEY (set_par_kn) REFERENCES Partie (par_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
+                FOREIGN KEY (set_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTableCartons:string = `create table if not exists Cartons (car_kn integer PRIMARY KEY, car_ren_kn integer, car_lic_kn integer,
-                car_vn_couleur integer, car_va_motif text,
-                FOREIGN KEY (car_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
-                FOREIGN KEY (car_lic_kn) REFERENCES Licencie (lic_kn) ON DELETE CASCADE ON UPDATE NO ACTION
+    public static creeTableSession:string = `create table if not exists Session (ses_ren_kn integer PRIMARY KEY,
+                ses_vn_recoitCoteX,
+                ses_vn_clubChoisi,
+                ses_va_titreRencontre,
+                ses_clubA_kn,
+                ses_clubX_kn,
+                ses_vn_forfaitA,
+                ses_vn_forfaitX,
+                ses_vn_compoFigee,
+                ses_vn_scoreValide,
+                ses_va_reserveClubA,
+                ses_va_reserveClubX,
+                ses_va_reclamationClubA,
+                ses_va_reclamationClubX,
+                ses_va_rapportJA,
+                ses_va_nomJA,
+                ses_va_prenomJA,
+                ses_va_adresseJA,
+                ses_vn_licenceJA,
+                ses_va_score,
+                ses_vn_scoreA,
+                ses_vn_scoreX,
+                ses_va_feuilleDeMatch,
+                FOREIGN KEY (ses_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTableReserves:string = `create table if not exists Reserves (rsv_kn integer PRIMARY KEY, rsv_ren_kn integer,
-                rsv_vd_heure text, rsv_va_score text, rsv_va_texte text, rsv_vn_reclam integer,
-                FOREIGN KEY (rsv_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
-                )`;
-
-    private static creeTableRapportJA:string = `create table if not exists Rapport_JA (rja_ren_kn integer PRIMARY KEY, rja_lic_kn integer, rja_va_nom text,
-                rja_va_prenom text, rja_va_rapport text,
-                FOREIGN KEY (rja_lic_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
-                )`;
-
-
+    // supprime les tables et la base
     public static Drop() {
         RespeqttDb.db.execSQL("drop table Club").then(error => {console.log("impossible de supprimer la table Club");});
         RespeqttDb.db.execSQL("drop table Cartons").then(error => {console.log("impossible de supprimer la table Cartons");});
@@ -91,80 +105,96 @@ export class RespeqttDb {
         RespeqttDb.db.execSQL("drop table Set_ren").then(error => {console.log("impossible de supprimer la table Set");});
         RespeqttDb.db.execSQL("drop table Licencie").then(error => {console.log("impossible de supprimer la table Licencie");});
         RespeqttDb.db.execSQL("drop table Rencontre").then(error => {console.log("impossible de supprimer la table Rencontre");});
-        RespeqttDb.db.deleteDatabase(this.dbName);
+        RespeqttDb.db.execSQL("drop table Session").then(error => {console.log("impossible de supprimer la table Session");});
+        RespeqttDb.db.deleteDatabase(RespeqttDb.dbName);
     }
 
-    public static Init():boolean {
+    // initialise la base et crée les tables
+    public static Init() {
 
-        // réinit de l'id BDD
-        RespeqttDb.db = null;
-
-        // créer la base de données
-        new Sqlite(this.dbName).then(db => {
-            // création des tables
-            db.execSQL(this.creeTableRencontre).then(id => {
-                RespeqttDb.db = db;
-                db.execSQL(this.creeTableClub).then(id => {
-                    db.execSQL(this.creeTableLicencie).then(id => {
-                        db.execSQL(this.creeTableCompo).then(id => {
-                            db.execSQL(this.creeTableFormule).then(id => {
-                                db.execSQL(this.creeTablePartie).then(id => {
-                                    db.execSQL(this.creeTableSet).then(id => {
-                                        db.execSQL(this.creeTableCartons).then(id => {
-                                            db.execSQL(this.creeTableReserves).then(id => {
-                                                db.execSQL(this.creeTableRapportJA).then(id => {
-                                                    console.log("Toutes tables OK");
-                                                }, error => {
-                                                    console.log("Impossible de créer la table RapportJA", error);
-                                                    return false;
-                                                });
+        let promise = new Promise(function(resolve, reject) {
+            if(RespeqttDb.db) {
+                resolve(true);
+            } else {
+                // créer la base de données
+                new Sqlite(RespeqttDb.dbName).then(db => {
+                    RespeqttDb.db = db;
+                    // création des tables
+                    db.execSQL(RespeqttDb.creeTableRencontre).then(id => {
+                        db.execSQL(RespeqttDb.creeTableClub).then(id => {
+                            db.execSQL(RespeqttDb.creeTableLicencie).then(id => {
+                                db.execSQL(RespeqttDb.creeTableCompo).then(id => {
+                                    db.execSQL(RespeqttDb.creeTableFormule).then(id => {
+                                        db.execSQL(RespeqttDb.creeTablePartie).then(id => {
+                                            db.execSQL(RespeqttDb.creeTableSet).then(id => {
+                                                db.execSQL(RespeqttDb.creeTableSession).then(id => {
+                                                        console.log("Toutes tables OK / BDD PRETE");
+                                                        resolve(true);
+                                                    }, error => {
+                                                        console.log("Impossible de créer la table Session", error);
+                                                        reject(error);
+                                                    });
                                             }, error => {
-                                                console.log("Impossible de créer la table Reserves", error);
-                                                return false;
+                                                console.log("Impossible de créer la table Set", error);
+                                                reject(error);
                                             });
                                         }, error => {
-                                            console.log("Impossible de créer la table Cartons", error);
-                                            return false;
+                                            console.log("Impossible de créer la table Partie", error);
+                                            reject(error);
                                         });
                                     }, error => {
-                                        console.log("Impossible de créer la table Set", error);
-                                        return false;
+                                        console.log("Impossible de créer la table Formule", error);
+                                        reject(error);
                                     });
                                 }, error => {
-                                    console.log("Impossible de créer la table Partie", error);
-                                    return false;
+                                    console.log("Impossible de créer la table Compo", error);
+                                    reject(error);
                                 });
                             }, error => {
-                                console.log("Impossible de créer la table Formule", error);
-                                return false;
+                                console.log("Impossible de créer la table Licencie", error);
+                                reject(error);
                             });
                         }, error => {
-                            console.log("Impossible de créer la table Compo", error);
-                            return false;
+                            console.log("Impossible de créer la table Club", error);
+                            reject(error);
                         });
-                    }, error => {
-                        console.log("Impossible de créer la table Licencie", error);
-                        return false;
+                        }, error => {
+                        console.log("Impossible de créer la table Rencontre", error);
+                        reject(error);
                     });
                 }, error => {
-                    console.log("Impossible de créer la table Club", error);
-                    return false;
+                    console.log("Impossible de créer/ouvrir la BDD", error);
+                    reject(error);
                 });
-                }, error => {
-                console.log("Impossible de créer la table Rencontre", error);
-                return false;
-            });
-        }, error => {
-            console.log("Impossible de créer/ouvrir la BDD", error);
-            return false;
+            }
         });
-        if(RespeqttDb.db == null) {
-            console.log("!!! db NULL");
-        } else {
-            console.log("BDD ouverte ?", RespeqttDb.db.isOpen() ? "Yes" : "No");
-        }
-        return true;
+        return promise;
     }
 
+    // cherche la session dans la table des sessions et la crée si besoin
+    public static ChercheSessionEnBase(rencontre:number) {
+        let nbSessions:number=0;
+
+        // vérifier si la table existe
+        RespeqttDb.db.get("select count(*) from Session where ses_ren_kn = " + rencontre).then(row => {
+            nbSessions = Number(row[0]);
+            if(nbSessions > 0) {
+                console.log("Session trouvée en BDD");
+            } else {
+                RespeqttDb.db.execSQL("insert into Session (ses_ren_kn").then(id => {
+                    console.log("Table Session créée");
+                }, error2 => {
+                    console.log("Impossible de créer la table Session", error2);
+                });
+                }
+        }, error => {
+            console.log("création de la table Session");
+            RespeqttDb.db.execSQL(RespeqttDb.creeTableSession).then(id => {
+                console.log("Table Session créée");
+            }, error2 => {
+                console.log("Impossible de créer la table Session", error2);
+            });
+        });
+    }
 
 }
