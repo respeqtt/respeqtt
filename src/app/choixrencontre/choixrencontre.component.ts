@@ -18,10 +18,10 @@ import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } fro
 import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData, Switch } from "@nativescript/core";
 import {Router} from "@angular/router";
 
-import { EltListeRencontre, Rencontre, Club } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre, Club, EltListeLicencie } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
-import { Mobile } from "../outils/outils";
+import { Mobile, Maintenant } from "../outils/outils";
 
 
 
@@ -47,6 +47,7 @@ export class ChoixRencontreComponent {
         this.titre = "CHOIX DE LA RENCONTRE";
         this.sousTitre = "dans la liste ci-dessous";
         Rencontre.getListe().then(liste => {
+            var r:EltListeRencontre;
             this.listeRencontres = liste as Array<EltListeRencontre>;
         }, error => {
             console.log("Impossible de lire la liste des rencontres : " + error.toString());
@@ -69,41 +70,54 @@ export class ChoixRencontreComponent {
         if(SessionAppli.RechargeSession(SessionAppli.rencontreChoisie)) {
             this.router.navigate(["preparation"]);
         } else {
-            // récupérer la description complète de la rencontre
-            Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(ren => {
-                SessionAppli.rencontre = ren as Rencontre;
-                // récupérer le club 1 placé en A en attendant de savoir
-                Club.getClub(SessionAppli.rencontre.club1).then(club => {
-                    SessionAppli.clubA = club as Club;
-                    console.log("ClubA = " + SessionAppli.clubA.nom);
-                    // récupérer le club 2 placé en X en attendant de savoir
-                    Club.getClub(SessionAppli.rencontre.club2).then(club => {
-                        SessionAppli.clubX = club as Club;
-                        console.log("ClubX = " + SessionAppli.clubX.nom);
-                        // récupérer le titre de la rencontre
-                        Rencontre.getDescriptionRencontre(SessionAppli.rencontreChoisie).then(desc => {
-                            SessionAppli.titreRencontre = desc as string;
-                            console.log("Rencontre =" + SessionAppli.titreRencontre);
+            if(SessionAppli.rencontreChoisie == 0)  {
+                // aller sur la page de préparation de la feuille de match
+                const button: Button = <Button>args.object;
+                const page: Page = button.page;
+                this.router.navigate(["preparation"]);
+            } else {
+                // récupérer la description complète de la rencontre
+                Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(ren => {
+                    const r: Rencontre = ren as Rencontre;
+                    // mémoriser le nb de joueurs
+                    SessionAppli.nbJoueurs = r.nbJoueurs;
+                    // mémoriser la formule
+                    SessionAppli.formule = r.formule;
+                    // mémoriser le nb de sets gagnants
+                    SessionAppli.nbSetsGagnants = r.nbSets;
+                    console.log("NbJoueurs = " + SessionAppli.nbJoueurs);
+                    // récupérer le club 1 placé en A en attendant de savoir
+                    Club.getClub(r.club1).then(club => {
+                        SessionAppli.clubA = club as Club;
+                        console.log("ClubA = " + SessionAppli.clubA.nom);
+                        // récupérer le club 2 placé en X en attendant de savoir
+                        Club.getClub(r.club2).then(club => {
+                            SessionAppli.clubX = club as Club;
+                            console.log("ClubX = " + SessionAppli.clubX.nom);
+                            // récupérer le titre de la rencontre
+                            Rencontre.getDescriptionRencontre(SessionAppli.rencontreChoisie).then(desc => {
+                                SessionAppli.titreRencontre = desc as string;
+                                console.log("Rencontre =" + SessionAppli.titreRencontre);
 
-                            // aller sur la page de préparation de la feuille de match
-                            const button: Button = <Button>args.object;
-                            const page: Page = button.page;
-                            this.router.navigate(["preparation"]);
+                                // aller sur la page de préparation de la feuille de match
+                                const button: Button = <Button>args.object;
+                                const page: Page = button.page;
+                                this.router.navigate(["preparation"]);
+                            }, error => {
+                                console.log("Impossible de lire le titre de la rencontre" + error.toString());
+                            });
                         }, error => {
-                            console.log("Impossible de lire le titre de la rencontre" + error.toString());
+                            console.log("Impossible de trouver le club " + r.club2.toString() + ": " + error.toString());
                         });
                     }, error => {
-                        console.log("Impossible de trouver le club " + SessionAppli.rencontre.club2.toString() + ": " + error.toString());
+                        console.log("Impossible de trouver le club " + r.club1.toString() + ": " + error.toString());
                     });
                 }, error => {
-                    console.log("Impossible de trouver le club " + SessionAppli.rencontre.club1.toString() + ": " + error.toString());
+                    console.log("Impossible de lire la rencontre choisie : " + error.toString())
                 });
-            }, error => {
-                console.log("Impossible de lire la rencontre choisie : " + error.toString())
-            });
+
+            }
         }
-
-
     }
 
 }

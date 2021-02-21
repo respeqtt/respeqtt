@@ -2,6 +2,13 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
     <FlexboxLayout flexDirection="column">
         <Label class="titre" text="JUGE ARBITRE" textWrap="true" flexGrow="1" flexShrink="1"></Label>
         <TextField hint="Nom JA"  flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.nomJA' ></TextField>

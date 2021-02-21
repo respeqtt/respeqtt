@@ -2,23 +2,52 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
-    <FlexboxLayout flexDirection="column">
-        <Label class="titre" text="RENCONTRE EN COURS" flexGrow="0" flexShrink="0"></Label>
-        <Label class="sous-titre" [text]="this.titreRencontre" flexGrow="0" flexShrink="0"></Label>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
+    <FlexboxLayout flexDirection="column" justifyContent="flex-start">
+        <Label class="titre" text="RENCONTRE EN COURS" flexGrow="0" flexShrink="1"></Label>
+        <Label class="sous-titre" [text]="this.titreRencontre" flexGrow="0" flexShrink="1"></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
             <Label class = "switch-label" [text]="this.clubA" flexGrow="1" flexShrink="1"></Label>
-            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" [isenabled]="this.modif"></Switch>
+            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" [isenabled]="this.switchActif"></Switch>
             <Label class = "switch-label" [text]="this.clubX" flexGrow="1" flexShrink="1"></Label>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
-            <Button text="Composer équipe A"       flexGrow="1" backgroundColor="blue" [nsRouterLink]="['../compo/A']" [isenabled]="this.modif"></Button>
-            <Button text="Composer équipe X"       flexGrow="1" backgroundColor="darkblue" [nsRouterLink]="['../compo/X']" [isenabled]="this.modif"></Button>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Button text="Composer équipe A"     flexShrink="1" flexGrow="1" backgroundColor="blue" [nsRouterLink]="['../compo/A']" [isenabled]="this.modif"></Button>
+            <Button text="Composer équipe X"     flexShrink="1" flexGrow="1" backgroundColor="darkblue" [nsRouterLink]="['../compo/X']" [isenabled]="this.modif"></Button>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
-            <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)" [isenabled]="this.modif"></Button>
-            <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)" [isenabled]="this.modif"></Button>
+        <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="0" flexShrink="0">
+            <ListView class ="liste" [items]="listeEquipeA" flexGrow="0" flexShrink="1">
+                <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                    <StackLayout orientation="vertical" height="20" [class.odd]="odd" [class.even]="even">
+                        <Label [class.odd]="odd" [class.even]="even" [text]="item.nom + ' ' + item.prenom + ' ' + item.points">
+                        </Label>
+                    </StackLayout>
+                </ng-template>
+            </ListView>
+            <ListView class ="liste" [items]="listeEquipeX" flexGrow="0" flexShrink="1">
+                <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                    <StackLayout orientation="vertical" height="20" [class.odd]="odd" [class.even]="even">
+                        <Label [class.odd]="odd" [class.even]="even" [text]="item.nom + ' ' + item.prenom + ' ' + item.points">
+                        </Label>
+                    </StackLayout>
+                </ng-template>
+            </ListView>
         </FlexboxLayout>
-        <Button text="Valider la composition des équipes" flexGrow="0" flexShrink="0" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.modif"></Button>
-        <Button text="FERMER"                      flexGrow="0" flexShrink="0" backgroundColor="blue" [nsRouterLink]="['../actions']"></Button>
+        <FlexboxLayout flexDirection="row" flexGrow="0" flexShrink="1" justifyContent="space-between">
+            <Label text="Lieu" flexGrow="0.2" flexShrink="1"></Label>
+            <TextField class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.lieu' ></TextField>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)" [isenabled]="this.resValid "></Button>
+            <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)" [isenabled]="this.resValid"></Button>
+        </FlexboxLayout>
+        <Button text="Valider la composition des équipes" flexGrow="0" flexShrink="1" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
+        <Button text="FERMER"                      flexGrow="0" flexShrink="1" backgroundColor="blue" (tap)="onFermer($event)"></Button>
     </FlexboxLayout>
 </Page>

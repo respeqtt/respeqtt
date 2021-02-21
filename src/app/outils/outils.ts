@@ -2,7 +2,6 @@ import { Device, Screen, isAndroid, isIOS } from "@nativescript/core/platform";
 
 
 export class Mobile {
-
     largeurEcran:number;
     hauteurEcran:number;
     estAndroid:boolean;
@@ -38,6 +37,34 @@ export class StringListElt {
     }
 }
 
+// échappe les / dans les paramètres des URL
+export function toURLQuote(s:string):string {
+    const pattern:RegExp = /\//g;
+    const insert:string = "%2F";
+    return "'" + toURL(s) + "'";
+}
+
+// échappe les / dans les paramètres des URL
+export function toURL(s:string):string {
+    const pattern:RegExp = /\//g;
+    const insert:string = "%2F";
+    return s.replace(pattern, insert);
+}
+
+// décode les / dans les paramètres des URL
+export function URLtoString(s:string):string {
+    const pattern:RegExp = /%2F/g;
+    const insert:string = "/";
+    return "'" + URLtoStringSansQuote(s) + "'";
+}
+
+// décode les / dans les paramètres des URL
+export function URLtoStringSansQuote(s:string):string {
+    const pattern:RegExp = /%2F/g;
+    const insert:string = "/";
+    return s.replace(pattern, insert);
+}
+
 // double les ' dans le SQL et ajoute les ' en début et fin de chaine
 export function toSQL(s:string):string {
     const pattern:RegExp = /'/g;
@@ -54,4 +81,34 @@ export function bool2SQL(b:boolean):number {
 export function SQL2bool(n:number):boolean {
     return n != 0;
 }
+
+// renvoie la date courante sous la forme d'une chaine JJ/MM/AAAA
+export function Aujourdhui(maintenant:Date):string {
+
+    var j:number = maintenant.getDate();
+    var mois:number = maintenant.getMonth();
+    var annee:number = maintenant.getFullYear();
+
+    return (j > 9 ? j : "0" + j) + "/" + (mois > 9 ? mois : "0" + mois) + "/" + annee.toString();
+}
+
+// renvoie la date courante sous la forme d'une chaine JJ/MM/AAAA
+export function HeureMinCourante(maintenant:Date):string {
+
+
+    var heures:number = maintenant.getHours();
+    var min:number = maintenant.getMinutes();
+
+    return (heures > 9 ? heures : heures + " ") + "H" + (min > 9 ? min : "0" + min);
+}
+
+
+// renvoie la date heure courante sous la forme d'une chaine JJ/MM/AAAA HH:MI
+export function Maintenant():string {
+
+    const maintenant = new Date();
+    return Aujourdhui(maintenant) + HeureMinCourante(maintenant);
+
+}
+
 

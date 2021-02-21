@@ -25,7 +25,7 @@ import { QrCode, QrSegment, Ecc } from "./qrcodegen"
 import { registerElement } from '@nativescript/angular';
 import { Paint, CanvasView, Canvas, createRect } from '@nativescript-community/ui-canvas';
 import { Color } from '@nativescript/core/color';
-
+import { URLtoString } from "../outils/outils";
 
 @Component({
     templateUrl: "./qrmontrer.component.html",
@@ -33,13 +33,14 @@ import { Color } from '@nativescript/core/color';
     styleUrls: ["../global.css"]
  })
 export class QRMontrerComponent implements OnInit{
-    intro:string;
+    titre:string;
     contenu:string;
     qr2:QrCode;
     dimEcran: number;
     aDessiner:boolean;
     trace:string;
     router:RouterExtensions;
+    retour:string;          // page appelante
 
 
 
@@ -50,16 +51,28 @@ export class QRMontrerComponent implements OnInit{
 
         registerElement('CanvasView', () => CanvasView);
 
+        this.retour = this._route.snapshot.paramMap.get("retour");
+
+        switch(this.retour) {
+            case "placer":
+               this.retour = this.retour + "/" + this._route.snapshot.paramMap.get("param");
+            break;
+            case "resultat":
+               this.retour = this.retour + "/" + this._route.snapshot.paramMap.get("param");
+            break;
+            default:
+            }
         this.router = _routerExtensions;
     }
 
     ngOnInit(): void {
-
-
         this.contenu = this._route.snapshot.paramMap.get("quoi");
-        this.intro = this._route.snapshot.paramMap.get("titre");
+        this.titre = this._route.snapshot.paramMap.get("titre");
+        // décoder les / du titre
+        this.titre = URLtoString(this.titre);
+
         const estPasNum: boolean= isNaN(Number(this._route.snapshot.paramMap.get("dim")));
-//        alert("contenu=" + this.contenu + ", intro=" + this.intro + ", dim=" + this._route.snapshot.paramMap.get("dim"));
+
         if(estPasNum)
             this.dimEcran = 150;
         else
@@ -106,7 +119,7 @@ export class QRMontrerComponent implements OnInit{
 
         // retourne à la page d'appel
         goBack() {
-            this.router.back();
+            this.router.navigate([this.retour]);
         }
 
         onTap(args: EventData) {

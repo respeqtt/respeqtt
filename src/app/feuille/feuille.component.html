@@ -1,0 +1,18 @@
+<Page     xmlns="http://schemas.nativescript.org/tns.xsd">
+
+<ActionBar title="RespeqTT">
+    <StackLayout orientation="horizontal"
+    ios:horizontalAlignment="center"
+    android:horizontalAlignment="left">
+        <Image src="res://icon" class="action-image" ></Image>
+    </StackLayout>
+</ActionBar>
+<FlexboxLayout flexDirection="column">
+        <Label class="titre" [text]="this.titre" flexGrow="0" flexShrink="0" ></Label>
+        <Label class="sous-titre" [text]="this.sousTitre" flexGrow="1" flexShrink="1" ></Label>
+        <Button text="Consulter" backgroundColor="darkblue" (tap)="onConsulter($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Envoyer" backgroundColor="blue" (tap)="onEnvoyer($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Fermer" backgroundColor="darkblue" (tap)="onFermer($event)" flexGrow="0" flexShrink="0" ></Button>
+    </FlexboxLayout>
+
+</Page>

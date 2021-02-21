@@ -1,70 +1,45 @@
-<Page
-    xmlns="http://schemas.nativescript.org/tns.xsd"
->
-<!--
-The GridLayout arranges its child elements in a table structure of rows and columns.
-A cell can contain multiple child elements, they can span over multiple rows and columns,
-and even overlap each other. The GridLayout has one column and one row by default.
-You can learn more about NativeScript layouts at https://docs.nativescript.org/ui/layout-containers.
+<Page    xmlns="http://schemas.nativescript.org/tns.xsd">
 
-These components make use of the NativeScript core theme, which styles them with element selectors.
-The theme also provides a set of helper class names such as p-20, h1, h2, and text-center to enhance styling.
-You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
--->
-    <FlexboxLayout flexDirection="column">
-        <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="1"></Label>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Button text="QRC" flexGrow="1"           (tap)="onTapQRCode($event)"></Button>
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
+
+    <FlexboxLayout flexDirection="column" justifyContent="flex-start">
+        <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="1" flexShrink="1"></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
+            <Button text="QR Code" flexGrow="1"           (tap)="onTapQRCode($event)"></Button>
             <Button text="Scan résultat" flexGrow="1" backgroundColor="darkblue" (tap)="onTapScan($event)"></Button>
         </FlexboxLayout>
-        <Label text="Résultats" horizontalAlignment="stretch" flexGrow="1"></Label>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label text="1er set" flexGrow="1" ></Label>
-            <TextField hint="1er set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set1'></TextField>
+        <Label text="Résultats" horizontalAlignment="stretch" flexGrow="1" flexShrink="1"></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="1er set" flexGrow="1" ></Label>
+            <TextField class="sets" hint="1er set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set1'></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label text="2e set" flexGrow="1" ></Label>
-            <TextField hint="2e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
+            <Label class="sets" text="2e set" flexGrow="1" ></Label>
+            <TextField class="sets" hint="2e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" flexGrow="1" justifyContent="space-between">
-            <Label text="3e set" flexGrow="1"></Label>
-            <TextField hint="3e set" secure="false" flexGrow="1" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
+            <Label class="sets" text="3e set" flexGrow="1"></Label>
+            <TextField class="sets" hint="3e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label text="4e set" flexGrow="1"></Label>
-            <TextField hint="4e set" flexGrow="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
+            <Label class="sets" text="4e set" flexGrow="1"></Label>
+            <TextField class="sets" hint="4e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label text="5e set" flexGrow="1"></Label>
-            <TextField hint="5e set" flexGrow="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
+            <Label class="sets" text="5e set" flexGrow="1"></Label>
+            <TextField class="sets" hint="5e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
-            <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamA($event)"></Button>
-            <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamX($event)"></Button>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
+            <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamA($event)"></Button>
+            <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
-        <Button text="Valider le résultat" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="0"></Button>
-        <Button text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="0"></Button>
+        <Button text="Valider le résultat" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1"></Button>
+        <Button text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
     </FlexboxLayout>
-
-<!--
-    <GridLayout columns="*, *" rows="auto, auto, 55, 55, 55, 55, 55, 55, 55" backgroundColor="lightblue">
-        <Label class="titre" [text]="this.titre"    row="0" col="0" colspan="2" textWrap="true"></Label>
-        <Button text="QRC"                          row="1" col="0" (tap)="onTapQRCode($event)"></Button>
-        <Button text="Scan résultat"                row="1" col="1" backgroundColor="darkblue" (tap)="onTapScan($event)"></Button>
-        <Label text="Résultats"                     row="2" col="0" colspan="2" ></Label>
-
-        <Label text="1er set"                       row="3" col="0" ></Label>
-        <TextField hint="1er set"                   row="3" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set1' ></TextField>
-        <Label text="2e set"                        row="4" col="0" ></Label>
-        <TextField hint="2e set"                    row="4" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
-        <Label text="3e set"                        row="5" col="0" ></Label>
-        <TextField hint="3e set"                    row="5" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
-        <Label text="4e set"                        row="6" col="0" ></Label>
-        <TextField hint="4e set"                    row="6" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
-        <Label text="5e set"                        row="7" col="0" ></Label>
-        <TextField hint="5e set"                    row="7" col="1" secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
-
-         <Button text="Valider le résultat"         row="8" col="0" colspan="2"  (tap)="onTapValidate($event)"></Button>
-    </GridLayout>
--->
 </Page>

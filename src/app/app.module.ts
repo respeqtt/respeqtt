@@ -38,6 +38,8 @@ import { SaisieCommentaireComponent } from "./saisiecommentaire/saisiecommentair
 import { ValiderComponent } from "./valider/valider.component";
 import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 import { FeuilleComponent } from "./feuille/feuille.component";
+import { AttenteComponent } from "./attente/attente.component";
+
 
 
 
@@ -72,7 +74,8 @@ import { AppRoutingModule } from "./app-routing.module";
         SaisieCommentaireComponent,
         ValiderComponent,
         JugeArbitreComponent,
-        FeuilleComponent
+        FeuilleComponent,
+        AttenteComponent
     ],
     providers: [],
     schemas: [

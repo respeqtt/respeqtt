@@ -4,6 +4,13 @@
     background-color: yellow;
   }
 
+.fal {
+    font-family: "Font Awesome 5 Free", "fa-solid-900";
+    font-size: 100;
+    background-color: ivory;
+  }
+
+
 .action-image {
     width: 40;
     height: 40;
@@ -45,12 +52,22 @@ label {
     text-align: center;
 }
 
-TextField {
-    font-size: 1.5em;
+label.sets {
+    font-size: 1em;
+    font-weight: bold;
+    color: darkblue;
+    background-color: lightslategray;
+    margin: 0px;
+    padding: 10px;
+    text-align: center;
+}
+
+TextField.sets {
+    font-size: 1em;
     color: darkblue;
     background-color: whitesmoke;
-    margin: 5px;
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
     text-align: center;
 }
 
@@ -77,6 +94,16 @@ label.club {
     padding: 10px;
 }
 
+label.attente {
+    text-align: center;
+    vertical-align: center;
+    background-color: royalblue;
+    color:whitesmoke;
+    font-weight: bold;
+    font-style: italic;
+    padding: 50px;
+    height: 200px;
+}
 
 button {
     font-size: 2em;

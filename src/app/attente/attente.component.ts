@@ -15,59 +15,51 @@
 /*******************************************************************************/
 
 import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
-import { Session } from "inspector";
-import { Page } from "@nativescript/core/ui/page";
+import { EventData } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
+import { Page } from "@nativescript/core/ui/page";
+import { View } from "@nativescript/core/ui/core/view";
 
-import { RespeqttDb } from "../db/dbRespeqtt";
-import { EltListeClub, Club } from "../db/RespeqttDAO";
-import { SessionAppli } from "../session/session";
-
+let view: View;
 
 @Component({
-    templateUrl: "./club.component.html",
+    templateUrl: "./attente.component.html",
     moduleId:module.id,
     styleUrls: ["../global.css"]
-})
-export class ClubComponent{
-    listeClubs:Array<EltListeClub>;
-    retour:string;                      // page appelante
+ })
+export class AttenteComponent {
+    destination:string;
+    router:RouterExtensions;    // pour navigation
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // récupération du routeur pour naviguer
+        this.router = _routerExtensions;
+        console.log("Attente/quoi=" + this._route.snapshot.paramMap.get("quoi"));
+        // page suivante
+        this.destination = this._route.snapshot.paramMap.get("quoi") + "/"
+                         + this._route.snapshot.paramMap.get("dim") + "/"
+                         + this._route.snapshot.paramMap.get("titre") + "/"
+                         + this._route.snapshot.paramMap.get("retour") + "/"
+                         + this._route.snapshot.paramMap.get("param");
+    }
 
-        this.retour = this._route.snapshot.paramMap.get("retour");
-
-        Club.getListe().then(liste => {
-            this.listeClubs = liste  as Array<EltListeClub>;
-        }, error =>{
-            console.log("Impossible de lire la liste des clubs :" + error.toString());
+    onPageLoaded(args: EventData) {
+        console.log("$$$$$$$$$$$ Page Loaded $$$$$$$$$$$$$$");
+        const page = args.object as Page;
+        console.log("Page reference from loaded event: ", page);
+        view = page.getViewById("wait");
+/*
+        view.animate({
+            rotate: 360,
+            duration: 10000
         });
-    }
+*/
+        // aller sur la page suivante
+        console.log("Destination=" + this.destination);
+        this.router.navigate(["qrmontrer/" + this.destination]);
 
-    ngOnInit(): void {
-    }
-
-
-    onListViewLoaded(args: EventData) {
-        const maListe = <ListView>args.object;
-    }
-
-    onItemTap(args: ItemEventData) {
-        const index = args.index;
-
-        // mémoriser le club sélectionné pour usage ultérieur
-        SessionAppli.clubChoisi = this.listeClubs[index].numero;
-
-        console.log("Club choisi : " + SessionAppli.clubChoisi);
-
-        // aller sur la page de chargement des joueurs
-        const button: Button = <Button>args.object;
-        const page: Page = button.page;
-        // retour à l'appelant (passé en paramètre de l'appel)
-        this._routerExtensions.navigate([this.retour]);
     }
 
 }

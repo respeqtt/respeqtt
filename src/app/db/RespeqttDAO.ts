@@ -16,7 +16,7 @@
 import { textAlignmentProperty } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { SessionAppli} from "../session/session";
-import { bool2SQL, SQL2bool, toSQL } from "../outils/outils";
+import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } from "../outils/outils";
 
 export class EltListeRencontre {
     id:number;
@@ -38,17 +38,11 @@ export class Rencontre{
     nbJoueurs:number;
     formule:number;
     nbSets:number;
-    ja: number;
-    lieu:string;
     echelon:string;
     feminin:boolean;
     division:string;
     ligue:string;
     poule:string;
-    va_feuille:string;
-    scoreA:number;
-    scoreX:number;
-
 
     // liste des rencontres
     public static liste:Array<any>;
@@ -128,9 +122,7 @@ export class Rencontre{
      // renvoie la rencontre complete
      public static getRencontre(id:number) {
         const select = `select ren_club1_kn, ren_club2_kn, ren_vd_date, ren_vn_phase, ren_vn_journee, ren_vn_nb_joueurs,
-                            ren_for_kn, ren_vn_nb_sets, ren_vn_ja, ren_va_lieu, ren_vn_echelon,
-                            ren_vn_feminin, ren_va_division, ren_va_ligue, ren_va_poule, ren_va_feuille,
-                            ren_vn_score_A, ren_vn_score_X
+                            ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin, ren_va_division, ren_va_ligue, ren_va_poule
                         from Rencontre
                         where ren_kn = `
                      + id.toString();
@@ -149,16 +141,11 @@ export class Rencontre{
                     rencontre.nbJoueurs= Number(row[5]);
                     rencontre.formule= Number(row[6]);
                     rencontre.nbSets= Number(row[7]);
-                    rencontre.ja= Number(row[8]);
-                    rencontre.lieu= row[9];
                     rencontre.echelon= row[10];
                     rencontre.feminin= Boolean(row[11]);
                     rencontre.division= row[12];
                     rencontre.ligue= row[13];
                     rencontre.poule= row[14];
-                    rencontre.va_feuille= row[15];
-                    rencontre.scoreA= row[16];
-                    rencontre.scoreX= row[17];
 
                     resolve(rencontre);
                 }
@@ -388,11 +375,11 @@ export class Partie{
     sel:boolean;                // sélection si dans une liste
 
     // crée la liste des parties
-    static InitListeParties(r:Rencontre, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean):Array<Partie> {
+    static InitListeParties(eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean):Array<Partie> {
         var liste:Array<Partie>=[];
 
         // récuperer la formule
-        Formule.getFormule(r.formule).then(f=> {
+        Formule.getFormule(SessionAppli.formule).then(f=> {
             const formule = f as Formule;
             var n:number;   // nombre de parties
             var partie:Partie;
@@ -400,7 +387,7 @@ export class Partie{
             // mettre en forme les parties
             n = formule.getNbParties();
             console.log("Nb parties=" + n);
-            for(var i:number=0; i < r.nbJoueurs; i++) {
+            for(var i:number=0; i < SessionAppli.nbJoueurs; i++) {
                 console.log("J" + (i+1) + " A = " + (forfaitA ? "(forfait)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(forfait)" : eqX[i].nom));
             }
             for(var i:number = 0; i<n; i++) {
@@ -408,7 +395,7 @@ export class Partie{
                 liste.push(partie);
             }
         },error =>{
-            console.log("Impossible de trouver la formule " + r.formule.toString());
+            console.log("Impossible de trouver la formule " + SessionAppli.formule.toString());
         });
 
         return liste;
@@ -476,7 +463,7 @@ export class Partie{
     }
 
     // met à jour le score des parties disputées ; renvoie TRUE si le score est valide
-    setScore(result:Array<Set>, r:Rencontre):boolean {
+    setScore(result:Array<Set>, nbSets:number):boolean {
         let ptsA:number = 0;
         let ptsX:number = 0;
 
@@ -495,25 +482,26 @@ export class Partie{
             result[i].numSet = i;
             // mémoriser le set
             this.sets.push(result[i]);
+            console.log("nbsets à jouer = ", nbSets);
             // vérifier que si un joueur a gagné il n'y a pas de set à suivre
-            if((ptsA == r.nbSets || ptsX == r.nbSets) && i+1 < result.length) {
+            if((ptsA == nbSets || ptsX == nbSets) && i+1 < result.length) {
                 console.log("!!! Score incorrect : des sets ont été joués après le résultat acquis");
                 console.log("ptsA=" + ptsA + ", ptsX=" + ptsX + ", i+1=" + (i+1) + ", length=" + result.length);
                 return false;
             }
         }
         // vérifier que le bon nombre de sets ont été joués
-        console.log(r.nbSets + " sets gagnants / " + r.nbSets + " joués");
-        if (ptsA < r.nbSets && ptsX < r.nbSets) {
-            console.log("!!! Score incomplet : aucun joueur n'a remporté " + r.nbSets + " sets");
+        console.log(nbSets + " sets gagnants / " + nbSets + " joués");
+        if (ptsA < nbSets && ptsX < nbSets) {
+            console.log("!!! Score incomplet : aucun joueur n'a remporté " + nbSets + " sets");
             return false;
         }
-        if (ptsA > r.nbSets) {
-            console.log("!!! Score incorrect : le joueur coté A a remporté plus de sets (" + ptsA + ") que nécessaire :" + r.nbSets);
+        if (ptsA > nbSets) {
+            console.log("!!! Score incorrect : le joueur coté A a remporté plus de sets (" + ptsA + ") que nécessaire :" + nbSets);
             return false;
         }
-        if (ptsX > r.nbSets) {
-            console.log("!!! Score incorrect : le joueur coté X a remporté plus de sets (" + ptsX + ") que nécessaire :" + r.nbSets);
+        if (ptsX > nbSets) {
+            console.log("!!! Score incorrect : le joueur coté X a remporté plus de sets (" + ptsX + ") que nécessaire :" + nbSets);
             return false;
         }
         if(ptsA > ptsX) {
@@ -530,12 +518,17 @@ export class Partie{
         return true;
     }
 
-    ScoreToJSon (numPartie:number, r:Rencontre):string {
+    ScoreToJSon (numPartie:number, numRencontre:number):string {
         var json:string;
 
         // début
-        json = '{"rencontre":"' + r.id +  '", "num":"' + numPartie + '", "res": [';
-
+        // encoder les / de la description
+        const desc = toURL(SessionAppli.listeParties[numPartie].desc);
+        json = '{"rencontre":"' + numRencontre
+             +  '", "partie":"' + numPartie
+             + '", "desc":"' + desc
+             + '", "nbsets":"' + SessionAppli.nbSetsGagnants
+             + '", "res": [';
 
         // Coder le résultat des sets en JSON
         for(var i = 0; i < this.sets.length; i++) {
@@ -547,29 +540,96 @@ export class Partie{
         return json;
     }
 
-    // convertit un message json en score d'une partie
-    JsonToScore (json:string, rencontre:Rencontre, partie:number):boolean {
+/*
+    // convertit un message json en partie ; renvoie l'indice de la partie
+    PartieToJson(iPartie:number):string {
+        var json:string;
+
+        // début
+        json = '{"partie":"' + iPartie.toString()
+             +  '", "desc":"' + SessionAppli.listeParties[iPartie].desc
+             + '", "joueurA":"' + SessionAppli.listeParties[iPartie].joueurA.toString()
+             + '", "joueurX":"' + SessionAppli.listeParties[iPartie].joueurX.toString()
+             + '"}';
+
+            return json;
+    }
+*/
+
+    // convertit un message json en partie ; renvoie l'indice de la partie
+    JsonToPartie (json:string):number {
         var data;
+        var ok:boolean=true;
 
         // analyse du JSON en entrée
         data = JSON.parse(json);
+        // récupérer le n° de la partie
+        var iPartie:number = Number(data.partie);
+        // contrôler la description
+        // décoder les / de la description
+        const desc = URLtoStringSansQuote(data.desc);
 
+
+        if(iPartie >= 0 && iPartie < 30) {
+            // on crée assez de parties pour avoir celle que l'on veut
+            for(var i=SessionAppli.listeParties.length; i < iPartie+1 ; i++) {
+                var p:Partie = new Partie("", null, null, false, false);
+                SessionAppli.listeParties.push(p);
+            }
+            // analyse du JSON en entrée
+            data = JSON.parse(json);
+            SessionAppli.listeParties[iPartie].desc = desc;
+            SessionAppli.listeParties[iPartie].joueurA = data.joueurA;
+            SessionAppli.listeParties[iPartie].joueurX = data.joueurX;
+            SessionAppli.nbSetsGagnants = data.nbsets;
+        } else {
+            console.log("Numéro de partie incorrect : " + data.partie);
+            ok = false;
+        }
+
+
+        // si tout s'est bien passé on retourne le numéro de partie, sinon -1
+        if(ok) {
+            return data.partie;
+        } else {
+            return -1;
+        }
+    }
+
+    // convertit un message json en score d'une partie
+    public static JsonToScore (json:string):number {
+        var data;
+        var iPartie:number = -1;
+
+        // analyse du JSON en entrée
+        data = JSON.parse(json);
+        iPartie = Number(data.partie);
+        // décoder les / de la description
+        const desc = URLtoStringSansQuote(data.desc);
 
         // controles
-        if(data.rencontre == rencontre.id && data.num == partie && data.res.length>0) {
+        if( iPartie >= 0 && data.res.length>0 && SessionAppli.listeParties[iPartie].desc == desc) {
             // mémoriser les sets
             var listeSets:Array<Set>=[];
             var s:Set;
+            console.log(data.res.length.toString() + " sets dans le scan");
             for(var i=0; i < data.res.length; i++) {
                 s = new Set(data.res[i].score);
                 listeSets.push(s);
             }
             // mettre à jour les sets et le score de la partie
-            this.setScore(listeSets, rencontre);
-            return true;
+            SessionAppli.listeParties[iPartie].setScore(listeSets, SessionAppli.nbSetsGagnants);
+            // consigner les réclamations
+            if(data.reclamA != "") {
+                SessionAppli.reclamationClubA = SessionAppli.reclamationClubA + "\n Partie n°" + data.num + ": " + data.reclamA;
+            }
+            if(data.reclamX != "") {
+                SessionAppli.reclamationClubX = SessionAppli.reclamationClubX + "\n Partie n°" + data.num + ": " + data.reclamX;
+            }
+            return iPartie;
         } else {
-            alert("Ce n'est pas le résultat de la partie ou de la rencontre attendue");
-            return false;
+            console.log("Ce n'est pas le résultat de la partie ou de la rencontre attendue");
+            return -1;
         }
     }
 

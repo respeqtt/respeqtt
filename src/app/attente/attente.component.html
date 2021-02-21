@@ -1,0 +1,17 @@
+<Page (loaded)="onPageLoaded($event)">
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
+
+    <FlexboxLayout flexDirection="column" justifyContent="center">
+<!--        <Image id="wait" src="res://spinner" loadMode="async" width= "500" min-width= "50" flex-grow="1"></Image>
+-->
+            <Label text="Un peu de patience ..." flex-grow="1" flex-shrink="0" class="attente"></Label>
+    </FlexboxLayout>
+
+
+</Page>

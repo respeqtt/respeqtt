@@ -14,10 +14,10 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { Label, Button, EventData } from "@nativescript/core";
+import { Component } from "@angular/core";
+import { Tabs, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre, Partie } from "../db/RespeqttDAO";
 import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
@@ -38,6 +38,8 @@ export class ActionsComponent{
     valider:boolean=false;                        // activation du bouton : valider le score
     spid:boolean=false;                           // activation du bouton : envoyer à SPID
     abandonner:boolean=false;                     // activation du bouton : abandonner la rencontre en cours
+    tab:number=SessionAppli.tab;                        // tab présenté
+    modeRencontre:boolean=SessionAppli.modeRencontre;   // mode rencontre ou mode saisie équipe/saisie de score hors rencontre
 
 
     constructor(private _routerExtensions: RouterExtensions) {
@@ -63,16 +65,18 @@ export class ActionsComponent{
                 this.preparer = true;
             }
             // on ne lance les parties que si la compo est figée
-            this.lancer = SessionAppli.compoFigee;
+            this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;
 
             // on ne valide le score que si les parties ont été lancées
-            this.valider = SessionAppli.listeParties.length > 0;
+            this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre;
 
             // on n'envoie à SPID que si le scoré a été validé
-            this.spid = SessionAppli.scoreValide;
+            this.spid = SessionAppli.scoreValide && SessionAppli.modeRencontre;
 
             // on ne peut abandonner que si on a commencé et pas validé le score
             this.abandonner = this.preparer && !SessionAppli.scoreValide;
+
+            console.log("Mode rencontre : " + (this.modeRencontre ? "OUI" : "NON"));
 
         }, error => {
             console.log(error);
@@ -152,7 +156,6 @@ export class ActionsComponent{
 
 //            this.routerExt.navigate(["envoi"]);
         }
-
     }
 
     onAbandonner(args: EventData) {
@@ -175,6 +178,10 @@ export class ActionsComponent{
                     this.spid = false;
                     this.abandonner = false;
 
+                    // Fin du mode rencontre
+                    SessionAppli.modeRencontre = false;
+                    this.modeRencontre = SessionAppli.modeRencontre;
+
                     alert("Rencontre abandonnée");
                 } else {
                     console.log("Abandon ANNULE");
@@ -192,11 +199,73 @@ export class ActionsComponent{
     }
 
     onPreparer(args: EventData) {
-        if(SessionAppli.rencontre) {
+        if(SessionAppli.rencontreChoisie >= 0) {
             this.routerExt.navigate(["preparation"]);
         } else {
             this.routerExt.navigate(["choixrencontre"]);
         }
     }
+
+
+    onTabChanged(args: EventData) {
+        // vers quel onglet va-t-on
+        const tab = args.object as Tabs;
+        // onglet 2 = scan de la partie
+        if(tab.selectedIndex == 2) {
+            SessionAppli.tab = 2;
+            // préparation de la session
+            if(SessionAppli.rencontreChoisie < 0) {
+                var p:Partie;
+                SessionAppli.rencontreChoisie = 0;
+                p = new Partie("", null, null, false, false);
+                p.desc = "PARTIE IMPORTEE";
+                SessionAppli.listeParties.push(p);
+                console.log("Partie  à scanner :" + SessionAppli.listeParties[0].desc);
+            }
+            // appeler la page de scan des parties
+            this.routerExt.navigate(["/qrscan/PARTIE/0"]);
+        }
+
+    }
+
+
+    onClub(args: EventData) {
+        SessionAppli.tab = 1;
+        // appeler la page de compo des équipes
+        this.routerExt.navigate(["clubs/actions"]);
+    }
+
+    onJoueurs(args: EventData) {
+        SessionAppli.tab = 1;
+        // appeler la page de compo des équipes
+        this.routerExt.navigate(["joueurs"]);
+    }
+
+    onRencontre(args: EventData) {
+        SessionAppli.tab = 1;
+        // appeler la page de choix de rencontre
+        this.routerExt.navigate(["choixrencontre"]);
+    }
+
+    onCompo(args: EventData) {
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        // appeler la page de compo des équipes
+        this.routerExt.navigate(["preparation"]);
+    }
+
+    onPartie(args: EventData) {
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        // appeler la page de scan des parties
+        this.routerExt.navigate(["qrscan/PARTIE/0"]);
+    }
+
 
 }

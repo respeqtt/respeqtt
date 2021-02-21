@@ -1,12 +1,19 @@
 
     <script src="https://kit.fontawesome.com/4ac1ebb706.js" crossorigin="anonymous"></script>
 
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
     <FlexboxLayout flexDirection="column" justifyContent="flex-start" backgroundColor="lightblue">
         <Label class="titre" text="COMPOSITION D'EQUIPE"  flexGrow="0" flexShrink="0"></Label>
         <Label class = "sous-titre" [text] = "this.clubChoisi.nom"  flexGrow="0" flexShrink="0"> </Label>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="SCANNER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onScanTap($event)"></Button>
-            <Button text="FORFAIT" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onForfaitTap($event)"></Button>
+            <Button text="SCANNER" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onScanTap($event)" [isenabled]="this.modeRencontre"></Button>
+            <Button text="FORFAIT" min-width="100" width="1000" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onForfaitTap($event)" [isenabled]="this.modeRencontre"></Button>
         </FlexboxLayout>
         <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">

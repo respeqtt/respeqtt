@@ -47,7 +47,7 @@ export class LancementComponent{
         // construire les parties
         console.log("Nb de parties dans la session : " + SessionAppli.listeParties.length);
         if(SessionAppli.listeParties.length==0) {
-            this.listeLignes = Partie.InitListeParties(SessionAppli.rencontre, SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
+            this.listeLignes = Partie.InitListeParties(SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
             this.nbParties = this.listeLignes.length;
         } else {
             this.listeLignes = SessionAppli.listeParties;

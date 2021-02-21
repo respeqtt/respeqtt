@@ -14,16 +14,16 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
-import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData, Switch, Observable } from "@nativescript/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { Button, EventData, Switch } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
 
-import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
-import { Mobile } from "../outils/outils";
+import { Maintenant } from "../outils/outils";
 
 
 
@@ -36,12 +36,17 @@ import { Mobile } from "../outils/outils";
 export class PreparationComponent{
     recoitCoteX:boolean
     titreRencontre:string;
-    modif:boolean;
+    modif:boolean=false;
+    resValid:boolean=false;
+    switchActif:boolean=false;
     routeur:RouterExtensions;
     btnResA:string;
     btnResX:string;
     clubA:string;
     clubX:string;
+    listeEquipeA:Array<EltListeLicencie>=[];
+    listeEquipeX:Array<EltListeLicencie>=[];
+    lieu:string="";
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
         this.routeur = routerExtensions;
@@ -59,11 +64,42 @@ export class PreparationComponent{
             this.btnResX = "1 réserve club X";
         }
 
-        this.clubA = "A/" + SessionAppli.clubA.nom;
-        this.clubX = "X/" + SessionAppli.clubX.nom;
+        // si rencontre de travail alors club A = club choisi
+        if(SessionAppli.rencontreChoisie) {
+            this.clubA = "A/" + SessionAppli.clubA.nom;
+            this.clubX = "X/" + SessionAppli.clubX.nom;
+            // proposer le club A par défaut si pas de lieu choisi
+            if(SessionAppli.lieu == "") {
+                this.lieu = SessionAppli.clubA.nom;
+            } else {
+                this.lieu = SessionAppli.lieu;
+            }
+        } else {
+            // récupérer le club choisi
+            Club.getClub(SessionAppli.clubChoisi).then(c => {;
+                SessionAppli.clubA = c as Club;
+                this.clubA = SessionAppli.clubA.nom;
+                this.lieu = SessionAppli.clubA.nom;
+                this.clubX = "X";
+            }, error => {
+                console.log("Impossible de trouver le club choisi : " + SessionAppli.clubChoisi, error);
+            });
+        }
+
+        // on commence avec une liste vide si pas d'équipe déjà composée
+        for(var i = 0; i < SessionAppli.equipeA.length; i++) {
+            this.listeEquipeA.push(SessionAppli.equipeA[i]);
+        }
+        for(var i = 0; i < SessionAppli.equipeX.length; i++) {
+            this.listeEquipeX.push(SessionAppli.equipeX[i]);
+        }
+
+        // on fixe le mode rencontre en fonction de l'onglet sur lequel on est
+        SessionAppli.modeRencontre = SessionAppli.tab == 0;
 
         this.modif = !SessionAppli.compoFigee;
-        console.log("Compo figée :" + SessionAppli.compoFigee);
+        this.switchActif = !SessionAppli.compoFigee;
+        this.resValid = SessionAppli.modeRencontre && !SessionAppli.compoFigee;
     }
 
     ngOnInit(): void {
@@ -88,6 +124,15 @@ export class PreparationComponent{
         this.clubA = "A/" + SessionAppli.clubA.nom;
         this.clubX = "X/" + SessionAppli.clubX.nom;
 
+        // on inverse les équipes dans la liste
+        this.listeEquipeA = [];
+        for(var i = 0; i < SessionAppli.equipeA.length; i++) {
+            this.listeEquipeA.push(SessionAppli.equipeA[i]);
+        }
+        this.listeEquipeX = [];
+        for(var i = 0; i < SessionAppli.equipeX.length; i++) {
+            this.listeEquipeX.push(SessionAppli.equipeX[i]);
+        }
 
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
     }
@@ -113,9 +158,19 @@ export class PreparationComponent{
             alert("Les deux équipes n'ont pas été renseignées.");
             return;
         } else {
-            // on fige la composition des deux équipes
+            // passer en mode rencontre
+            SessionAppli.modeRencontre = true;
+            // figer la composition des deux équipes
             SessionAppli.compoFigee = true;
+            // mémoriser la date de la rencontre
+            SessionAppli.date = Maintenant();
+            // mémoriser le lieu de la rencontre
+            SessionAppli.lieu = this.lieu;
+            // désactiver les boutons
             this.modif = !SessionAppli.compoFigee;
+            this.switchActif = !SessionAppli.compoFigee;
+            this.resValid = !SessionAppli.compoFigee;
+
         }
 
         // sauvegarder la session en BDD
@@ -126,6 +181,16 @@ export class PreparationComponent{
     onVoirFeuille(args: EventData) {
 
     }
+
+    // Fermer
+    onFermer(args: EventData) {
+        // mémoriser le lieu saisi (ou pas)
+        console.log("Lieu =" + this.lieu);
+        SessionAppli.lieu = this.lieu;
+        // retourner à la page des actions
+        this.routeur.navigate(["actions"]);
+    }
+
 }
 
 

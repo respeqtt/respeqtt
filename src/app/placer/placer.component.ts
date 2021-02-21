@@ -15,7 +15,7 @@
 /*******************************************************************************/
 
 import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData, ListView, ItemEventData, Observable, ObservableArray, Page } from "@nativescript/core";
+import { GridLayout, Label, Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { EltListeLicencie, Club, Formule } from "../db/RespeqttDAO";
@@ -57,7 +57,7 @@ export class PlacerComponent{
             debut = 1; // A
         }
         // init de la liste des places
-        for(var i= 0; i < SessionAppli.rencontre.nbJoueurs; i++ ) {
+        for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
             this.listePlaces.push(this.alphabet.charAt(i+debut));
         }
 
@@ -72,7 +72,7 @@ export class PlacerComponent{
         }
 
         // init du tableau des places : dans l'ordre de l'équipe
-        for(var i= 0; i < SessionAppli.rencontre.nbJoueurs; i++ ) {
+        for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
             this.equipe[i].place = this.alphabet.charAt(i+debut);
         }
 
@@ -89,14 +89,13 @@ export class PlacerComponent{
         // construction de la liste des joueurs
         this.listeJoueurs = new Observable();
         this.listeJoueurs.set("listeJoueurs", new ObservableArray(this.equipe));
-        for(var i = 0; i < SessionAppli.rencontre.nbJoueurs; i++) {
+        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
             console.log("Joueur[" + (i+1) + "]= " + this.equipe[i].id);
             this.equipe[i].sel = false;
         }
     }
 
-    ngOnInit(): void {
-
+    ngOnInit(args: EventData): void {
     }
 
     onUp(args:EventData) {
@@ -117,7 +116,7 @@ export class PlacerComponent{
         let button = args.object as Button;
 
         // si le joueur sélectionné n'est pas en bas, on le descend, on met à jour sa place et on met à jour son rang dans joueurSel
-        if(this.joueurSel < SessionAppli.rencontre.nbJoueurs - 1) {
+        if(this.joueurSel < SessionAppli.nbJoueurs - 1) {
             var swap = this.equipe[this.joueurSel + 1];
             this.equipe[this.joueurSel + 1] = this.equipe[this.joueurSel];
             this.equipe[this.joueurSel + 1].place = this.listePlaces[this.joueurSel + 1];
@@ -129,7 +128,7 @@ export class PlacerComponent{
 
     onAnnulerTap(args: EventData) {
         let button = args.object as Button;
-        this.routerExt.backToPreviousPage();
+        this.routerExt.navigate(["preparation"]);
     }
 
     onValiderTap(args: EventData) {
@@ -137,7 +136,7 @@ export class PlacerComponent{
 
         // trier les joueurs dans l'ordre des places
         var equipeFinale:Array<EltListeLicencie> = [];
-        for(var i = 0; i < SessionAppli.rencontre.nbJoueurs; i++) {
+        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
             equipeFinale.push(this.equipe[i]);
         }
         // tracer le json
@@ -153,10 +152,10 @@ export class PlacerComponent{
 
     onQRCodeTap(args: EventData) {
         const quoi:string= SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id);
-        const titre:string=SessionAppli.rencontre.division + SessionAppli.rencontre.poule + " équipe " + this.clubChoisi.nom;
+        const titre:string=SessionAppli.titreRencontre + " équipe " + this.clubChoisi.nom;
         const dim:number = SessionAppli.dimEcran - 40;
 
-        this.routerExt.navigate(["qrmontrer/" + quoi + "/" + dim + "/" + titre]);
+         this.routerExt.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/placer/" + (this.cote ? "X" : "A")]);
     }
 
     onEquipeLoaded(args: EventData) {
@@ -167,7 +166,7 @@ export class PlacerComponent{
         const index = args.index;
 
         // sélectionner le joueur et déselectionner les autres
-        for(var i = 0; i < SessionAppli.rencontre.nbJoueurs; i++) {
+        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
             this.equipe[i].sel = false;
         }
         this.equipe[index].sel = true;

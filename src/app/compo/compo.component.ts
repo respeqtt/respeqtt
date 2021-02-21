@@ -37,6 +37,7 @@ export class CompoComponent{
     clubChoisi:Club;
     routerExt: RouterExtensions;
     equipe:Array<EltListeLicencie> = [];
+    modeRencontre:boolean = SessionAppli.modeRencontre;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // récupération du coté en paramètre
@@ -133,11 +134,11 @@ export class CompoComponent{
         let button = args.object as Button;
 
         console.log(this.equipe.length + " Joueurs sélectionnés");
-        console.log(SessionAppli.rencontre.nbJoueurs + " Joueurs par équipe");
+        console.log(SessionAppli.nbJoueurs + " Joueurs par équipe");
 
         // compter les joueurs
-        if(this.equipe.length < SessionAppli.rencontre.nbJoueurs) {
-            alert("Il manque " + (SessionAppli.rencontre.nbJoueurs - this.equipe.length) + " joueurs dans l'équipe");
+        if(this.equipe.length < SessionAppli.nbJoueurs) {
+            alert("Il manque " + (SessionAppli.nbJoueurs - this.equipe.length) + " joueurs dans l'équipe");
         } else {
             // mémoriser l'équipe sélectionnée
             if(this.cote) {
@@ -190,7 +191,7 @@ export class CompoComponent{
         }
         if(!trouve) {
             // vérifier qu'il n'y a pas trop de joueurs
-            if(this.equipe.length >= SessionAppli.rencontre.nbJoueurs)  {
+            if(this.equipe.length >= SessionAppli.nbJoueurs)  {
                 alert("L'équipe est complète");
             } else {
                 // sélectionner

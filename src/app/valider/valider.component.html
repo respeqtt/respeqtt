@@ -2,6 +2,14 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
+
     <FlexboxLayout flexDirection="column">
         <Label class="titre" text="VALIDATION DE LA RENCONTRE" textWrap="true" flexGrow="1" flexShrink="1"></Label>
         <Label class="sous-titre" [text]="this.sousTitre" textWrap="true" flexGrow="1" flexShrink="1"></Label>

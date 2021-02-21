@@ -20,6 +20,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { SessionAppli } from "../session/session";
 import { Set } from "../db/RespeqttDAO";
+import { toURLQuote } from "../outils/outils";
 
 @Component({
     templateUrl: "./resultat.component.html",
@@ -37,6 +38,7 @@ export class ResultatComponent{
     dim: number;
     routeur:RouterExtensions;
     numPartie:number;
+    reclam:boolean;
 
     txfSet1:TextField;
 
@@ -45,6 +47,9 @@ export class ResultatComponent{
         this.routeur = routerExtensions;
         this.numPartie = Number(_route.snapshot.paramMap.get("partie"));
         console.log("Saisie résultats partie " + _route.snapshot.paramMap.get("partie"));
+
+        // on ne peut saisir les réclamations qu'en mode rencontre
+        this.reclam = SessionAppli.modeRencontre;
 
         // supprimer le 1er caractère des doubles et le dernier pour tous
         if(SessionAppli.listeParties[this.numPartie].desc.charAt(0) == "#") {
@@ -97,8 +102,7 @@ export class ResultatComponent{
         this.routeur.navigate(["saisiecommentaire/RECLAMATION/X"]);
     }
 
-    onTapValidate(args: EventData) {
-        let button = args.object as Button;
+    ConstruitScore():boolean {
         // construire le score
         var resPartie:Array<Set>=[];
 
@@ -124,45 +128,65 @@ export class ResultatComponent{
         }
         console.log(resPartie.length + " sets dans le résultat");
 
-        if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.rencontre)) {
-            this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontre);
+        if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.nbSetsGagnants)) {
+            this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
             console.log(this.quoi);
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste();
+            return true;
         } else {
-            // init scores invalides
-            this.set1 = NaN;
-            this.set2 = NaN;
-            this.set3 = NaN;
-            this.set4 = NaN;
-            this.set5 = NaN;
-
-            alert("Score incorrect ou incomplet, merci de corriger");
-            return;
+            /*
+            // réinit scores invalides
+            this.set1 = null;
+            this.set2 = null;
+            this.set3 = null;
+            this.set4 = null;
+            this.set5 = null;
+            */
+            return false;
         }
+    }
 
-        // sauvegarder la session en BDD
-        SessionAppli.Persiste();
+    onTapValidate(args: EventData) {
+        let button = args.object as Button;
 
-        // Afficher le résultat
-         console.log("Resultat = " + this.quoi);
-        // Navigation
-        this.routeur.navigate(["lancement"]);
+        if(this.ConstruitScore()) {
+            // Afficher le résultat
+            console.log("Resultat = " + this.quoi);
+            // Navigation
+            this.routeur.navigate(["lancement"]);
+        } else {
+            alert("Score incorrect ou incomplet, merci de corriger");
+        }
 }
 
-onTapClose(args: EventData) {
-        // Navigation
-        this.routeur.navigate(["lancement"]);
-}
+    onTapClose(args: EventData) {
+            // Navigation
+            this.routeur.navigate(["lancement"]);
+    }
 
     onTapScan(args: EventData) {
         // appeler la page de scan
-        this.routeur.navigate(["/qrscan/PARTIE/" + this.numPartie]);
+        this.routeur.navigate(["/qrscan/RESULTAT/" + this.numPartie]);
     }
 
     onTapQRCode(args: EventData) {
-        console.log("Montrer QRCode : quoi=" + this.quoi + "; dim=" + this.dim + "; titre=" + this.titre);
-        // produire le json
-        this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontre);
-        this.routeur.navigate(['/qrmontrer', this.quoi,  this.dim, this.titre]);
+        // si pas de set saisi ou score OK
+        if(this.ConstruitScore()
+        || (this.set1 == null && this.set2 == null && this.set3 == null && this.set4 == null && this.set5 == null)) {
+            // produire le json
+            this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
+            let paramTitre:string;
+
+            // encoder les / du titre
+            paramTitre = toURLQuote(this.titre);
+
+            console.log("Montrer QRCode : quoi=" + this.quoi + "; dim=" + this.dim + "; titre=" + paramTitre);
+            this.routeur.navigate(["attente/" + this.quoi + "/" + this.dim + "/" + paramTitre
+                                + "/" + "resultat" + "/" + this.numPartie.toString()]);
+        } else {
+            alert("Score incorrect ou incomplet, merci de corriger");
+        }
     }
 
 }

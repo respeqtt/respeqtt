@@ -1,22 +1,15 @@
 <Page xmlns:cv="@nativescript-community/ui-canvas">
 
-
-
-<!--
-The GridLayout arranges its child elements in a table structure of rows and columns.
-A cell can contain multiple child elements, they can span over multiple rows and columns,
-and even overlap each other. The GridLayout has one column and one row by default.
-You can learn more about NativeScript layouts at https://docs.nativescript.org/ui/layout-containers.
-
-These components make use of the NativeScript core theme, which styles them with element selectors.
-The theme also provides a set of helper class names such as p-20, h1, h2, and text-center to enhance styling.
-You can learn more about the NativeScript core theme at https://github.com/nativescript/theme
--->
-
-
+    <ActionBar title="RespeqTT">
+        <StackLayout orientation="horizontal"
+        ios:horizontalAlignment="center"
+        android:horizontalAlignment="left">
+            <Image src="res://icon" class="action-image" ></Image>
+        </StackLayout>
+    </ActionBar>
 
     <StackLayout  horizontalAlignment="center">
-        <Label  [text] = "this.intro"></Label>
+        <Label  [text] = "this.titre"></Label>
         <cv:CanvasView [width]="this.dimEcran" [height]="this.dimEcran" (draw)="draw($event)" (onDraw)="draw($event)"> </cv:CanvasView>
         <Button text="Fermer"  (tap)="goBack()"></Button>
         <Label  [text] = "this.trace"></Label>

@@ -36,6 +36,7 @@ import { SaisieCommentaireComponent, } from "./saisiecommentaire/saisiecommentai
 import { ValiderComponent } from "./valider/valider.component";
 import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 import { FeuilleComponent } from "./feuille/feuille.component";
+import { AttenteComponent } from "./attente/attente.component";
 
 const routes: Routes = [
     { path: "", redirectTo: "/actions", pathMatch: "full" },
@@ -43,7 +44,7 @@ const routes: Routes = [
     { path: "rencontre", component: RencontreComponent },
     { path: "choixrencontre", component: ChoixRencontreComponent },
     { path: "joueurs", component: JoueursComponent },
-    { path: "clubs", component: ClubComponent },
+    { path: "clubs/:retour", component: ClubComponent },
     { path: "preparation", component: PreparationComponent },
     { path: "compo/:cote", component: CompoComponent },
     { path: "compoDouble/:cote/:numDouble/:nbDoubles", component: CompoDoubleComponent },  // coté = A ou X ; numDouble = numéro du double à composer ; nbDoubles = nb de doubles
@@ -51,12 +52,13 @@ const routes: Routes = [
     { path: "lancement", component: LancementComponent },
     { path: "envoi", component: EnvoiComponent },
     { path: "resultat/:partie", component: ResultatComponent },
-    { path: "qrmontrer/:quoi/:dim/:titre", component: QRMontrerComponent }, // dim = dimension du QRCode en pixels écran
+    { path: "qrmontrer/:quoi/:dim/:titre/:retour/:param", component: QRMontrerComponent }, // dim = dimension du QRCode en pixels écran
     { path: "qrscan/:quoi/:param", component: QRScanComponent },    // quoi = COMPO ou PARTIE ; param = numPartie
     { path: "saisiecommentaire/:quoi/:auteur", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA
     { path: "valider/:scoreA/:scoreX", component: ValiderComponent },    // scoreA = score du club A ; scoreX = score du club X
     { path: "jugearbitre", component: JugeArbitreComponent },
     { path: "feuille", component: FeuilleComponent },
+    { path: "attente/:quoi/:dim/:titre/:retour/:param", component: AttenteComponent },  // quoi, dim, titre -> cf qrmontrer, retour = page appelante, param = paramètre de la page appelante
 ];
 
 @NgModule({

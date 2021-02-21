@@ -21,7 +21,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Label, Button, EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
-import { Set, Licencie } from "../db/RespeqttDAO";
+import { Partie } from "../db/RespeqttDAO";
 
 @Component({
     templateUrl: "./qrscan.component.html",
@@ -51,11 +51,26 @@ export class QRScanComponent implements OnInit{
         this.router = _routerExtensions;
 
         this.quoi = this._route.snapshot.paramMap.get("quoi");
-        // si on scanne une partie, mémoriser son indice dans la liste des parties en cours
+        // si on scanne une partie, on est en mode hors rencontre dans l'onglet partie
         if(this.quoi == "PARTIE") {
             this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
+
+            console.log("SCAN de la partie " + this.iPartie);
+
+            this.titre = "Scan de la partie";
+            this.sousTitre = "au choix";
+
+        }
+
+        // si on scanne le résultat d'une partie, mémoriser son indice dans la liste des parties en cours
+        if(this.quoi == "RESULTAT") {
+            this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
+
+            console.log("SCAN résultat de la partie " + this.iPartie);
+
             this.titre = "Scan du résultat de la partie";
             this.sousTitre = SessionAppli.listeParties[this.iPartie].desc;
+
         }
 
         if(this.quoi == "COMPO") {
@@ -64,7 +79,7 @@ export class QRScanComponent implements OnInit{
             } else {
                 this.cote = false;
             }
-            console.log("COMPO côté " + this._route.snapshot.paramMap.get("param")+"=" + this.cote);
+            console.log("SCAN compo côté " + this._route.snapshot.paramMap.get("param")+"=" + this.cote);
             this.titre = "Scan de la composition de l'équipe";
             if(this.cote) {
                 // X
@@ -109,15 +124,43 @@ export class QRScanComponent implements OnInit{
                   console.log("*** Scan=" + result.text);
                   // si c'est une partie
                   if(this.quoi == "PARTIE") {
+                      console.log("-- Scan PARTIE --");
+                      var iPartie:number;
+                    // créer la partie si on n'en a pas
+                    if(SessionAppli.listeParties.length ==0) {
+                        var p:Partie = new Partie("", null, null, false, false);
+                        SessionAppli.listeParties.push(p);
+                    }
+                    // lire le JSON et aller à la page de saisie des résultats
+                    iPartie = SessionAppli.listeParties[this.iPartie].JsonToPartie(result.text);
+                    // aller à la page de saisie des scores
+                    if(iPartie >=0) {
+                        this.router.navigate(["resultat/" + iPartie]);
+                    } else {
+                        alert("QRCode incorrect");
+                    }
+
+                  }
+
+                  // si c'est un résultat
+                  if(this.quoi == "RESULTAT") {
+                    console.log("-- Scan RESULTAT --");
+                    var iPartie:number;
                     // lire le JSON et mettre à jour la liste des parties avec les scores et les sets
-                    SessionAppli.listeParties[this.iPartie].JsonToScore(result.text, SessionAppli.rencontre, this.iPartie);
+                    iPartie = Partie.JsonToScore(result.text);
+                    if(iPartie > 0) {
+
+                    } else {
+                        alert("QRCode incorrect");
+                    }
                     // retour à la page de lancement des parties
-                    this.router.navigate(["resultat/" + this.iPartie]);
+                    this.router.navigate(["lancement"]);
                   }
                   if(this.quoi == "COMPO") {
+                    console.log("-- Scan COMPO --");
                     // lire le JSON et mettre à jour la compo de l'équipe selon le coté
                     if(this.cote) {
-                        SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.rencontre, SessionAppli.clubX.id, this.cote);
+                        SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.nbJoueurs, SessionAppli.clubX.id, this.cote);
                         if(SessionAppli.equipeX.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
@@ -131,7 +174,7 @@ export class QRScanComponent implements OnInit{
                             }
                         }
                     } else {
-                        SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.rencontre, SessionAppli.clubA.id, this.cote);
+                        SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.nbJoueurs, SessionAppli.clubA.id, this.cote);
                         if(SessionAppli.equipeA.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
@@ -158,5 +201,16 @@ export class QRScanComponent implements OnInit{
 
     onScanResult(args: EventData) {
             console.log("scan terminé");
+    }
+
+    onFermer(args: EventData) {
+        switch(this.quoi) {
+            case "PARTIE":
+                    this.router.navigate(["resultat/" + this.iPartie]);
+            break;
+            case "COMPO":
+                this.router.navigate(["preparation"]);
+            break;
+        }
     }
 }

@@ -5,7 +5,6 @@ import { toSQL, bool2SQL, SQL2bool } from "../outils/outils";
 
 import { Feuille18 } from "./feuille18";
 
-
 export class SessionAppli {
 
     public static listeRencontres:Array<EltListeRencontre>=[];
@@ -13,7 +12,6 @@ export class SessionAppli {
     public static clubChoisi:number = -1;
     public static rencontreChoisie = -1;
     public static titreRencontre = "";
-    public static rencontre:Rencontre=null;
     public static clubA:Club=null;
     public static clubX:Club=null;
     public static equipeA:Array<EltListeLicencie>=[];
@@ -37,6 +35,13 @@ export class SessionAppli {
     public static scoreA:number=0;
     public static scoreX:number=0;
     public static feuilleDeMatch:string="";
+    public static tab=0;
+    public static modeRencontre:boolean=false;
+    public static nbJoueurs:number=0;
+    public static nbSetsGagnants:number=0;
+    public static formule:number=0;
+    public static date:string="";
+    public static lieu:string="";
 
     // sleep
     public static delay(ms: number){
@@ -108,7 +113,7 @@ export class SessionAppli {
     }
 
     // décode le JSON en équipe
-    public static JsonToEquipe(json:string, rencontre:Rencontre, club:number, cote:boolean):Array<EltListeLicencie> {
+    public static JsonToEquipe(json:string, nbJoueurs:number, club:number, cote:boolean):Array<EltListeLicencie> {
         var data;
         var equipe:Array<EltListeLicencie>=[];
 
@@ -117,8 +122,8 @@ export class SessionAppli {
         if(data.club == club) {
             for(var i = 0; i < data.equipe.length; i++) {
                 const codePlace = data.equipe[i].place.charCodeAt(0);
-                if((cote && codePlace >= "Z".charCodeAt(0) - rencontre.nbJoueurs)
-                || (!cote && codePlace < "A".charCodeAt(0) + rencontre.nbJoueurs)) {
+                if((cote && codePlace >= "Z".charCodeAt(0) - nbJoueurs)
+                || (!cote && codePlace < "A".charCodeAt(0) + nbJoueurs)) {
                     // ajouter le joueur dans la liste
                     var  elt:EltListeLicencie = new EltListeLicencie();
                     elt.id = Number(data.equipe[i].licence);
@@ -144,11 +149,11 @@ export class SessionAppli {
 
         var feuille:string;
 
-        switch(SessionAppli.rencontre.formule) {
+        switch(SessionAppli.formule) {
             case 18:
                 feuille = Feuille18.FeuilleVide();
             break;
-            default: console.log("!!!!!!! Formule " + SessionAppli.rencontre.formule + " inconnue !!!!!!!!!");
+            default: console.log("!!!!!!! Formule " + SessionAppli.formule + " inconnue !!!!!!!!!");
         }
 
         // remplacer les éléments dans la feuille
@@ -216,7 +221,14 @@ export class SessionAppli {
             ses_va_score,
             ses_vn_scoreA,
             ses_vn_scoreX,
-            ses_va_feuilleDeMatch)`;
+            ses_va_feuilleDeMatch,
+            ses_vn_modeRencontre,
+            ses_vn_nbJoueurs,
+            ses_vn_nbSetsGagnants,
+            ses_vn_formule,
+            ses_va_date,
+            ses_va_lieu
+            )`;
         var values:string;
 
         values = " values ("
@@ -242,7 +254,14 @@ export class SessionAppli {
                + toSQL(SessionAppli.score) + ", "
                + SessionAppli.scoreA + ", "
                + SessionAppli.scoreX + ", "
-               + toSQL(SessionAppli.feuilleDeMatch) + ") ";
+               + toSQL(SessionAppli.feuilleDeMatch) + ", "
+               + bool2SQL(SessionAppli.modeRencontre) + ", "
+               + SessionAppli.nbJoueurs + ", "
+               + SessionAppli.nbSetsGagnants + ", "
+               + SessionAppli.formule + ", "
+               + toSQL(SessionAppli.date) + ", "
+               + toSQL(SessionAppli.lieu) + " "
+                  + ") ";
 
         // insertion en BDD
         console.log(insert + values);
@@ -289,7 +308,13 @@ export class SessionAppli {
             + "ses_va_score = " + toSQL(SessionAppli.score) + ", "
             + "ses_vn_scoreA = " + SessionAppli.scoreA + ", "
             + "ses_vn_scoreX = " + SessionAppli.scoreX + ", "
-            + "ses_va_feuilleDeMatch = " + toSQL(SessionAppli.feuilleDeMatch) + " "
+            + "ses_va_feuilleDeMatch = " + toSQL(SessionAppli.feuilleDeMatch) + ", "
+            + "ses_vn_modeRencontre = " + bool2SQL(SessionAppli.modeRencontre) + ", "
+            + "ses_vn_nbJoueurs = " + SessionAppli.nbJoueurs + ", "
+            + "ses_vn_nbSetsGagnants = " + SessionAppli.nbSetsGagnants + ", "
+            + "ses_vn_formule = " + SessionAppli.formule + ", "
+            + "ses_va_date = " + toSQL(SessionAppli.date) + ", "
+            + "ses_va_lieu = " + toSQL(SessionAppli.lieu) + " "
             + "where ses_ren_kn = " + SessionAppli.rencontreChoisie;
 
         // màj en BDD
@@ -315,12 +340,25 @@ export class SessionAppli {
 
     // efface la session liée à la rencontre en BDD
     public static Efface(rencontre:number) {
-        var del:string = "delete from Session where ses_ren_kn = " + rencontre;
+        var del:string;
 
         // insertion en BDD
         console.log(del);
+        del = "delete from Set_ren where set_ren_kn = " + rencontre;
         RespeqttDb.db.execSQL(del).then(id => {
-            console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
+            console.log("Sets de la rencontre " + rencontre + " effacés de la BDD");
+            del = "delete from Partie where par_ren_kn = " + rencontre;
+            RespeqttDb.db.execSQL(del).then(id => {
+                console.log("Parties de la rencontre " + rencontre + " effacées de la BDD");
+                del = "delete from Session where ses_ren_kn = " + rencontre;
+                RespeqttDb.db.execSQL(del).then(id => {
+                    console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
+                }, error => {
+                    console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                });
+            }, error => {
+                console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+            });
         }, error => {
             console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
         });
@@ -353,7 +391,13 @@ export class SessionAppli {
             ses_va_score,
             ses_vn_scoreA,
             ses_vn_scoreX,
-            ses_va_feuilleDeMatch
+            ses_va_feuilleDeMatch,
+            ses_vn_modeRencontre,
+            ses_vn_nbJoueurs,
+            ses_vn_nbSetsGagnants,
+            ses_vn_formule,
+            ses_va_date,
+            ses_va_lieu
         from Session where ses_ren_kn = ` + rencontre;
 
         var clubA:number;
@@ -407,6 +451,13 @@ export class SessionAppli {
                 console.log("scoreX = " + SessionAppli.scoreX.toString());
                 SessionAppli.feuilleDeMatch = row[21];
                 console.log("feuille de match = " + SessionAppli.feuilleDeMatch);
+                SessionAppli.modeRencontre = SQL2bool(Number(row[22]));
+                SessionAppli.nbJoueurs = Number(row[23]);
+                SessionAppli.nbSetsGagnants = Number(row[24]);
+                SessionAppli.formule = Number(row[25]);
+                SessionAppli.date = row[26];
+                SessionAppli.lieu = row[27];
+
 
                 // retrouver les clubs
                 Club.getClub(clubA).then(c =>{
@@ -445,7 +496,6 @@ export class SessionAppli {
     // RAZ la Session (sauf la liste des rencontres)
     public static Raz() {
                     // tout effacer dans la session sauf la liste des rencontres
-                    SessionAppli.rencontre = null;
                     SessionAppli.rencontreChoisie = -1;
                     SessionAppli.compoFigee = false;
                     SessionAppli.scoreValide = false;
@@ -471,5 +521,12 @@ export class SessionAppli {
                     SessionAppli.adresseJA="";
                     SessionAppli.licenceJA=0;
                     SessionAppli.score="";
+                    SessionAppli.tab=0;
+                    SessionAppli.modeRencontre=false;
+                    SessionAppli.nbJoueurs=0;
+                    SessionAppli.nbSetsGagnants=0;
+                    SessionAppli.formule=0;
+                    SessionAppli.date="";
+                    SessionAppli.lieu="";
     }
 }
