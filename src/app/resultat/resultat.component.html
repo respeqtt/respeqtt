@@ -1,5 +1,6 @@
 <Page    xmlns="http://schemas.nativescript.org/tns.xsd">
 
+
     <ActionBar title="RespeqTT">
         <StackLayout orientation="horizontal"
         ios:horizontalAlignment="center"
@@ -9,37 +10,39 @@
     </ActionBar>
 
     <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-        <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="1" flexShrink="1"></Label>
+        <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
             <Button text="QR Code" flexGrow="1"           (tap)="onTapQRCode($event)"></Button>
             <Button text="Scan résultat" flexGrow="1" backgroundColor="darkblue" (tap)="onTapScan($event)"></Button>
         </FlexboxLayout>
-        <Label text="Résultats" horizontalAlignment="stretch" flexGrow="1" flexShrink="1"></Label>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
-            <Label class="sets" text="1er set" flexGrow="1" ></Label>
-            <TextField class="sets" hint="1er set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set1'></TextField>
+        <Label class="sous-titre" text="Résultats" horizontalAlignment="stretch" flexGrow="0" flexShrink="1"></Label>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="1e set" flexGrow="0.5"></Label>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="1er set" flexGrow="1" secure="false" keyboardType="number" maxLength="3" [(ngModel)]='this.set1'></TextField>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label class="sets" text="2e set" flexGrow="1" ></Label>
-            <TextField class="sets" hint="2e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="2e set" flexGrow="0.5"></Label>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="2e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" flexGrow="1" justifyContent="space-between">
-            <Label class="sets" text="3e set" flexGrow="1"></Label>
-            <TextField class="sets" hint="3e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="3e set" flexGrow="0.5"></Label>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="3e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label class="sets" text="4e set" flexGrow="1"></Label>
-            <TextField class="sets" hint="4e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="4e set" flexGrow="0.5"></Label>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="4e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
         </FlexboxLayout>
-        <FlexboxLayout flexDirection="row" justifyContent="space-between">
-            <Label class="sets" text="5e set" flexGrow="1"></Label>
-            <TextField class="sets" hint="5e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
+            <Label class="sets" text="5e set" flexGrow="0.5"></Label>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="5e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
             <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamA($event)"></Button>
             <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
-        <Button text="Valider le résultat" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1"></Button>
-        <Button text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
-    </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Button text="VALIDER" horizontalAlignment="stretch" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onTapValidate($event)"></Button>
+            <Button text="FERMER"  horizontalAlignment="stretch" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onTapClose($event)"></Button>
+        </FlexboxLayout>
+</FlexboxLayout>
 </Page>

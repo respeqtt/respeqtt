@@ -134,7 +134,7 @@ export class ActionsComponent{
                 }
             });
         } else {
-            this.routerExt.navigate(["valider/"+scoreA+"/"+scoreX]);
+            this.routerExt.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
         }
     }
 

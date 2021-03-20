@@ -26,7 +26,7 @@
             <Button text="Composer les équipes"             flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
             <Button text="Les parties"                      flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
             <Button text="Valider le score de la rencontre" flexGrow="1" (tap)="onValiderScore($event)" [isenabled]="this.valider"></Button>
-            <Button text="Feuille de match"                 flexGrow="1" (tap)="onFeuille($event)" ></Button>
+            <Button text="Feuille de match"                 flexGrow="1" (tap)="onFeuille($event)" isenabled="false"></Button>
             <Button text="Envoyer à SPID"                   flexGrow="1" (tap)="onEnvoyerASPID($event)" [isenabled]="this.spid"></Button>
             <Button text="Abandonner la rencontre en cours" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.abandonner"></Button>
         </FlexboxLayout>

@@ -19,6 +19,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Label, Button, EventData, TextField } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
+import { toURL } from "../outils/outils";
 
 var dialogs = require("tns-core-modules/ui/dialogs");
 
@@ -57,8 +58,14 @@ export class JugeArbitreComponent {
     onTapRapport(args: EventData) {
         let button = args.object as Button;
 
+        // mémoriser les coordonnées du JA pour les retrouver en sortant du rapport
+        SessionAppli.nomJA = this.nomJA;
+        SessionAppli.prenomJA = this.prenomJA;
+        SessionAppli.adresseJA = this.adresseJA;
+        SessionAppli.licenceJA = this.licenceJA;
+
         // Ouvrir la page de saisie de saisie du rapport du JA
-        this.routeur.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA]);
+        this.routeur.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA + "/jugearbitre"]);
     }
 
     onTapValider(args: EventData) {
@@ -70,7 +77,7 @@ export class JugeArbitreComponent {
         SessionAppli.adresseJA = this.adresseJA;
         SessionAppli.licenceJA = this.licenceJA;
 
-        this.routeur.navigate(["actions"]);
+        this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
     }
 
     onTapFermer(args: EventData) {
@@ -85,14 +92,18 @@ export class JugeArbitreComponent {
             cancelButtonText:"ANNULER"
             }).then(r => {
                 if(r.result) {
+                    SessionAppli.nomJA = "";
+                    SessionAppli.prenomJA = "";
+                    SessionAppli.adresseJA = "";
+                    SessionAppli.licenceJA = 0;
                     SessionAppli.rapportJA = "";
-                    this.routeur.navigate(["actions"]);
-                    } else {
+                    this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+                } else {
                 return;
                 }
         });
         } else {
-            this.routeur.navigate(["actions"]);
+            this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
         }
 
     }

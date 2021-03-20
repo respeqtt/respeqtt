@@ -27,11 +27,17 @@ label, button, .liste {
     font-family: arial, helvetica, sans-serif;
 }
 
+label.titre {
+    background-color: blue;
+    color:white;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
 label.sous-titre {
     background-color: rgb(44, 89, 141);
     color:white;
     font-weight: bold;
-    padding: 20px;
     vertical-align: middle;
 }
 
@@ -40,7 +46,7 @@ label.score {
     color:yellow;
     font-weight: bold;
     padding: 20px;
-    vertical-align: middle;
+    vertical-align: center;
 }
 
 label {
@@ -68,14 +74,6 @@ TextField.sets {
     background-color: whitesmoke;
     margin: 0px;
     padding: 0px;
-    text-align: center;
-}
-
-label.titre {
-    background-color: blue;
-    color:white;
-    font-weight: bold;
-    padding: 50px;
 }
 
 label.switch-label {

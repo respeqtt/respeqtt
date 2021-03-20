@@ -41,13 +41,15 @@
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" flexGrow="0" flexShrink="1" justifyContent="space-between">
             <Label text="Lieu" flexGrow="0.2" flexShrink="1"></Label>
-            <TextField class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.lieu' ></TextField>
+            <TextField class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.lieu' [isenabled]="this.resValid"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)" [isenabled]="this.resValid "></Button>
-            <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)" [isenabled]="this.resValid"></Button>
+            <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)"></Button>
+            <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)"></Button>
         </FlexboxLayout>
-        <Button text="Valider la composition des équipes" flexGrow="0" flexShrink="1" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
-        <Button text="FERMER"                      flexGrow="0" flexShrink="1" backgroundColor="blue" (tap)="onFermer($event)"></Button>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Button text="VALIDER" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
+            <Button text="FERMER"  flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onFermer($event)"></Button>
+        </FlexboxLayout>
     </FlexboxLayout>
 </Page>

@@ -54,7 +54,7 @@ const routes: Routes = [
     { path: "resultat/:partie", component: ResultatComponent },
     { path: "qrmontrer/:quoi/:dim/:titre/:retour/:param", component: QRMontrerComponent }, // dim = dimension du QRCode en pixels écran
     { path: "qrscan/:quoi/:param", component: QRScanComponent },    // quoi = COMPO ou PARTIE ; param = numPartie
-    { path: "saisiecommentaire/:quoi/:auteur", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA
+    { path: "saisiecommentaire/:quoi/:auteur/:retour", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA ; retour = page d'appel
     { path: "valider/:scoreA/:scoreX", component: ValiderComponent },    // scoreA = score du club A ; scoreX = score du club X
     { path: "jugearbitre", component: JugeArbitreComponent },
     { path: "feuille", component: FeuilleComponent },

@@ -20,7 +20,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { SessionAppli } from "../session/session";
 import { Set } from "../db/RespeqttDAO";
-import { toURLQuote } from "../outils/outils";
+import { toURLQuote, toURL } from "../outils/outils";
 
 @Component({
     templateUrl: "./resultat.component.html",
@@ -91,15 +91,30 @@ export class ResultatComponent{
 
     onReclamA(args: EventData) {
         let button = args.object as Button;
-        // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/A"]);
+
+        if(this.ConstruitScore()) {
+            // Afficher le résultat
+            console.log("Resultat = " + this.quoi);
+            // Ouvrir la page de saisie des réclamations
+            this.routeur.navigate(["saisiecommentaire/RECLAMATION/A/resultat" + toURL("/" + this.numPartie.toString())]);
+        } else {
+            alert("Score incorrect ou incomplet, merci de corriger avant de saisir la réclamation");
+        }
+
     }
 
 
     onReclamX(args: EventData) {
         let button = args.object as Button;
-        // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/X"]);
+
+        if(this.ConstruitScore()) {
+            // Afficher le résultat
+            console.log("Resultat = " + this.quoi);
+            // Ouvrir la page de saisie des réclamations
+            this.routeur.navigate(["saisiecommentaire/RECLAMATION/X/resultat" + toURL("/" + this.numPartie.toString())]);
+        } else {
+            alert("Score incorrect ou incomplet, merci de corriger avant de saisir la réclamation");
+        }
     }
 
     ConstruitScore():boolean {

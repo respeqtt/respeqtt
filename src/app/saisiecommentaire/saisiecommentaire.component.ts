@@ -19,6 +19,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Label, Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
+import { URLtoStringSansQuote } from "../outils/outils";
 
 @Component({
     templateUrl: "./saisiecommentaire.component.html",
@@ -31,37 +32,85 @@ export class SaisieCommentaireComponent {
     sousTitre:string;
     saisie:string;
     auteur:string;
+    retour:string;
+    consult:boolean=true;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
 
         this.router = _routerExtensions;
         this.titre =  this._route.snapshot.paramMap.get("quoi");
         this.auteur =  this._route.snapshot.paramMap.get("auteur");
+        this.retour = URLtoStringSansQuote(this._route.snapshot.paramMap.get("retour"));
         this.saisie = SessionAppli.rapportJA;
 
         console.log("Objet= " + this.titre);
         console.log("Auteur >" + this.auteur + "<");
+        console.log("Retour= " + this.retour);
 
-        if(this.auteur == "A") {
-            this.sousTitre = "posée par " + SessionAppli.clubA.nom + " sur la rencontre " + SessionAppli.titreRencontre;
-            if(this.titre == "RESERVE" && SessionAppli.reserveClubA != "") {
-                this.saisie = SessionAppli.reserveClubA;
-            }
-            if(this.titre == "RECLAMATION" && SessionAppli.reclamationClubA != "") {
-                this.saisie = SessionAppli.reclamationClubA;
-            }
-        }
-        if(this.auteur == "X") {
-            console.log("Auteur coté X");
-            this.sousTitre = "posée par " + SessionAppli.clubX.nom + " sur la rencontre " + SessionAppli.titreRencontre;
-            if(this.titre == "RESERVE" && SessionAppli.reserveClubX != "") {
-                this.saisie = SessionAppli.reserveClubX;
-            }
-            if(this.titre == "RECLAMATION" && SessionAppli.reclamationClubX != "") {
-                this.saisie = SessionAppli.reclamationClubX;
-            }
-        } else {
-            this.sousTitre = this.auteur;
+        // on met l'heure de rédaction de la réserve
+        let maintenant = new Date();
+        switch(this.auteur) {
+            case "A" :
+                this.sousTitre = "posée par " + SessionAppli.clubA.nom + " sur la rencontre " + SessionAppli.titreRencontre;
+                switch(this.titre) {
+                    case "RESERVE" :
+                        if(SessionAppli.reserveClubA != "") {
+                            this.saisie = SessionAppli.reserveClubA;
+                        }
+                        this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                    break;
+                    case "RESERVE-C" :
+                        this.saisie = SessionAppli.reserveClubA;
+                        this.consult = false;
+                    break;
+                    case "RECLAMATION" :
+                        if(SessionAppli.reclamationClubA != "") {
+                            this.saisie = SessionAppli.reclamationClubA;
+                            this.saisie = this.saisie + "\n";
+                        }
+                        if(this.retour.substr(0, 7) == "valider") {
+                            this.saisie = this.saisie + "POSEE EN FIN DE RENCONTRE A ";
+                        } else {
+                            const partie:number = Number(this.retour.substr(9))+1;
+                            this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
+                        }
+                        this.saisie = this.saisie + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                    break;
+                }
+            break;
+
+            case "X" :
+                this.sousTitre = "posée par " + SessionAppli.clubX.nom + " sur la rencontre " + SessionAppli.titreRencontre;
+                switch(this.titre) {
+                    case "RESERVE" :
+                        if(SessionAppli.reserveClubX != "") {
+                            this.saisie = SessionAppli.reserveClubX;
+                        }
+                        this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                    break;
+                    case "RESERVE-C" :
+                        this.saisie = SessionAppli.reserveClubX;
+                        this.consult = false;
+                    break;
+                    case "RECLAMATION" :
+                        if(SessionAppli.reclamationClubX != "") {
+                            this.saisie = SessionAppli.reclamationClubX;
+                            this.saisie = this.saisie + "\n";
+                        }
+                        if(this.retour.substr(0, 7) == "valider") {
+                                this.saisie = this.saisie + "POSEE EN FIN DE RENCONTRE A ";
+                        } else {
+                            const partie:number = Number(this.retour.substr(9))+1;
+                            this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
+                        }
+                        this.saisie = this.saisie + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                    break;
+                }
+            break;
+
+            default:
+                this.sousTitre = this.auteur;
+                console.log("Auteur=" + this.auteur);
         }
     }
 
@@ -81,9 +130,6 @@ export class SaisieCommentaireComponent {
                 auteur = SessionAppli.clubX.nom;
             }
             alert("Texte de la réserve posée par le club " + auteur + ": " + this.saisie);
-
-            // retour à la page de préparation de la feuille
-            this.router.navigate(["preparation"]);
         }
         if(this.titre == "RECLAMATION") {
             // mémoriser la réclamation de l'équipe indiquée
@@ -95,9 +141,6 @@ export class SaisieCommentaireComponent {
                 auteur = SessionAppli.clubX.nom;
             }
             alert("Texte de la réclamation posée par le club " + auteur + ": " + this.saisie);
-
-            // retour à la page de préparation de validation du score
-            this.router.navigate(["valider/?/?"]);
         }
         if(this.titre == "RAPPORT") {
             // mémoriser le rapport du JA (RAS par défaut)
@@ -108,12 +151,13 @@ export class SaisieCommentaireComponent {
                 SessionAppli.rapportJA = "RAS";
             }
             alert("Texte du rapport du JA " + this.auteur + ": " + SessionAppli.rapportJA);
-            // retour à la page de préparation de validation du score
-            this.router.backToPreviousPage();
         }
-
         // sauvegarder la session en BDD
         SessionAppli.Persiste();
+
+        // retour à la page appelante
+        this.router.navigate([this.retour]);
+
 
     }
 

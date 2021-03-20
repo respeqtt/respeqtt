@@ -21,7 +21,7 @@ import { Rencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Session } from "inspector";
+import { toURL } from "../outils/outils";
 
 var dialogs = require("tns-core-modules/ui/dialogs");
 
@@ -68,14 +68,14 @@ export class ValiderComponent{
     onReclamA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/A"]);
+        this.routeur.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)]);
     }
 
 
     onReclamX(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/X"]);
+        this.routeur.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)]);
     }
 
     onJA(args: EventData) {

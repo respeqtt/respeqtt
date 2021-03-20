@@ -48,11 +48,8 @@ export class PreparationComponent{
     listeEquipeX:Array<EltListeLicencie>=[];
     lieu:string="";
 
-    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
-        this.routeur = routerExtensions;
-        this.recoitCoteX=false;
-        this.titreRencontre = SessionAppli.titreRencontre;
-        console.log("Rencontre : " + this.titreRencontre);
+
+    private MajLibBoutonsReserves() {
         if(SessionAppli.reserveClubA == "") {
             this.btnResA = "0 réserve club A";
         } else {
@@ -63,6 +60,16 @@ export class PreparationComponent{
         } else {
             this.btnResX = "1 réserve club X";
         }
+
+    }
+
+    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+        this.routeur = routerExtensions;
+        this.recoitCoteX=false;
+        this.titreRencontre = SessionAppli.titreRencontre;
+        console.log("Rencontre : " + this.titreRencontre);
+
+        this.MajLibBoutonsReserves();
 
         // si rencontre de travail alors club A = club choisi
         if(SessionAppli.rencontreChoisie) {
@@ -111,6 +118,7 @@ export class PreparationComponent{
         this.recoitCoteX = sw.checked; // boolean
         let c = SessionAppli.clubA;
         let e = SessionAppli.equipeA;
+
         // échanger les clubs et les équipes et mémoriser dans la session
         SessionAppli.clubA = SessionAppli.clubX;
         SessionAppli.clubX = c;
@@ -120,6 +128,8 @@ export class PreparationComponent{
         s = SessionAppli.reserveClubA;
         SessionAppli.reserveClubA = SessionAppli.reserveClubX;
         SessionAppli.reserveClubX = s;
+        // recalculer le libellé des boutons des réserves
+        this.MajLibBoutonsReserves();
 
         this.clubA = "A/" + SessionAppli.clubA.nom;
         this.clubX = "X/" + SessionAppli.clubX.nom;
@@ -140,13 +150,24 @@ export class PreparationComponent{
     onReserveA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réserves
-        this.routeur.navigate(["saisiecommentaire/RESERVE/A"]);
+        if(this.resValid) {
+            // ouverture en saisie
+            this.routeur.navigate(["saisiecommentaire/RESERVE/A/preparation"]);
+        } else {
+            // ouverture en consultation
+            this.routeur.navigate(["saisiecommentaire/RESERVE-C/A/preparation"]);
+        }
     }
 
     onReserveX(args: EventData) {
         let button = args.object as Button;
-        // Ouvrir la page de saisie des réserves
-        this.routeur.navigate(["saisiecommentaire/RESERVE/X"]);
+        if(this.resValid) {
+            // ouverture en saisie
+            this.routeur.navigate(["saisiecommentaire/RESERVE/X/preparation"]);
+        } else {
+            // ouverture en consultation
+            this.routeur.navigate(["saisiecommentaire/RESERVE-C/X/preparation"]);
+        }
     }
 
     onValiderFeuille(args: EventData) {

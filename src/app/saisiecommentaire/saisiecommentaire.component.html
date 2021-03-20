@@ -12,10 +12,11 @@
         <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="0" flexShrink="0"></Label>
         <Label class="sous-titre" [text]="this.sousTitre" flexGrow="1" flexShrink="0" textWrap="true"></Label>
         <TextView hint="Saisir ici les observations à formuler" height = "1000" min-height = "100" flexGrow="1" flexShrink="1"
-                   secure="false" autocorrect = "true" textAlignment="left" maxLength="5000" [(ngModel)]="this.saisie"></TextView>
+                   secure="false" autocorrect = "true" textAlignment="left" maxLength="5000" [(ngModel)]="this.saisie" [isenabled]="this.consult">
+        </TextView>
 
         <FlexboxLayout flexDirection="row" flexGrow="0" flexShrink="0">
-            <Button text="Valider" width="1000" min-width="100" flexGrow="1" flexShrink="1" (tap)="onTapValidate($event)" flexGrow="0"></Button>
+            <Button text="Valider" width="1000" min-width="100" flexGrow="1" flexShrink="1" (tap)="onTapValidate($event)" flexGrow="0" [isenabled]="this.consult"></Button>
             <Button text="Fermer" width="1000" min-width="100"  flexGrow="1" flexShrink="1" (tap)="onTapClose($event)" flexGrow="0"></Button>
         </FlexboxLayout>
     </FlexboxLayout>
