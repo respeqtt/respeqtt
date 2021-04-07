@@ -53,6 +53,7 @@ export class CompoComponent{
         // recherche du club correspondant
         if(this.cote) {
             this.clubChoisi = SessionAppli.clubX;
+
         }
         else {
             this.clubChoisi = SessionAppli.clubA;
@@ -65,7 +66,9 @@ export class CompoComponent{
             abs.prenom = "";
             abs.id = 0;
             abs.points = 0;
+            abs.cartons = 0;
             abs.sel = false;
+            abs.double = 0;
 
             this.listeJoueurs = liste as Array<EltListeLicencie>;
             if(this.listeJoueurs != null) {
@@ -80,7 +83,9 @@ export class CompoComponent{
             abs2.prenom = "";
             abs2.id = 1;
             abs2.points = 0;
+            abs2.cartons = 0;
             abs2.sel = false;
+            abs2.double = 0;
             this.listeJoueurs.push(abs2);
 
 
@@ -196,17 +201,12 @@ export class CompoComponent{
             } else {
                 // sélectionner
                 this.listeJoueurs[index].sel = true;
-                // on l'ajoute à l'équipe
+                // on l'ajoute à l'équipe et on raz son appartenance à un double
+                joueur.double = 0;
                 this.equipe.push(joueur);
                 console.log("Joueur sélectionné : " + joueur.id +"(index=" + index + ")");
             }
         }
-        // rafraichir l'affichage pour le style
-//        liste.set("listeJoueurs", new ObservableArray(this.listeJoueurs));
-//        liste.notifyPropertyChange("listeJoueurs", new ObservableArray(this.listeJoueurs));
-//        liste.bindingContext.listeJoueurs = new ObservableArray(this.listeJoueurs);
-
-
     }
 
 

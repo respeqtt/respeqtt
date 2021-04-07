@@ -18,7 +18,7 @@ import { Component, OnInit } from "@angular/core";
 import { Label, Button, EventData, ListView, ItemEventData, Observable, ObservableArray, Page } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie, Rencontre, Licencie, Partie, Formule } from "../db/RespeqttDAO";
+import { EltListeLicencie, Rencontre, Licencie, Partie, FormuledeRencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { StringListElt } from "../outils/outils";
 

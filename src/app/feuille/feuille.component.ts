@@ -17,13 +17,35 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Label, Button, EventData, TextField } from "@nativescript/core";
+import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
+import { Rencontre } from "../db/RespeqttDAO";
+
+import { Utils } from "@nativescript/core";
+
+const fs = require("tns-core-modules/file-system");
+
+
 
 import { knownFolders, path, File, Folder } from "@nativescript/core/file-system";
 import * as SocialShare from "nativescript-social-share";
 
-var utilityModule = require("utils/utils");
+import { html2PdfFile } from 'nativescript-html2pdf';
+
+import { getText, getTextSync, setText, setTextSync } from "nativescript-clipboard";
+
+export function CopieDansPressePapier(texte:string) {
+    setText(texte).then(() => {
+        console.log("Copié : " + texte + " dans le presse papier");
+    });
+
+}
+
+export function PasteFromPressePapier():string {
+
+    return getTextSync();
+}
+
 
 @Component({
     templateUrl: "./feuille.component.html",
@@ -44,26 +66,18 @@ export class FeuilleComponent {
 
         // construire la feuille de match
         if(SessionAppli.rencontreChoisie >=0) {
-            SessionAppli.RemplirLaFeuille();
-        }
-
-        // enregistrer en tant que fichier
-/*        var fs = require("file-system");
-        let documentsFolder = fs.knownFolders.documents();
-*/
-        const documentsFolder:Folder = <Folder>knownFolders.documents();
-        this.path = path.join(documentsFolder.path, "FeuilleDeMatch.html");
-        const file:File = File.fromPath(this.path);
-
-        // Ecriture du fichier
-        file.writeText(SessionAppli.feuilleDeMatch)
-            .then(result => {
-                // Succeeded writing to the file.
-                    console.log("Feuille de match enregistrée dans " + this.path);
-                }).catch(err => {
-                console.log("Erreur à l'écriture de la feuille de match");
-                console.log(err.stack);
+            var r:Rencontre;
+            Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(ren =>{
+                r = ren as Rencontre;
+                console.log("Remplissage de la feuille de match...");
+                SessionAppli.RemplirLaFeuille(r);
+                console.log("Feuille de match remplie : " + SessionAppli.feuilleDeMatch.length + " octets");
+            }, error => {
+                console.log("Impossible de retrouver en BDD la rencontre choisie : ", error);
+                return false;
             });
+
+        }
     }
 
      onEnvoyer(args: EventData) {
@@ -71,23 +85,106 @@ export class FeuilleComponent {
 
         console.log("Envoi de la feuille ...");
         // Envoyer par mail
-        SocialShare.shareHtml(SessionAppli.feuilleDeMatch, "Comment voulez-vous partager la feuille de match?");
+        SocialShare.shareText(SessionAppli.feuilleDeMatch, "Comment voulez-vous partager la feuille de match?");
         console.log("Feuille envoyée !");
     }
 
+    // Fichier HTML + ouverture navigateur
     onConsulter(args: EventData) {
         let button = args.object as Button;
 
-        // est-ce que le fichier existe ?
-        const documents = <Folder>knownFolders.documents();
-        const filePath = path.join(documents.path, "FeuilleDeMatch.html");
-        const exists = File.exists(filePath);
-        console.log("Est-ce que la feuille de match existe ? "  + (exists ? "oui":"non"));
+        // First get the required permissions
+        // Note: this permissions should also be in your AndroidManifest.xml file as:
+        //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        // (Included by Nativescript)
+        const permissions = require('nativescript-permissions')
+        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .then(() => {
+            console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
+            // Get the publicly accessable Downloads directory path
+            const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
+            console.log('sdDownloadPath: ' + sdDownloadPath)
 
-        // Consulter dans le navigateur
+            // Get a specific folder in that path (will be created if it does not exist)
+            const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
+            console.log('RESPEQTT path: ' + myAppFolder.path)
 
-        utilityModule.openUrl("file://" + filePath);
+            // Get a file in that path (will be created if it does not exist)
+            // Note: In this case we try to get a unique file every time this code is run
+            // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
+            let htmlFile:File = myAppFolder.getFile('feuille-de-match.html');
+                console.log('Fichier HTML : ' + htmlFile.path)
+
+            // écrire le fichier HTML
+            htmlFile.writeText(SessionAppli.feuilleDeMatch).then(() => {
+                console.log("Fichier HTML écrit");
+                // Consulter
+                Utils.openFile(htmlFile.path);
+            })
+            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`))
+        })
+        .catch(() => {
+            console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+        });
     }
+
+
+        // Fichier PDF
+        onPDF(args: EventData) {
+            let button = args.object as Button;
+
+            // First get the required permissions
+            // Note: this permissions should also be in your AndroidManifest.xml file as:
+            //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            // (Included by Nativescript)
+            const permissions = require('nativescript-permissions')
+            permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .then(() => {
+                console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
+                // Get the publicly accessable Downloads directory path
+                const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
+                console.log('sdDownloadPath: ' + sdDownloadPath)
+
+                // Get a specific folder in that path (will be created if it does not exist)
+                const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
+                console.log('RESPEQTT path: ' + myAppFolder.path)
+
+                // Get a file in that path (will be created if it does not exist)
+                // Note: In this case we try to get a unique file every time this code is run
+                // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
+                let pdfPath:string = myAppFolder.getFile('feuille-de-match.pdf').path;
+                    console.log('myFile path: ' + pdfPath)
+        //        let pdfPath: string = fs.knownFolders.documents().getFile('feuille-de-match.pdf').path;
+
+                // convertit la feuille de match en PDF
+                html2PdfFile(SessionAppli.feuilleDeMatch, pdfPath);
+
+                // Ouvrir le lecteur de PDF
+                Utils.openFile(pdfPath);
+            })
+            .catch(() => {
+                console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+            });
+
+    }
+
+
+
+onQRCode(args: EventData) {
+    let button = args.object as Button;
+
+    // Convertir en QRCode
+
+}
+
+onCopier(args: EventData) {
+    let button = args.object as Button;
+
+    // Copier dans le presse papier
+    CopieDansPressePapier(SessionAppli.feuilleDeMatch);
+    console.log("Feuille copiée dans le presse papier");
+}
+
 
      onFermer(args: EventData) {
         let button = args.object as Button;

@@ -26,6 +26,11 @@
             <Button text="&#xf13a;" class="fas" min-width= "100" width= "1000" flex-grow="1" backgroundColor="blue" (tap)="onDown($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Button text="Capitaine" min-width= "200" width= "1000" flex-grow="1" backgroundColor="blue" (tap)="onCapitaine($event)"></Button>
+            <TextField hint="licence" min-width= "200" width= "1000" flexGrow="1" flexShrink="0.3" secure="false" maxLength="20" keyboardType="number" [(ngModel)]='this.licenceCapitaine'></TextField>
+        </FlexboxLayout>
+        <Label [text]="this.capitaine" min-width= "50" width= "1000" flexGrow="0" flexShrink="1"></Label>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
             <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" backgroundColor="blue"     (tap)="onAnnulerTap($event)"></Button>
             <Button text="QR CODE" class="-primary -rounded-lg" color="whitesmoke" min-width= "50" width= "1000" flex-grow="1" backgroundColor="darkblue" (tap)="onQRCodeTap($event)"></Button>
             <Button text="VALIDER" min-width= "50" width= "1000" flex-grow="1" backgroundColor="blue"     (tap)="onValiderTap($event)"></Button>

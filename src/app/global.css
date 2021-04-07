@@ -76,6 +76,14 @@ TextField.sets {
     padding: 0px;
 }
 
+.lieu {
+    font-size: 1em;
+    color: darkblue;
+    background-color: lightblue;
+    margin: 0px;
+    padding: 0px;
+}
+
 label.switch-label {
     text-align: center;
     background-color: white;
@@ -116,6 +124,21 @@ button {
     border-bottom-width: 0.5em;
     border-bottom-color: darkblue;
 }
+
+button.cartonJaune {
+    color: black;
+    background-color: yellow;
+    text-align: center;
+    border-bottom-color: yellow;
+}
+
+button.cartonRouge {
+    color: black;
+    background-color: red;
+    text-align: center;
+    border-bottom-color: red;
+}
+
 textarea {
     Height: 1em
 }

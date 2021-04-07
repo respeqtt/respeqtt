@@ -18,13 +18,67 @@ import { RespeqttDb } from "../db/dbRespeqtt";
 import { SessionAppli} from "../session/session";
 import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } from "../outils/outils";
 
+
+
+// renvoie le code de la première lettre dans la liste des lettres de joueurs
+export function debut(s:string):number {
+    return s.charCodeAt(0);
+}
+
+// renvoie les deux lettres (clubA + clubX) qui décrivent la partie
+// n = rang de la partie recherchée, à partir de 1
+export function getPartie(n: number, s:string):string {
+        const debut = (n-1)*3;
+        const fin = debut + 2;
+        return s.substring(debut, fin);
+    }
+
+// renvoie le nombre de parties
+export function getNbParties(s:string):number {
+        return (s.length + 1)/3;
+    }
+
+
+export class FormuledeRencontre {
+    id:number;      // nombre de parties sur la feuille de match
+    desc:string;    // description des parties
+    joueursA:string;    // liste des lettres des joueurs coté A
+    joueursX:string;    // liste des lettres des joueurs coté X
+
+    // renvoie la première lettre du coté demandé
+    public debut(cote:string):number {
+        switch(cote) {
+            case "A":
+                return this.joueursA.charCodeAt(0);
+            case "X":
+                return this.joueursX.charCodeAt(0);
+        }
+        return -1;
+    }
+
+    // renvoie les deux lettres (clubA + clubX) qui décrivent la partie
+    // n = rang de la partie recherchée, à partir de 1
+    public getPartie(n: number):string {
+        const debut = (n-1)*3;
+        const fin = debut + 2;
+        return this.desc.substring(debut, fin);
+    }
+
+    // renvoie le nombre de parties
+    public getNbParties():number {
+        return (this.desc.length + 1)/3;
+    }
+
+
+};
+
 export class EltListeRencontre {
     id:number;
     journee:number;
     division:string;
     date:string;
     sel:boolean;
-}
+};
 
 export class Rencontre{
 
@@ -38,7 +92,7 @@ export class Rencontre{
     nbJoueurs:number;
     formule:number;
     nbSets:number;
-    echelon:string;
+    echelon:number;
     feminin:boolean;
     division:string;
     ligue:string;
@@ -100,7 +154,9 @@ export class Rencontre{
             ren_va_division, ren_va_ligue, ren_va_poule) values (`;
        let rencontres = [
            `1, 1690162, 1690221, '2020/11/08 09H00', 1, 4, 4, 18, 3, 3, 0, 'PR', 'AURA', 'D')`,
-           `2, 1690162, 1690160, '2020/11/08 09H00', 1, 4, 4, 18, 3, 3, 0, 'D1', 'AURA', 'B')`
+           `2, 1690162, 1690160, '2020/11/08 09H00', 1, 4, 4, 18, 3, 3, 0, 'D1', 'AURA', 'B')`,
+           `3, 1690162, 1690221, '2021/03/04 09H00', 1, 3, 2,  5, 3, 3, 0, 'C2', 'AURA', 'TF')`,
+           `4, 1690162, 1690221, '2021/04/05 09H00', 2, 5, 4, 14, 3, 2, 0, 'R3', 'AURA', 'A')`
        ];
 
         for (var j in clubs) {
@@ -141,11 +197,13 @@ export class Rencontre{
                     rencontre.nbJoueurs= Number(row[5]);
                     rencontre.formule= Number(row[6]);
                     rencontre.nbSets= Number(row[7]);
-                    rencontre.echelon= row[10];
-                    rencontre.feminin= Boolean(row[11]);
-                    rencontre.division= row[12];
-                    rencontre.ligue= row[13];
-                    rencontre.poule= row[14];
+                    rencontre.echelon= row[8];
+                    rencontre.feminin= Boolean(row[9]);
+                    rencontre.division= row[10];
+                    rencontre.ligue= row[11];
+                    rencontre.poule= row[12];
+
+                    console.log("Trouvé rencontre " + rencontre.id + " div " + rencontre.division + " poule " + rencontre.poule + " ligue " + rencontre.ligue);
 
                     resolve(rencontre);
                 }
@@ -281,6 +339,7 @@ export class EltListeLicencie {
     sel:boolean;
     place:string;
     double:number;
+    cartons:number;
 
 }
 export class Licencie{
@@ -298,6 +357,35 @@ export class Licencie{
 
     // liste des licencies
     public static liste:Array<any>;
+
+    // renvoie un EltListeLicencie (nom, prenom et points) à partir de sa licence
+    public static get(id:number, club:number) {
+    var where:string = "";
+    if(club > 0) {
+        where = " and lic_clu_kn = " + club.toString();
+    }
+    const select = "select lic_va_nom, lic_va_prenom, lic_vn_points from Licencie where lic_kn = " + id.toString() + where;
+    let promise = new Promise(function(resolve, reject) {
+        RespeqttDb.db.get(select).then(row => {
+            if(row) {
+                var lic = new EltListeLicencie;
+                lic.id = id;
+                lic.nom = row[0];
+                lic.prenom = row[1];
+                lic.points = Number(row[2]);
+                lic.cartons = 0;
+                resolve(lic);
+            }
+            else {
+                resolve(null);
+            }
+        }, error => {
+            reject(error);
+        });
+    });
+    return promise;
+};
+
 
 
     // renvoie la liste en BDD des joueurs du club demandé pour affichage sur la page des joueurs
@@ -319,6 +407,7 @@ export class Licencie{
                     elt.mute = Boolean(rows[row][4]);
                     elt.etranger = Boolean(rows[row][5]);
                     elt.feminin = Boolean(rows[row][6]);
+                    elt.cartons = 0;
                     elt.sel = false;
                     liste.push(elt);
                     n = n + 1;
@@ -350,7 +439,7 @@ export class Licencie{
             `1690221, 690202, 'MICHON', 'Alexandre', 550, 0, 0, 0)`,
             `1690221, 690203, 'PIERRE', 'Jacques', 789, 1, 0, 0)`,
             `1690221, 690204, 'ANDRE', 'Christophe', 654, 0, 0, 0)`,
-            `1690221, 690205, 'MARTIN', 'Charlotte', 1234, 1, 1, 1)`
+            `1690221, 690205, 'MARTIN', 'Charlotte', 1234, 1, 0, 1)`
         ];
 
         for (var j in joueurs) {
@@ -376,36 +465,38 @@ export class Partie{
 
     // crée la liste des parties
     static InitListeParties(eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean):Array<Partie> {
+
         var liste:Array<Partie>=[];
+        var n:number;   // nombre de parties
+        var partie:Partie;
 
         // récuperer la formule
-        Formule.getFormule(SessionAppli.formule).then(f=> {
-            const formule = f as Formule;
-            var n:number;   // nombre de parties
-            var partie:Partie;
+        const formule:FormuledeRencontre = ListeFormules.getFormule(SessionAppli.formule);
+        console.log("Formule en cours : " + formule.id.toString() + " / " + formule.desc);
 
+        if(formule) {
             // mettre en forme les parties
-            n = formule.getNbParties();
+            n = getNbParties(formule.desc);
             console.log("Nb parties=" + n);
             for(var i:number=0; i < SessionAppli.nbJoueurs; i++) {
                 console.log("J" + (i+1) + " A = " + (forfaitA ? "(forfait)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(forfait)" : eqX[i].nom));
             }
             for(var i:number = 0; i<n; i++) {
-                partie = new Partie(formule.getPartie(i+1), eqA, eqX, forfaitA, forfaitX);
+                partie = new Partie(formule, getPartie(i+1, formule.desc), eqA, eqX, forfaitA, forfaitX);
                 liste.push(partie);
             }
-        },error =>{
-            console.log("Impossible de trouver la formule " + SessionAppli.formule.toString());
-        });
-
-        return liste;
+            return liste;
+        }
+        return null;
     }
 
     // crée une partie à partir de son modèle p (ex : AW) et des deux équipes
     // p vide -> partie créée vide
-    constructor(p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean) {
+    constructor(f:FormuledeRencontre, p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean) {
 
         var joueur:EltListeLicencie;
+        const debutA:number=debut(f.joueursA);
+        const debutX:number=debut(f.joueursX);
 
         if(p != ""){
             // pas sélectionnée
@@ -413,7 +504,7 @@ export class Partie{
             // description = A/nom prénom vs X/nom prénom = points
             this.desc = p.charAt(0) + "/";
             console.log(p);
-            if(p.charCodeAt(0) < 65) {
+            if(p.charCodeAt(0) < debutA) {
                 // c'est un double
                 this.desc = "*** double" + this.desc + " *** = ";
                 // mettre le score en cas de forfait
@@ -430,31 +521,31 @@ export class Partie{
                 // c'est un simple
                 // coté A
                 if(!forfaitA) {
-                    joueur = eqA[p.charCodeAt(0)-65];
-                    console.log("Rang A =" + (p.charCodeAt(0)-65));
+                    joueur = eqA[p.charCodeAt(0)-debutA];
+                    console.log("Rang A =" + (p.charCodeAt(0)-debutA));
                     this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
                     this.joueurA = joueur.id;
                 }
                 // coté X
                 if(!forfaitX) {
                     this.desc = this.desc + p.charAt(1) + "/";
-                    console.log("Rang X =" + (p.charCodeAt(1)-87));
-                    joueur = eqX[p.charCodeAt(1)-87];
+                    console.log("Rang X =" + (p.charCodeAt(1)-debutX));
+                    joueur = eqX[p.charCodeAt(1)-debutX];
                     this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
                     this.joueurX = joueur.id;
                 }
                 // mettre le score en cas de forfait
-                if(forfaitA || eqA[p.charCodeAt(0)-65].nom == "(absent)") {
+                if(forfaitA || eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
                     this.scoreAX = "0-2";
                 }
-                if(forfaitX || eqX[p.charCodeAt(1)-87].nom == "(absent)") {
+                if(forfaitX || eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
                     this.scoreAX = "2-0";
                 }
 
                 // corriger si double forfait
-                if((forfaitA && eqX[p.charCodeAt(1)-87].nom == "(absent)")
-                || (forfaitX && eqA[p.charCodeAt(0)-65].nom == "(absent)")
-                || (eqX[p.charCodeAt(1)-87].nom == "(absent)" && eqA[p.charCodeAt(0)-65].nom == "(absent)")
+                if((forfaitA && eqX[p.charCodeAt(1)-debutX].nom == "(absent)")
+                || (forfaitX && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
+                || (eqX[p.charCodeAt(1)-debutX].nom == "(absent)" && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
                 ) {
                     this.scoreAX = "0-0";
                 }
@@ -472,11 +563,10 @@ export class Partie{
 
         // cas des parties disputées
         for(var i=0; i < result.length; i++) {
-            // si X gagne 11-0 => -99
-            if(result[i].score < 0) {
-                ptsX++;
-            } else {
+            if(Set.AVainqueur(result[i].score)) {
                 ptsA++;
+            } else {
+                ptsX++;
             }
             // compléter le set
             result[i].numSet = i;
@@ -540,22 +630,6 @@ export class Partie{
         return json;
     }
 
-/*
-    // convertit un message json en partie ; renvoie l'indice de la partie
-    PartieToJson(iPartie:number):string {
-        var json:string;
-
-        // début
-        json = '{"partie":"' + iPartie.toString()
-             +  '", "desc":"' + SessionAppli.listeParties[iPartie].desc
-             + '", "joueurA":"' + SessionAppli.listeParties[iPartie].joueurA.toString()
-             + '", "joueurX":"' + SessionAppli.listeParties[iPartie].joueurX.toString()
-             + '"}';
-
-            return json;
-    }
-*/
-
     // convertit un message json en partie ; renvoie l'indice de la partie
     JsonToPartie (json:string):number {
         var data;
@@ -573,7 +647,7 @@ export class Partie{
         if(iPartie >= 0 && iPartie < 30) {
             // on crée assez de parties pour avoir celle que l'on veut
             for(var i=SessionAppli.listeParties.length; i < iPartie+1 ; i++) {
-                var p:Partie = new Partie("", null, null, false, false);
+                var p:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
                 SessionAppli.listeParties.push(p);
             }
             // analyse du JSON en entrée
@@ -697,7 +771,7 @@ export class Partie{
         RespeqttDb.db.all(sql).then(rows => {
             for(var row in rows) {
                 var rang = Number(rows[row][0]);
-                var elt:Partie = new Partie("", null, null, false, false);
+                var elt:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
 
                 elt.id = rang;
                 elt.desc = rows[row][1];
@@ -723,19 +797,47 @@ export class Partie{
 
 export class Set{
     numSet:number;
-    score:number;
+    score:string;
 
-    constructor(res:number) {
+    static rxA = new RegExp('^[0-9]+$');
+    static rxX = new RegExp('^-[0-9]+$');
+
+
+    constructor(res:string) {
         this.score = res;
+    }
+
+    public static AVainqueur(s:string):boolean {
+        return this.rxA.test(s);
+    }
+
+    public static ScoreOK(s:string):boolean {
+        if(s) {
+            console.log("Score à contrôler=" + s);
+            if(s !="") {
+                // set gagné par l'équipe A
+                if(this.rxA.test(s))  {
+                    console.log("Set gagné par équipe A");
+                    return true;
+                }
+                // set gagné par l'équipe X
+                if(this.rxX.test(s)) {
+                    console.log("Set gagné par équipe X");
+                    return true;
+                }
+                return false;
+            }
+        }
+            return true;
     }
 
     // écrit un set d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
     private static PersisteSet(rencontre:number, partie:number, set:Set, rang:number) {
         var update:string;
         var values:string;
-        var insert:string = `insert into Set_ren (set_ren_kn, set_par_kn, set_vn_num, set_vn_score) values (`;
+        var insert:string = `insert into Set_ren (set_ren_kn, set_par_kn, set_vn_num, set_va_score) values (`;
 
-        update = "update Set_ren set set_vn_score = " + set.score + " "
+        update = "update Set_ren set set_va_score = '" + set.score + "' "
         + "where set_par_kn = " + partie
         + " and set_vn_num = " + rang
         + " and set_ren_kn = " + rencontre;
@@ -748,8 +850,8 @@ export class Set{
                 // le set n'existe pas => insert
                 values = rencontre + ", "
                     + partie + ", "
-                    + rang + ", "
-                    + set.score + ")";
+                    + rang + ", '"
+                    + set.score + "')";
                 RespeqttDb.db.execSQL(insert + values).then(id => {
                 console.log("Set " + rang + " de la partie " + partie + " inséré en BDD");
                 }, error2 => {
@@ -777,15 +879,15 @@ export class Set{
     // recharge les sets de la rencontre dans la session en cours
     public static RechargeSets(rencontre:number) {
 
-        var sql:string = `select set_par_kn, set_vn_num, set_vn_score from Set_ren where set_ren_kn = ` + rencontre;
+        var sql:string = `select set_par_kn, set_vn_num, set_va_score from Set_ren where set_ren_kn = ` + rencontre;
         RespeqttDb.db.all(sql).then(rows => {
             for(var row in rows) {
                 var numPartie:number;
-                var elt:Set = new Set(999);
+                var elt:Set = new Set("999");
 
                 numPartie = Number(rows[row][0]);
                 elt.numSet = rows[row][1];
-                elt.score = Number(rows[row][2]);
+                elt.score = rows[row][2];
 
                 SessionAppli.listeParties[numPartie].sets.push(elt);
                 console.log("set relu " + elt.numSet + " dans partie " + numPartie);
@@ -798,75 +900,69 @@ export class Set{
 
 };
 
-export class Formule{
+export class ListeFormules {
+    // gestion de la table des formules
+    static tabFormules:FormuledeRencontre[] = null;  // table des formules
+    // formules
+    // 0 pour les parties hors rencontre (SessionAppli.formule = 0)
+    static json:string=`{
+        "formules": [
+            {
+                "id": "0",
+                "desc": "AX",
+                "joueursA": "A",
+                "joueursX": "X"
+            },
+            {
+                "id": "1",
+                "desc": "AX",
+                "joueursA": "A",
+                "joueursX": "X"
+            },
+            {
+                "id": "5",
+                "desc": "AX BY 11 AY BX",
+                "joueursA": "A B",
+                "joueursX": "X Y"
+            },
+            {
+                "id": "14",
+                "desc": "AW BX CY DZ AX BW DY CZ 11 22 AY CW DX BZ",
+                "joueursA": "A B C D",
+                "joueursX": "W X Y Z"
+            },
+            {
+                "id": "18",
+                "desc": "AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ",
+                "joueursA": "A B C D",
+                "joueursX": "W X Y Z"
+            }
+        ]
+    }`;
 
-    // attributs en BDD
-    id:number;
-    desc:string;
-
-    // requêtes SQL
-    private static selFormule = "select for_va_desc from Formule where for_kn = ";
-
-
-    // chargement des formules
-    public static LoadFormules():void {
-
-        var sql =`insert into Formule (for_kn, for_va_desc) values (`;
-
-        // formules
-        let formules= [
-            // 4 joueurs, complet
-            "18, 'AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ')",
-            // 2 joueurs, complet
-            "5, 'AX BY 11 AY BX')"
-        ];
-
-        for (var j in formules) {
-            RespeqttDb.db.execSQL(sql + formules[j]).then(id => {
-                console.log("Formule " + formules[j] + " insérée");
-                }, error => {
-                    console.log("ECHEC INSERT Formule " + error.toString());
-                });
+    // charge la table des formules
+    public static Init() {
+        this.tabFormules = JSON.parse(this.json).formules;
+        for(var i=0; i < this.tabFormules.length; i++) {
+            console.log("Formule " + this.tabFormules[i].id + " = " + this.tabFormules[i].desc);
         }
-    }
-    // renvoie les deux lettres (clubA + clubX) qui décrivent la partie
-    // formule = description de la formule telle qu'en BDD
-    // n = rang de la partie recherchée, à partir de 1
-    public getPartie(n: number):string {
-        const debut = (n-1)*3;
-        const fin = debut + 2;
-        return this.desc.substring(debut, fin);
-    }
 
-    // renvoie le nombre de parties
-    public getNbParties():number {
-        return (this.desc.length + 1)/3;
     }
 
     // renvoie la formule complete
-    public static getFormule(id:number) {
-        const select = Formule.selFormule + id.toString();
+    public static getFormule(id:number):FormuledeRencontre {
 
-        let promise = new Promise(function(resolve, reject) {
-            RespeqttDb.db.get(select).then(row => {
-                if(row) {
-                    var formule = new Formule;
-
-                    formule.id = id;
-                    formule.desc = row[0];
-
-                    resolve(formule);
-                }
-                else {
-                    reject("Pas trouvé la formule " + id.toString());
-                }
-            }, error => {
-                reject(error);
-            });
-        });
-        return promise;
+        for(var i = 0; i < this.tabFormules.length; i++) {
+            if(this.tabFormules[i].id == id) {
+                return this.tabFormules[i];
+            }
+        }
+        console.log("Formule " + id.toString() + " pas trouvée");
+        return null;
     }
+
 };
+
 
 export class Compo{
 
@@ -882,17 +978,18 @@ export class Compo{
     public static PersisteJoueur(joueur:EltListeLicencie, rang:number, rencontre:number) {
 
         var insert: string  = `insert into compo (cpo_ren_kn, cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points,
-            cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin) values (`;
+            cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons) values (`;
         var values:string;
-        var update:string  = "update Compo set cpo_lic_kn = " + joueur.id + ", "
+        var update:string  = "update Compo set cpo_lic_kn = " + joueur.id.toString() + ", "
         + "cpo_va_nom = " + toSQL(joueur.nom) + ", "
         + "cpo_va_prenom = " + toSQL(joueur.prenom) + ", "
-        + "cpo_vn_points = " + joueur.points + ", "
+        + "cpo_vn_points = " + joueur.points.toString() + ", "
         + "cpo_vn_mute = " + bool2SQL(joueur.mute) +", "
         + "cpo_vn_etranger = " + bool2SQL(joueur.etranger) + ", "
-        + "cpo_vn_feminin = " + bool2SQL(joueur.feminin)
-        + " where cpo_ren_kn = " + rencontre
-        + " and cpo_vn_rang = " + rang;
+        + "cpo_vn_feminin = " + bool2SQL(joueur.feminin) + ", "
+        + "cpo_vn_cartons = " + joueur.cartons.toString()
+        + " where cpo_ren_kn = " + rencontre.toString()
+        + " and cpo_vn_rang = " + rang.toString();
 
         console.log(update);
         RespeqttDb.db.execSQL(update).then(n => {
@@ -901,14 +998,15 @@ export class Compo{
             } else {
                 // le joueur n'existe pas => insert
                 values = rencontre + ", "
-                       + rang + ", "  // l'équipe X commence à 10
-                       + joueur.id + ", "
+                       + rang.toString() + ", "  // l'équipe X commence à 10
+                       + joueur.id.toString() + ", "
                        + toSQL(joueur.nom) + ", "
                        + toSQL(joueur.prenom) + ", "
-                       + joueur.points + ", "
+                       + joueur.points.toString() + ", "
                        + bool2SQL(joueur.mute) +", "
                        + bool2SQL(joueur.etranger) + ", "
-                       + bool2SQL(joueur.feminin) + ")";
+                       + bool2SQL(joueur.feminin) + ", "
+                       + joueur.cartons.toString() + ")";
 
                 RespeqttDb.db.execSQL(insert + values).then(id => {
                     console.log("Joueur " + rang + " inséré en BDD");
@@ -925,7 +1023,7 @@ export class Compo{
     // recharge les équipes de la rencontre dans la session en cours
     public static RechargeEquipes(rencontre:number) {
 
-        var sql:string = `select cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin
+        var sql:string = `select cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons
                from Compo where cpo_ren_kn = ` + rencontre; + " order by cpo_vn_num asc"
         RespeqttDb.db.all(sql).then(rows => {
             for(var row in rows) {
@@ -939,6 +1037,7 @@ export class Compo{
                 elt.mute = SQL2bool(Number(rows[row][5]));
                 elt.etranger = SQL2bool(Number(rows[row][6]));
                 elt.feminin = SQL2bool(Number(rows[row][7]));
+                elt.cartons = Number(rows[row][8]);
                 if(rang > 9) {
                     // équipe X
                     SessionAppli.equipeX.push(elt);
@@ -946,7 +1045,7 @@ export class Compo{
                     // équipe A
                     SessionAppli.equipeA.push(elt);
                 }
-                console.log("joueur " + rang + " nom " + elt.nom + " prenom " + elt.prenom + " licence=" + elt.id);
+                console.log("joueur " + rang + " nom " + elt.nom + " prenom " + elt.prenom + " licence=" + elt.id + " cartons=" + elt.cartons);
             }
         }, error => {
             console.log("Impossible de trouver en BDD les équipes de la rencontre " + rencontre, error);

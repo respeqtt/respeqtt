@@ -1,6 +1,5 @@
 import { Device, Screen, isAndroid, isIOS } from "@nativescript/core/platform";
 
-
 export class Mobile {
     largeurEcran:number;
     hauteurEcran:number;
@@ -92,7 +91,7 @@ export function Aujourdhui(maintenant:Date):string {
     return (j > 9 ? j : "0" + j) + "/" + (mois > 9 ? mois : "0" + mois) + "/" + annee.toString();
 }
 
-// renvoie la date courante sous la forme d'une chaine JJ/MM/AAAA
+// renvoie l'heure courante sous la forme d'une chaine hhHmm
 export function HeureMinCourante(maintenant:Date):string {
 
 
@@ -107,7 +106,7 @@ export function HeureMinCourante(maintenant:Date):string {
 export function Maintenant():string {
 
     const maintenant = new Date();
-    return Aujourdhui(maintenant) + HeureMinCourante(maintenant);
+    return Aujourdhui(maintenant) + " " + HeureMinCourante(maintenant);
 
 }
 

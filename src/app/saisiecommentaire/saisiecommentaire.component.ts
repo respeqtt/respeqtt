@@ -60,6 +60,7 @@ export class SaisieCommentaireComponent {
                         this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
                     break;
                     case "RESERVE-C" :
+                        console.log("Reserve :" + SessionAppli.reserveClubA);
                         this.saisie = SessionAppli.reserveClubA;
                         this.consult = false;
                     break;
@@ -89,6 +90,7 @@ export class SaisieCommentaireComponent {
                         this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
                     break;
                     case "RESERVE-C" :
+                        console.log("Reserve :" + SessionAppli.reserveClubX);
                         this.saisie = SessionAppli.reserveClubX;
                         this.consult = false;
                     break;
@@ -145,12 +147,10 @@ export class SaisieCommentaireComponent {
         if(this.titre == "RAPPORT") {
             // mémoriser le rapport du JA (RAS par défaut)
             console.log("Saisie :" + this.saisie);
+            SessionAppli.rapportJA = this.saisie;
             if(this.saisie != "") {
-                SessionAppli.rapportJA = this.saisie;
-            } else {
-                SessionAppli.rapportJA = "RAS";
+                alert("Texte du rapport du JA " + this.auteur + ": " + SessionAppli.rapportJA);
             }
-            alert("Texte du rapport du JA " + this.auteur + ": " + SessionAppli.rapportJA);
         }
         // sauvegarder la session en BDD
         SessionAppli.Persiste();

@@ -21,7 +21,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Label, Button, EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
-import { Partie } from "../db/RespeqttDAO";
+import { ListeFormules, Partie } from "../db/RespeqttDAO";
 
 @Component({
     templateUrl: "./qrscan.component.html",
@@ -128,7 +128,7 @@ export class QRScanComponent implements OnInit{
                       var iPartie:number;
                     // créer la partie si on n'en a pas
                     if(SessionAppli.listeParties.length ==0) {
-                        var p:Partie = new Partie("", null, null, false, false);
+                        var p:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
                         SessionAppli.listeParties.push(p);
                     }
                     // lire le JSON et aller à la page de saisie des résultats

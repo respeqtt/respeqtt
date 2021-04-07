@@ -23,10 +23,10 @@
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
             <Button text="Télécharger les rencontres"       flexGrow="1" [nsRouterLink]="['../rencontre']"></Button>
             <Button text="Télécharger les joueurs"          flexGrow="1" [nsRouterLink]="['../joueurs']"></Button>
-            <Button text="Composer les équipes"             flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
-            <Button text="Les parties"                      flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
+            <Button [text]="(this.lancer ? 'Consulter les équipes' : 'Choisir une rencontre')" flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
+            <Button text="Gérer les parties"                flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
             <Button text="Valider le score de la rencontre" flexGrow="1" (tap)="onValiderScore($event)" [isenabled]="this.valider"></Button>
-            <Button text="Feuille de match"                 flexGrow="1" (tap)="onFeuille($event)" isenabled="false"></Button>
+            <Button text="Feuille de match"                 flexGrow="1" (tap)="onFeuille($event)" [isenabled]="this.valider"></Button>
             <Button text="Envoyer à SPID"                   flexGrow="1" (tap)="onEnvoyerASPID($event)" [isenabled]="this.spid"></Button>
             <Button text="Abandonner la rencontre en cours" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.abandonner"></Button>
         </FlexboxLayout>
@@ -34,11 +34,10 @@
 
     <TabContentItem> <!-- A l'extérieur -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-            <Button text="Choisir une rencontre"   flexGrow="1" (tap)="onRencontre($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Télécharger les joueurs" flexGrow="1" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Choisir une rencontre"   flexGrow="1" (tap)="onRencontre($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Composer son équipe"     flexGrow="1" (tap)="onCompo($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Saisir une partie"       flexGrow="1" (tap)="onPartie($event)" [isenabled]="!this.modeRencontre"></Button>
         </FlexboxLayout>
     </TabContentItem>
 </Tabs>
-

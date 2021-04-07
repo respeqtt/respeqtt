@@ -1,9 +1,13 @@
+import { stringify } from "@angular/compiler/src/util";
 import { Component } from "@angular/core";
+import { numberProperty } from "@nativescript-community/ui-canvas/shapes/shape";
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set } from "../db/RespeqttDAO";
+import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules } from "../db/RespeqttDAO";
 import { toSQL, bool2SQL, SQL2bool } from "../outils/outils";
 
-import { Feuille18 } from "./feuille18";
+import { Feuille18 } from "./feuille18";    // championnat par équipes départemental Rhone etc
+import { Feuille14 } from "./feuille14";    // championnat par équipes régional et national
+import { Feuille5 }  from "./feuille5";     // coupe du Rhone
 
 export class SessionAppli {
 
@@ -16,6 +20,8 @@ export class SessionAppli {
     public static clubX:Club=null;
     public static equipeA:Array<EltListeLicencie>=[];
     public static equipeX:Array<EltListeLicencie>=[];
+    public static capitaineA:EltListeLicencie = null;
+    public static capitaineX:EltListeLicencie = null;
     public static forfaitA:boolean=false;
     public static forfaitX:boolean=false;
     public static dimEcran:number=0;    // plus petite dimension de l'écran
@@ -103,6 +109,7 @@ export class SessionAppli {
             json = json + '"licence":"' + equipe[i].id + '",';
             json = json + '"nom":"'     + equipe[i].nom + '",';
             json = json + '"prenom":"'  + equipe[i].prenom + '",';
+            json = json + '"cartons":"'  + equipe[i].cartons + '",';
             json = json + '"points":"'  + equipe[i].points + '"}';
         }
         json = json + ']}';
@@ -130,6 +137,7 @@ export class SessionAppli {
                     elt.place = data.equipe[i].place;
                     elt.nom = data.equipe[i].nom;
                     elt.prenom = data.equipe[i].prenom;
+                    elt.cartons = Number(data.equipe[i].cartons);
                     elt.points = Number(data.equipe[i].points);
                     equipe.push(elt);
                 } else {
@@ -144,29 +152,247 @@ export class SessionAppli {
         return equipe;
     }
 
-    // remplir la feuille de match avec les infos de la session
-    public static RemplirLaFeuille() {
+    private static CompleteFeuille(feuille:string, val:string, template:string):string {
+        var rx:RegExp;
+
+        rx = new RegExp(template, "g");
+        if(val) {
+            feuille = feuille.replace(rx, val);
+        } else {
+            feuille = feuille.replace(rx, "---");
+        }
+
+        return feuille;
+    }
+
+    // remplir la feuille de match avec les infos de la session et de la rencontre passée en paramètre
+    public static RemplirLaFeuille(r:Rencontre) {
 
         var feuille:string;
+        const f:FormuledeRencontre=ListeFormules.getFormule(SessionAppli.formule);
 
-        switch(SessionAppli.formule) {
-            case 18:
+        // d'abord, mettre le score à jour
+        this.MajScore();
+
+        switch(Number(f.id)) {
+            case 18:    // 4 x 4 simples + 2 doubles
                 feuille = Feuille18.FeuilleVide();
             break;
+            case 14:    // 4 x 3 simples  + 2 doubles
+                feuille = Feuille14.FeuilleVide();
+            break;
+            case 5:     // 2 x 2 simples + 1 double
+                feuille = Feuille5.FeuilleVide();
+            break;
             default: console.log("!!!!!!! Formule " + SessionAppli.formule + " inconnue !!!!!!!!!");
+                     return;
         }
 
         // remplacer les éléments dans la feuille
 
         // Juge Arbitre (nom, prénom, adresse)
-        var JA:string;
+        console.log("Juge arbitre ...");
+        var ja:string="";
         if(SessionAppli.nomJA != "") {
-            JA = SessionAppli.nomJA + " " + SessionAppli.prenomJA;
+            ja = SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.adresseJA;
         }
-        feuille = feuille.replace(/#JA/g, JA);
-         SessionAppli.feuilleDeMatch = feuille;
+        feuille = this.CompleteFeuille(feuille, ja, "#JA");
 
+        console.log("Rencontre n°" + r.id);
+        // Lieu de la rencontre
+        feuille = this.CompleteFeuille(feuille, SessionAppli.lieu, "#Lieu");
+        // Ligue
+        feuille = this.CompleteFeuille(feuille, r.ligue, "#Ligue");
+        // Date heure
+        var date:string;
+        var heure:string;
+        date = SessionAppli.date.substr(0, SessionAppli.date.indexOf(" ")-1);
+        feuille = this.CompleteFeuille(feuille, date, "#Date");
+        heure = SessionAppli.date.substr(SessionAppli.date.indexOf(" ")+1);
+        feuille = this.CompleteFeuille(feuille, heure, "#Heure");
+        // Division
+        feuille = this.CompleteFeuille(feuille, r.division, "#Division");
+        // Poule
+        feuille = this.CompleteFeuille(feuille, r.poule, "#Poule");
+        // National
+        // Régional
+        // Départemental
+        console.log("Echelon:", r.echelon);
+        switch(r.echelon) {
+            case 3 :
+                feuille = this.CompleteFeuille(feuille, "Départemental", "#Départemental");
+                feuille = this.CompleteFeuille(feuille, "-------------", "#Régional");
+                feuille = this.CompleteFeuille(feuille, "-------------", "#National");
+            break;
+            case 2 :
+                feuille = this.CompleteFeuille(feuille, "-------------", "#Départemental");
+                feuille = this.CompleteFeuille(feuille, "Régional", "#Régional");
+                feuille = this.CompleteFeuille(feuille, "-------------", "#National");
+            break;
+            case 1 :
+                feuille = this.CompleteFeuille(feuille, "-------------", "#Départemental");
+                feuille = this.CompleteFeuille(feuille, "-------------", "#Régional");
+                feuille = this.CompleteFeuille(feuille, "National", "#National");
+            break;
+            default :
+                feuille = this.CompleteFeuille(feuille, "Echelon inconnu", "#Départemental");
+                feuille = this.CompleteFeuille(feuille, "???", "#Régional");
+                feuille = this.CompleteFeuille(feuille, "???", "#National");
+            break;
+        }
+        // Masculin
+        feuille = this.CompleteFeuille(feuille, r.feminin ? "" : "Masculin", "#Masculin");
+        // Féminin
+        feuille = this.CompleteFeuille(feuille, r.feminin ? "Féminin" : "", "#Féminin");
+
+        console.log("clubs...");
+        // N° ClubA
+        feuille = this.CompleteFeuille(feuille, SessionAppli.clubA.id.toString(), "#IdClubA");
+        // Nom ClubA
+        feuille = this.CompleteFeuille(feuille, SessionAppli.clubA.nom.toString(), "#NomClubA");
+
+        // N° ClubX
+        feuille = this.CompleteFeuille(feuille, SessionAppli.clubX.id.toString(), "#IdClubX");
+        // Nom ClubX
+        feuille = this.CompleteFeuille(feuille, SessionAppli.clubX.nom.toString(), "#NomClubX");
+
+        console.log("joueurs...");
+        // Joueurs
+        feuille = SessionAppli.RemplitJoueurs(f.joueursA, SessionAppli.equipeA, feuille);
+        feuille = SessionAppli.RemplitJoueurs(f.joueursX, SessionAppli.equipeX, feuille);
+
+        // Parties
+        console.log("parties...");
+        var rx: RegExp;
+        var iDouble = 0;
+        for(var p = 0; p < SessionAppli.listeParties.length; p++) {
+            // sets
+            for(var s = 0 ; s < SessionAppli.listeParties[p].sets.length; s++) {
+                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].sets[s].score.toString(), "#P" + (p+1).toString() + "S" + (s+1).toString());
+            }
+            // on complète avec des scores vides
+            var nbSets = SessionAppli.nbSetsGagnants * 2 - 1;
+            for(var n = s; n < nbSets; n++) {
+                feuille = this.CompleteFeuille(feuille, "", "#P" + (p+1).toString() + "S" + (n+1).toString());
+            }
+            // score équipe A
+            feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(0, 1), "#P" + (p+1).toString() + "SA");
+
+            // score équipe X
+            feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(2, 1), "#P" + (p+1).toString() + "SX");
+
+            // gestion des doubles : remplacer les intitulés
+            if(!SessionAppli.listeParties[p].simple) {
+                iDouble++;
+                var doubles:string[] = SessionAppli.listeParties[p].desc.split(" vs ");
+                if(doubles[0]) {
+                    feuille = this.CompleteFeuille(feuille, doubles[0].substr(1), "#Double" + (iDouble).toString() + "A");
+                }
+                if(doubles[1]) {
+                    feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length - 1), "#Double" + (iDouble).toString() + "X");
+                }
+            }
+        }
+
+        console.log("Bilan...");
+        // Score Equipe A
+        feuille = this.CompleteFeuille(feuille, SessionAppli.scoreA.toString(), "#ScoreA");
+        // Score Equipe X
+        feuille = this.CompleteFeuille(feuille, SessionAppli.scoreX.toString(), "#ScoreX");
+        // Nombre de réserves
+        var nbR:number;
+        nbR = (SessionAppli.reserveClubA == "" ? 0 : 1) + (SessionAppli.reserveClubX == "" ? 0 : 1);
+        if(nbR > 0) {
+            feuille = this.CompleteFeuille(feuille, nbR.toString(), "#NbRes");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "---", "#NbRes");
+        }
+        // Nombre de réclamations
+        nbR = (SessionAppli.reclamationClubA == "" ? 0 : 1) + (SessionAppli.reclamationClubX == "" ? 0 : 1);
+        if(nbR > 0) {
+            feuille = this.CompleteFeuille(feuille, nbR.toString(), "#NbRecl");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "---", "#NbRecl");
+        }
+        // Nombre de cartons
+        var nbC:number=0;
+        console.log("Nb joueurs = " + SessionAppli.nbJoueurs);
+        console.log("Nb joueurs eq A= " + SessionAppli.equipeA.length);
+        console.log("Nb joueurs eq X= " + SessionAppli.equipeX.length);
+        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
+            if(SessionAppli.equipeA[i].cartons > 0) nbC++;
+            if(SessionAppli.equipeX[i].cartons > 0) nbC++;
+        }
+        if(nbC>0) {
+            feuille = this.CompleteFeuille(feuille, nbC.toString(), "#NbCart");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "---", "#NbCart");
+        }
+        // RapportJA
+        feuille = this.CompleteFeuille(feuille, SessionAppli.rapportJA == "" ? "NON" : "OUI", "#RapportJA");
+
+        // CapitaineA
+        if(SessionAppli.capitaineA) {
+            feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom, "#CapitaineA");
+            // LicCapitaineA
+            feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "", "#CapitaineA");
+            // LicCapitaineA
+            feuille = this.CompleteFeuille(feuille, "", "#LicCapitaineA");
+        }
+
+        // CapitaineX
+        if(SessionAppli.capitaineX) {
+            feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom, "#CapitaineX");
+            // LicCapitaineX
+            feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "", "#CapitaineX");
+            // LicCapitaineX
+            feuille = this.CompleteFeuille(feuille, "", "#LicCapitaineX");
+        }
+
+        // Phase
+        feuille = this.CompleteFeuille(feuille, r.phase.toString(), "#Phase");
+        // Journée
+        feuille = this.CompleteFeuille(feuille, r.journee.toString(), "#Journée");
+
+        console.log("!!! Feuille remplie !!!");
+
+        SessionAppli.feuilleDeMatch = feuille;
     }
+
+    private static RemplitJoueurs(joueurs:string, equipe:EltListeLicencie[], feuille:string):string {
+
+        var debut:number;
+        var fin:number;
+        var j:string;
+        var rx: RegExp;
+
+        for(var i = 0; i < equipe.length; i++) {
+            j = joueurs.charAt(2*i);
+            // Id
+            feuille = this.CompleteFeuille(feuille, equipe[i].id.toString(), "#Id" + j);
+            // NomPrenom
+            feuille = this.CompleteFeuille(feuille, equipe[i].nom + " " + equipe[i].prenom, "#NomPrenom" + j);
+            // Pts
+            feuille = this.CompleteFeuille(feuille, equipe[i].points.toString(), "#Pts" + j);
+            // MutEtr
+            var m:string = (equipe[i].mute ? "M" : "") + (equipe[i].etranger ? "E" : "");
+            feuille = this.CompleteFeuille(feuille, m, "#MutEtr" + j);
+            // NbCart
+            var c: string;
+            var nbJ:number;
+            var nbR:number;
+            nbJ = equipe[i].cartons %10;
+            nbR = Math.floor(equipe[i].cartons/10);
+            c = (nbJ > 0 ? nbJ.toString() + " jaunes" : "") + (nbR > 0 ? nbR.toString() + " rouges" : "");
+            feuille = this.CompleteFeuille(feuille, c, "#NbCart" + j);
+        }
+        return feuille;
+    }
+
 
     // écrire sur disque
     public static Persiste() {
@@ -205,6 +431,8 @@ export class SessionAppli {
             ses_va_titreRencontre,
             ses_clubA_kn,
             ses_clubX_kn,
+            ses_capitaineA_kn,
+            ses_capitaineX_kn,
             ses_vn_forfaitA,
             ses_vn_forfaitX,
             ses_vn_compoFigee,
@@ -238,6 +466,8 @@ export class SessionAppli {
                + toSQL(SessionAppli.titreRencontre) + ", "
                + (SessionAppli.clubA ? SessionAppli.clubA.id : 0) + ", "
                + (SessionAppli.clubX ? SessionAppli.clubX.id : 0) + ", "
+               + (SessionAppli.capitaineA ? SessionAppli.capitaineA.id : 0) + ", "
+               + (SessionAppli.capitaineX ? SessionAppli.capitaineX.id : 0) + ", "
                + bool2SQL(SessionAppli.forfaitA) + ", "
                + bool2SQL(SessionAppli.forfaitX) + ", "
                + bool2SQL(SessionAppli.compoFigee) + ", "
@@ -292,6 +522,8 @@ export class SessionAppli {
             + "ses_va_titreRencontre = " + toSQL(SessionAppli.titreRencontre) + ", "
             + "ses_clubA_kn = " + SessionAppli.clubA.id + ", "
             + "ses_clubX_kn = "+ SessionAppli.clubX.id + ", "
+            + "ses_capitaineA_kn = "+ (SessionAppli.capitaineA ? SessionAppli.capitaineA.id : 0) + ", "
+            + "ses_capitaineX_kn = "+ (SessionAppli.capitaineX ? SessionAppli.capitaineX.id : 0) + ", "
             + "ses_vn_forfaitA = " + bool2SQL(SessionAppli.forfaitA) + ", "
             + "ses_vn_forfaitX = " + bool2SQL(SessionAppli.forfaitX) + ", "
             + "ses_vn_compoFigee = " + bool2SQL(SessionAppli.compoFigee) + ", "
@@ -375,6 +607,8 @@ export class SessionAppli {
             ses_va_titreRencontre,
             ses_clubA_kn,
             ses_clubX_kn,
+            ses_capitaineA_kn,
+            ses_capitaineX_kn,
             ses_vn_forfaitA,
             ses_vn_forfaitX,
             ses_vn_compoFigee,
@@ -402,6 +636,8 @@ export class SessionAppli {
 
         var clubA:number;
         var clubX:number;
+        var capitaineA:number;
+        var capitaineX:number;
 
         RespeqttDb.db.get(sql).then(row => {
             if(row) {
@@ -417,46 +653,50 @@ export class SessionAppli {
                 console.log("clubA = " + clubA.toString());
                 clubX = Number(row[4]);
                 console.log("clubX = " + clubX.toString());
-                SessionAppli.forfaitA = SQL2bool(Number(row[5]));
+                capitaineA = Number(row[5]);
+                console.log("capitaine A = " + capitaineA.toString());
+                capitaineX = Number(row[6]);
+                console.log("capitaine X = " + capitaineX.toString());
+                SessionAppli.forfaitA = SQL2bool(Number(row[7]));
                 console.log("forfaitA = " + SessionAppli.forfaitA.toString());
-                SessionAppli.forfaitX = SQL2bool(Number(row[6]));
+                SessionAppli.forfaitX = SQL2bool(Number(row[8]));
                 console.log("forfaitX = " + SessionAppli.forfaitX.toString());
-                SessionAppli.compoFigee = SQL2bool(Number(row[7]));
+                SessionAppli.compoFigee = SQL2bool(Number(row[9]));
                 console.log("compo figée = " + SessionAppli.compoFigee.toString());
-                SessionAppli.scoreValide = SQL2bool(Number(row[8]));
+                SessionAppli.scoreValide = SQL2bool(Number(row[10]));
                 console.log("score validé = " + SessionAppli.scoreValide.toString());
-                SessionAppli.reserveClubA = row[9];
+                SessionAppli.reserveClubA = row[11];
                 console.log("réserve A = " + SessionAppli.reserveClubA);
-                SessionAppli.reserveClubX = row[10];
+                SessionAppli.reserveClubX = row[12];
                 console.log("réserve X = " + SessionAppli.reserveClubX);
-                SessionAppli.reclamationClubA = row[11];
+                SessionAppli.reclamationClubA = row[13];
                 console.log("reclam A = " + SessionAppli.reclamationClubA);
-                SessionAppli.reclamationClubX = row[12];
+                SessionAppli.reclamationClubX = row[14];
                 console.log("reclam X = " + SessionAppli.reclamationClubX);
-                SessionAppli.rapportJA = row[13];
+                SessionAppli.rapportJA = row[15];
                 console.log("rapport JA = " + SessionAppli.rapportJA);
-                SessionAppli.nomJA = row[14];
+                SessionAppli.nomJA = row[16];
                 console.log("nom JA = " + SessionAppli.nomJA);
-                SessionAppli.prenomJA = row[15];
+                SessionAppli.prenomJA = row[17];
                 console.log("prénom JA = " + SessionAppli.prenomJA);
-                SessionAppli.adresseJA = row[16];
+                SessionAppli.adresseJA = row[18];
                 console.log("adresse JA = " + SessionAppli.adresseJA);
-                SessionAppli.licenceJA = Number(row[17]);
+                SessionAppli.licenceJA = Number(row[19]);
                 console.log("licenceJA = " + SessionAppli.licenceJA.toString());
-                SessionAppli.score = row[18];
+                SessionAppli.score = row[20];
                 console.log("score = " + SessionAppli.score);
-                SessionAppli.scoreA = Number(row[19]);
+                SessionAppli.scoreA = Number(row[21]);
                 console.log("scoreA = " + SessionAppli.scoreA.toString());
-                SessionAppli.scoreX = Number(row[20]);
+                SessionAppli.scoreX = Number(row[22]);
                 console.log("scoreX = " + SessionAppli.scoreX.toString());
-                SessionAppli.feuilleDeMatch = row[21];
+                SessionAppli.feuilleDeMatch = row[23];
                 console.log("feuille de match = " + SessionAppli.feuilleDeMatch);
-                SessionAppli.modeRencontre = SQL2bool(Number(row[22]));
-                SessionAppli.nbJoueurs = Number(row[23]);
-                SessionAppli.nbSetsGagnants = Number(row[24]);
-                SessionAppli.formule = Number(row[25]);
-                SessionAppli.date = row[26];
-                SessionAppli.lieu = row[27];
+                SessionAppli.modeRencontre = SQL2bool(Number(row[24]));
+                SessionAppli.nbJoueurs = Number(row[25]);
+                SessionAppli.nbSetsGagnants = Number(row[26]);
+                SessionAppli.formule = Number(row[27]);
+                SessionAppli.date = row[28];
+                SessionAppli.lieu = row[29];
 
 
                 // retrouver les clubs
@@ -474,6 +714,20 @@ export class SessionAppli {
                 });
                 // recharger les équipes
                 Compo.RechargeEquipes(rencontre);
+
+                // Retrouver les capitaines
+                Licencie.get(capitaineA, 0).then(cA => {
+                    SessionAppli.capitaineA = cA as EltListeLicencie;
+                }, error3 => {
+                    console.log("Impossible de trouver en BDD le capitaine A : ", error3);
+                    return false;
+                })
+                Licencie.get(capitaineX, 0).then(cX => {
+                    SessionAppli.capitaineX = cX as EltListeLicencie;
+                }, error4 => {
+                    console.log("Impossible de trouver en BDD le capitaine X : ", error4);
+                    return false;
+                })
                 // recharger les parties
                 Partie.RechargeParties(rencontre);
                 // recharger les sets
@@ -502,6 +756,8 @@ export class SessionAppli {
                     SessionAppli.titreRencontre = "";
                     SessionAppli.clubA = null;
                     SessionAppli.clubX = null;
+                    SessionAppli.capitaineA = null;
+                    SessionAppli.capitaineX = null;
                     SessionAppli.clubChoisi = -1;
                     SessionAppli.equipeA = [];
                     SessionAppli.equipeX = [];

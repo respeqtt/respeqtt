@@ -17,7 +17,7 @@
 import { Component } from "@angular/core";
 import { Tabs, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { EltListeRencontre, Rencontre, Partie } from "../db/RespeqttDAO";
+import { ListeFormules, EltListeRencontre, Rencontre, Partie } from "../db/RespeqttDAO";
 import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
@@ -64,9 +64,12 @@ export class ActionsComponent{
             } else {
                 this.preparer = true;
             }
+
+            // Chargement des formules
+            ListeFormules.Init();
+
             // on ne lance les parties que si la compo est figée
             this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;
-
             // on ne valide le score que si les parties ont été lancées
             this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre;
 
@@ -217,7 +220,7 @@ export class ActionsComponent{
             if(SessionAppli.rencontreChoisie < 0) {
                 var p:Partie;
                 SessionAppli.rencontreChoisie = 0;
-                p = new Partie("", null, null, false, false);
+                p = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
                 p.desc = "PARTIE IMPORTEE";
                 SessionAppli.listeParties.push(p);
                 console.log("Partie  à scanner :" + SessionAppli.listeParties[0].desc);

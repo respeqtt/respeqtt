@@ -35,21 +35,18 @@ export class RespeqttDb {
                 FOREIGN KEY (lic_clu_kn) REFERENCES Club (clu_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 );`;
 
-    private static creeTableFormule:string = `create table if not exists Formule (for_kn integer PRIMARY KEY, for_va_desc text)`;
-
     private static creeTableRencontre:string = `create table if not exists Rencontre (ren_kn integer PRIMARY KEY, ren_club1_kn integer,
                 ren_club2_kn integer, ren_vd_date text, ren_vn_phase integer, ren_vn_journee integer, ren_vn_nb_joueurs integer,
                 ren_for_kn integer, ren_vn_nb_sets integer, ren_vn_ja integer, ren_va_lieu text, ren_vn_echelon integer,
                 ren_vn_feminin integer, ren_va_division text, ren_va_ligue text, ren_va_poule text, ren_va_feuille text,
                 ren_vn_score_A integer, ren_vn_score_X integer,
                 FOREIGN KEY (ren_club1_kn) REFERENCES Club (clu_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
-                FOREIGN KEY (ren_club2_kn) REFERENCES Club (clu_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
-                FOREIGN KEY (ren_for_kn) REFERENCES Formule (for_kn) ON DELETE CASCADE ON UPDATE NO ACTION
+                FOREIGN KEY (ren_club2_kn) REFERENCES Club (clu_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
     private static creeTableCompo:string = `create table if not exists Compo (cpo_lic_kn integer, cpo_ren_kn integer, cpo_vn_rang integer,
                 cpo_va_nom text, cpo_va_prenom text, cpo_vn_points integer, cpo_vn_mute integer, cpo_vn_etranger integer,
-                cpo_vn_feminin integer,
+                cpo_vn_feminin integer, cpo_vn_cartons integer,
                 PRIMARY KEY(cpo_ren_kn, cpo_vn_rang),
                 FOREIGN KEY (cpo_lic_kn) REFERENCES Licencie (lic_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
                 FOREIGN KEY (cpo_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -61,7 +58,7 @@ export class RespeqttDb {
                 FOREIGN KEY (par_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
-    private static creeTableSet:string = `create table if not exists Set_ren (set_ren_kn, set_par_kn integer, set_vn_num integer, set_vn_score integer,
+    private static creeTableSet:string = `create table if not exists Set_ren (set_ren_kn, set_par_kn integer, set_vn_num integer, set_va_score text,
                 PRIMARY KEY(set_ren_kn, set_par_kn, set_vn_num),
                 FOREIGN KEY (set_par_kn) REFERENCES Partie (par_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
                 FOREIGN KEY (set_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -73,6 +70,8 @@ export class RespeqttDb {
                 ses_va_titreRencontre text,
                 ses_clubA_kn integer,
                 ses_clubX_kn integer,
+                ses_capitaineA_kn integer,
+                ses_capitaineX_kn integer,
                 ses_vn_forfaitA integer,
                 ses_vn_forfaitX integer,
                 ses_vn_compoFigee integer,
@@ -130,26 +129,21 @@ export class RespeqttDb {
                         db.execSQL(RespeqttDb.creeTableClub).then(id => {
                             db.execSQL(RespeqttDb.creeTableLicencie).then(id => {
                                 db.execSQL(RespeqttDb.creeTableCompo).then(id => {
-                                    db.execSQL(RespeqttDb.creeTableFormule).then(id => {
-                                        db.execSQL(RespeqttDb.creeTablePartie).then(id => {
-                                            db.execSQL(RespeqttDb.creeTableSet).then(id => {
-                                                db.execSQL(RespeqttDb.creeTableSession).then(id => {
-                                                        console.log("Toutes tables OK / BDD PRETE");
-                                                        resolve(true);
-                                                    }, error => {
-                                                        console.log("Impossible de créer la table Session", error);
-                                                        reject(error);
-                                                    });
-                                            }, error => {
-                                                console.log("Impossible de créer la table Set", error);
-                                                reject(error);
-                                            });
+                                    db.execSQL(RespeqttDb.creeTablePartie).then(id => {
+                                        db.execSQL(RespeqttDb.creeTableSet).then(id => {
+                                            db.execSQL(RespeqttDb.creeTableSession).then(id => {
+                                                    console.log("Toutes tables OK / BDD PRETE");
+                                                    resolve(true);
+                                                }, error => {
+                                                    console.log("Impossible de créer la table Session", error);
+                                                    reject(error);
+                                                });
                                         }, error => {
-                                            console.log("Impossible de créer la table Partie", error);
+                                            console.log("Impossible de créer la table Set", error);
                                             reject(error);
                                         });
                                     }, error => {
-                                        console.log("Impossible de créer la table Formule", error);
+                                        console.log("Impossible de créer la table Partie", error);
                                         reject(error);
                                     });
                                 }, error => {

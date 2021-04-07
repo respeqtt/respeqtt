@@ -14,13 +14,15 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { Label, Button, EventData, TextField } from "@nativescript/core";
+import { Component } from "@angular/core";
+import { Button, EventData, TextField } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { SessionAppli } from "../session/session";
 import { Set } from "../db/RespeqttDAO";
 import { toURLQuote, toURL } from "../outils/outils";
+
+
 
 @Component({
     templateUrl: "./resultat.component.html",
@@ -28,17 +30,21 @@ import { toURLQuote, toURL } from "../outils/outils";
     styleUrls: ["../global.css"]
 })
 export class ResultatComponent{
-    set1: number;
-    set2: number;
-    set3: number;
-    set4: number;
-    set5: number;
+    set1: string;
+    set2: string;
+    set3: string;
+    set4: string;
+    set5: string;
     titre:string;
     quoi:string;
     dim: number;
     routeur:RouterExtensions;
     numPartie:number;
     reclam:boolean;
+    nbJaunesA:number=0;
+    nbJaunesX:number=0;
+    nbRougesA:number=0;
+    nbRougesX:number=0;
 
     txfSet1:TextField;
 
@@ -78,15 +84,61 @@ export class ResultatComponent{
 
     }
 
-    // ajoute le résultat d'un set dans la liste des sets de la partie
-    AjouteRes(listeRes:Array<Set>, res:number) : boolean {
+    onBlur1(args: EventData) {
+        let tf = args.object as TextField;
+        if(!Set.ScoreOK(this.set1)) {
+            // score incorrect
+            alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
+            // remet le focus dessus
+            // tf.focus();
+        }
+    };
+    onBlur2(args: EventData) {
+        let tf = args.object as TextField;
+        if(!Set.ScoreOK(this.set2)) {
+            // score incorrect
+            alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
+            // remet le focus dessus
+            // tf.focus();
+        }
+    };
+    onBlur3(args: EventData) {
+        let tf = args.object as TextField;
+        if(!Set.ScoreOK(this.set3)) {
+            // score incorrect
+            alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
+            // remet le focus dessus
+            // tf.focus();
+        }
+    };
+    onBlur4(args: EventData) {
+        let tf = args.object as TextField;
+        if(!Set.ScoreOK(this.set4)) {
+            // score incorrect
+            alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
+            // remet le focus dessus
+            // tf.focus();
+        }
+    };
+    onBlur5(args: EventData) {
+        let tf = args.object as TextField;
+        if(!Set.ScoreOK(this.set5)) {
+            // score incorrect
+            alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
+            // remet le focus dessus
+            // tf.focus();
+        }
+    };
 
-        var score:Set;
+    // ajoute le résultat d'un set dans la liste des sets de la partie si le score n'est pas vide ou incorrect
+    AjouteRes(listeRes:Array<Set>, res:string) {
 
-        score = new Set(res);
-        listeRes.push(score);
+        if(res && res !="") {
+            var score:Set;
 
-        return true;
+            score = new Set(res);
+            listeRes.push(score);
+        }
     }
 
     onReclamA(args: EventData) {
@@ -100,9 +152,7 @@ export class ResultatComponent{
         } else {
             alert("Score incorrect ou incomplet, merci de corriger avant de saisir la réclamation");
         }
-
     }
-
 
     onReclamX(args: EventData) {
         let button = args.object as Button;
@@ -118,48 +168,36 @@ export class ResultatComponent{
     }
 
     ConstruitScore():boolean {
+
         // construire le score
         var resPartie:Array<Set>=[];
 
-        if(!isNaN(this.set1)) {
-            console.log("Set1=" + this.set1);
+        if(Set.ScoreOK(this.set1)) {
             this.AjouteRes(resPartie, this.set1);
-            if(!isNaN(this.set2)) {
-                console.log("Set2=" + this.set2);
+            if(Set.ScoreOK(this.set2)) {
                 this.AjouteRes(resPartie, this.set2);
-                if(!isNaN(this.set3)) {
-                    console.log("Set3=" + this.set3);
+                if(Set.ScoreOK(this.set3)) {
                     this.AjouteRes(resPartie, this.set3);
-                    if(!isNaN(this.set4)) {
-                        console.log("Set4=" + this.set4);
+                    if(Set.ScoreOK(this.set4)) {
                         this.AjouteRes(resPartie, this.set4);
-                        if(!isNaN(this.set5)) {
-                            console.log("Set5=" + this.set5);
+                        if(Set.ScoreOK(this.set5)) {
                             this.AjouteRes(resPartie, this.set5);
+
+                            console.log(resPartie.length + " sets dans le résultat");
+
+                            if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.nbSetsGagnants)) {
+                                this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
+                                console.log(this.quoi);
+                                // sauvegarder la session en BDD
+                                SessionAppli.Persiste();
+                                return true;
+                            }
                         }
                     }
                 }
             }
         }
-        console.log(resPartie.length + " sets dans le résultat");
-
-        if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.nbSetsGagnants)) {
-            this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
-            console.log(this.quoi);
-            // sauvegarder la session en BDD
-            SessionAppli.Persiste();
-            return true;
-        } else {
-            /*
-            // réinit scores invalides
-            this.set1 = null;
-            this.set2 = null;
-            this.set3 = null;
-            this.set4 = null;
-            this.set5 = null;
-            */
-            return false;
-        }
+        return false;
     }
 
     onTapValidate(args: EventData) {
@@ -167,7 +205,16 @@ export class ResultatComponent{
 
         if(this.ConstruitScore()) {
             // Afficher le résultat
-            console.log("Resultat = " + this.quoi);
+            console.log("Résultat = " + this.quoi);
+            // Comptabiliser les cartons
+            for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
+                if(SessionAppli.listeParties[this.numPartie].joueurX == SessionAppli.equipeX[i].id) {
+                    SessionAppli.equipeX[i].cartons = SessionAppli.equipeX[i].cartons + this.nbJaunesX + 10*this.nbRougesX;
+                }
+                if(SessionAppli.listeParties[this.numPartie].joueurA == SessionAppli.equipeA[i].id) {
+                    SessionAppli.equipeA[i].cartons = SessionAppli.equipeA[i].cartons + this.nbJaunesA + 10*this.nbRougesA;
+                }
+            }
             // Navigation
             this.routeur.navigate(["lancement"]);
         } else {

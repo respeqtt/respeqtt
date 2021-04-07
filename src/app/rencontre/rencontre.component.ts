@@ -18,7 +18,7 @@ import { Component, OnInit } from "@angular/core";
 import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { EltListeRencontre, Rencontre, Formule } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import {Router} from "@angular/router";
 
@@ -89,7 +89,6 @@ export class RencontreComponent{
         let button = args.object as Button;
         // charger la BDD avec la simulation
         Rencontre.SIM_LoadListe();
-        Formule.LoadFormules();
         // charger la liste en mémoire avec la BDD
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;

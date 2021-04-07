@@ -18,23 +18,23 @@
         <Label class="sous-titre" text="Résultats" horizontalAlignment="stretch" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="1e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="1er set" flexGrow="1" secure="false" keyboardType="number" maxLength="3" [(ngModel)]='this.set1'></TextField>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="1er set" flexGrow="1" secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set1' (blur)="onBlur1($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="2e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="2e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set2' ></TextField>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="2e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set2' (blur)="onBlur2($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="3e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="3e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set3' ></TextField>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="3e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set3' (blur)="onBlur3($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="4e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="4e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set4' ></TextField>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="4e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set4' (blur)="onBlur4($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="5e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="5e set" flexGrow="1"  secure="false" keyboardType="number"  maxLength="3" [(ngModel)]='this.set5' ></TextField>
+            <TextField style.margin="0" style.padding="0" class="sets" hint="5e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set5' (blur)="onBlur5($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
             <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamA($event)"></Button>

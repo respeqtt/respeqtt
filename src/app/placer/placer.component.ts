@@ -14,11 +14,11 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
+import { Component } from "@angular/core";
+import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie, Club, Formule } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club, Licencie } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
@@ -34,9 +34,11 @@ export class PlacerComponent{
     clubChoisi:Club;                // club
     routerExt: RouterExtensions;    // pour navigation
     equipe:Array<EltListeLicencie>; // equipe présentée dans la liste de joueurs
-    joueurSel:number=0;             // rang du joueur sélectionné dans l'équipe
+    joueurSel:number=-1;             // rang du joueur sélectionné dans l'équipe
     alphabet:string="?ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     listePlaces:Array<string> = [];
+    capitaine:string="";
+    licenceCapitaine:number=null;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // récupération du coté en paramètre
@@ -134,6 +136,12 @@ export class PlacerComponent{
     onValiderTap(args: EventData) {
         let button = args.object as Button;
 
+        // vérifier que le capitaine a été saisi
+        if((this.cote && !SessionAppli.capitaineX) || (!this.cote && !SessionAppli.capitaineA)) {
+            alert("Merci de saisir le numéro de licence du capitaine");
+            return;
+        }
+
         // trier les joueurs dans l'ordre des places
         var equipeFinale:Array<EltListeLicencie> = [];
         for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
@@ -165,12 +173,55 @@ export class PlacerComponent{
     onJoueurTap(args: ItemEventData) {
         const index = args.index;
 
-        // sélectionner le joueur et déselectionner les autres
+        // déselectionner les autres joueurs
         for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
-            this.equipe[i].sel = false;
+            if(i == index) {
+                // inverser la sélection du joueur
+                this.equipe[index].sel = !this.equipe[index].sel;
+                if(this.equipe[index].sel) {
+                    this.joueurSel = index;
+                } else {
+                    this.joueurSel = -1;
+                }
+            } else {
+                this.equipe[i].sel = false;
+            }
         }
-        this.equipe[index].sel = true;
-        this.joueurSel = index;
     }
+
+    onCapitaine(args: EventData) {
+
+        // si joueur sélectionné alors on le prend comme capitaine
+        if(this.joueurSel >=0) {
+            this.licenceCapitaine = this.equipe[this.joueurSel].id;
+        }
+        if(this.licenceCapitaine != null) {
+            console.log("licence du capitaine choisi = " + this.licenceCapitaine);
+            Licencie.get(this.licenceCapitaine, this.clubChoisi.id).then(j =>{
+                if(j) {
+                    if(this.cote) {
+                        SessionAppli.capitaineX = j as EltListeLicencie;
+                        this.capitaine = SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom;
+                    } else {
+                        SessionAppli.capitaineA = j as EltListeLicencie;
+                        this.capitaine = SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom;
+                        }
+                    } else {
+                        alert("Licence " + this.licenceCapitaine + " inconnue");
+                        this.licenceCapitaine = null;
+                        this.capitaine = "";
+                        if(this.cote) {
+                            SessionAppli.capitaineX = null;
+                        } else {
+                            SessionAppli.capitaineA = null;
+                        }
+                            }
+            }, error => {alert("Erreur :" + error.toString())
+            });
+        } else {
+            alert("Merci de choisir un joueur ou de saisir le numéro de licence du capitaine");
+        }
+    }
+
 }
 
