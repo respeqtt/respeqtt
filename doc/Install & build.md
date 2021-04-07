@@ -36,6 +36,12 @@ npm install node sass
 ns plugin add nativescript-barcodescanner
 ns plugin add @nativescript-community/ui-canvas 
 ns plugin add nativescript-sqlite
+ns plugin add nativescript-social-share
+ns plugin add nativescript-html2pdf
+ns plugin add nativescript-permissions
+#corriger 2 vulnérabilités mineures
+npm audit fix
+
 
 
 ## Installer MS CodeStudio et ses extensions Nativescript
