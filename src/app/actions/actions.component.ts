@@ -24,8 +24,6 @@ import { RouterExtensions } from "@nativescript/angular";
 
 var dialogs = require("tns-core-modules/ui/dialogs");
 
-var Sqlite = require ("nativescript-sqlite");
-
 @Component({
     templateUrl: "./actions.component.html",
     moduleId:module.id,
@@ -40,7 +38,6 @@ export class ActionsComponent{
     abandonner:boolean=false;                     // activation du bouton : abandonner la rencontre en cours
     tab:number=SessionAppli.tab;                        // tab présenté
     modeRencontre:boolean=SessionAppli.modeRencontre;   // mode rencontre ou mode saisie équipe/saisie de score hors rencontre
-
 
     constructor(private _routerExtensions: RouterExtensions) {
         this.routerExt = _routerExtensions;
@@ -70,8 +67,8 @@ export class ActionsComponent{
 
             // on ne lance les parties que si la compo est figée
             this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;
-            // on ne valide le score que si les parties ont été lancées
-            this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre;
+            // on ne valide le score que si les parties ont été lancées et si le score n'a pas déjà été validé
+            this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre && !SessionAppli.scoreValide;
 
             // on n'envoie à SPID que si le scoré a été validé
             this.spid = SessionAppli.scoreValide && SessionAppli.modeRencontre;
@@ -85,8 +82,6 @@ export class ActionsComponent{
             console.log(error);
             this.preparer = false;
         });
-
-
     }
 
     ngOnInit(): void {

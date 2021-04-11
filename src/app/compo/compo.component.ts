@@ -15,7 +15,7 @@
 /*******************************************************************************/
 
 import { Component, OnInit } from "@angular/core";
-import { Label, Button, EventData, ListView, ItemEventData, Observable, ObservableArray, Page } from "@nativescript/core";
+import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { EltListeLicencie, Licencie, Club } from "../db/RespeqttDAO";

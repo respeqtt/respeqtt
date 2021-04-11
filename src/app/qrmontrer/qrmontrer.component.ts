@@ -15,12 +15,11 @@
 /*******************************************************************************/
 
 import { Component, OnInit } from "@angular/core";
-import { Label, Button, EventData, TextField, Image, StackLayout } from "@nativescript/core";
+import { Button, EventData } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-// import { NativeScriptFormsModule } from "@nativescript/angular/forms";
 
-import { QrCode, QrSegment, Ecc } from "./qrcodegen"
+import { QrCode, Ecc } from "./qrcodegen"
 
 import { registerElement } from '@nativescript/angular';
 import { Paint, CanvasView, Canvas, createRect } from '@nativescript-community/ui-canvas';

@@ -17,9 +17,8 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Label, Button, EventData, TextField } from "@nativescript/core";
+import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
-import { toURL } from "../outils/outils";
 
 var dialogs = require("tns-core-modules/ui/dialogs");
 

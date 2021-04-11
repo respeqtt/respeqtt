@@ -26,8 +26,7 @@ import { Utils } from "@nativescript/core";
 const fs = require("tns-core-modules/file-system");
 
 
-
-import { knownFolders, path, File, Folder } from "@nativescript/core/file-system";
+import { File } from "@nativescript/core/file-system";
 import * as SocialShare from "nativescript-social-share";
 
 import { html2PdfFile } from 'nativescript-html2pdf';

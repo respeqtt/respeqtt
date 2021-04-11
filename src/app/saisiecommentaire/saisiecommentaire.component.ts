@@ -17,7 +17,7 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Label, Button, EventData } from "@nativescript/core";
+import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
 import { URLtoStringSansQuote } from "../outils/outils";
 

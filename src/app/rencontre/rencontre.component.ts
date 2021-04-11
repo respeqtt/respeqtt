@@ -14,10 +14,9 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
+import { Component } from "@angular/core";
+import { Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 
-import { RespeqttDb } from "../db/dbRespeqtt";
 import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import {Router} from "@angular/router";

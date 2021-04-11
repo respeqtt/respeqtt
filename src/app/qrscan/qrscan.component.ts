@@ -15,10 +15,10 @@
 /*******************************************************************************/
 
 import { registerElement } from "@nativescript/angular";
-import { Component, OnInit, Inject  } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { Label, Button, EventData } from "@nativescript/core";
+import { EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
 import { ListeFormules, Partie } from "../db/RespeqttDAO";

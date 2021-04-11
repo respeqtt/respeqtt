@@ -13,7 +13,6 @@
 /*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 /*                                                                             */
 /*******************************************************************************/
-import { textAlignmentProperty } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { SessionAppli} from "../session/session";
 import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } from "../outils/outils";

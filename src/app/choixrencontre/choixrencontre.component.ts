@@ -14,14 +14,14 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from "@angular/core";
-import { Page, GridLayout, Label, Button, EventData, ListView, ItemEventData, Switch } from "@nativescript/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { Page, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 import {Router} from "@angular/router";
 
-import { EltListeRencontre, Rencontre, Club, EltListeLicencie } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
-import { Mobile, Maintenant } from "../outils/outils";
+import { Mobile } from "../outils/outils";
 
 
 

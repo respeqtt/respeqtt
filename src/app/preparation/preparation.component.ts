@@ -15,7 +15,7 @@
 /*******************************************************************************/
 
 import { Component, ChangeDetectionStrategy } from "@angular/core";
-import { Button, EventData, Switch, ListView, ItemEventData } from "@nativescript/core";
+import { Button, EventData, Switch, ItemEventData } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
@@ -49,6 +49,7 @@ export class PreparationComponent{
     listeEquipeX:Array<EltListeLicencie>=[];
     lieu:string="";
     carton:couleur=null;
+    cartonsActifs:boolean=true;
 
 
     private MajLibBoutonsReserves() {
@@ -109,9 +110,11 @@ export class PreparationComponent{
         // on fixe le mode rencontre en fonction de l'onglet sur lequel on est
         SessionAppli.modeRencontre = SessionAppli.tab == 0;
 
-        this.modif = !SessionAppli.compoFigee;
-        this.switchActif = !SessionAppli.compoFigee;
-        this.resValid = SessionAppli.modeRencontre && !SessionAppli.compoFigee;
+        this.modif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
+        this.switchActif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
+        this.resValid = (SessionAppli.modeRencontre && !SessionAppli.compoFigee) && !SessionAppli.scoreValide;
+        this.cartonsActifs = !SessionAppli.scoreValide;
+
         console.log("resValid=" + this.resValid.toString());
     }
 
@@ -157,6 +160,9 @@ export class PreparationComponent{
 
     onReserveA(args: EventData) {
         let button = args.object as Button;
+
+        // mémoriser le lieu s'il a été saisi
+        SessionAppli.lieu = this.lieu;
         // Ouvrir la page de saisie des réserves
         if(this.resValid) {
             // ouverture en saisie
@@ -169,6 +175,8 @@ export class PreparationComponent{
 
     onReserveX(args: EventData) {
         let button = args.object as Button;
+        // mémoriser le lieu s'il a été saisi
+        SessionAppli.lieu = this.lieu;
         if(this.resValid) {
             // ouverture en saisie
             this.routeur.navigate(["saisiecommentaire/RESERVE/X/preparation"]);
@@ -206,6 +214,22 @@ export class PreparationComponent{
 
         // sauvegarder la session en BDD
         SessionAppli.Persiste();
+    }
+
+    // Compo équipe A
+    onCompoA (args: EventData) {
+        // mémoriser le lieu s'il a été saisi
+        SessionAppli.lieu = this.lieu;
+        // compo de l'équipe A
+        this.routeur.navigate(["compo/A"]);
+    }
+
+    // Compo équipe X
+    onCompoX (args: EventData) {
+        // mémoriser le lieu s'il a été saisi
+        SessionAppli.lieu = this.lieu;
+        // compo de l'équipe X
+        this.routeur.navigate(["compo/X"]);
     }
 
     private cartons(couleurCarton:couleur) {
@@ -319,11 +343,6 @@ export class PreparationComponent{
 
         // affichage
         alert("Equipe A:\n" + texteA + "\nEquipe X:\n" + texteX);
-    }
-
-    // ouvrir la page de consultation de la feuille de match
-    onVoirFeuille(args: EventData) {
-
     }
 
     // Fermer

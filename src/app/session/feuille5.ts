@@ -1,3 +1,19 @@
+/*******************************************************************************/
+/* This program is free software: you can redistribute it and/or modify        */
+/*     it under the terms of the Lesser GNU General Public License as          */
+/*     published by the Free Software Foundation, either version 3 of the      */
+/*     License, or (at your option) any later version.                         */
+/*                                                                             */
+/*     This program is distributed in the hope that it will be useful,         */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/*     GNU General Public License for more details.                            */
+/*                                                                             */
+/*     You should have received a copy of the GNU General Public License       */
+/*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+/*                                                                             */
+/*******************************************************************************/
+
 export class Feuille5 {
 
     public static FeuilleVide():string {
@@ -35,13 +51,13 @@ export class Feuille5 {
                 </table>
                 <table id="tabRencontre" style="min-width:1500px">
                     <tr>
-                        <td style="width:49%">Nom, Prénom, Adresse du juge arbitre : <b>#JA</b></td>
+                        <td style="width:49%">Nom, Prénom, Adresse du juge arbitre : </td>
                         <td style="width:2%"> </td>
                         <td colspan="2" style="width:25%">Lieu de rencontre : <b>#Lieu</b></td>
                         <td colspan="2" style="width:25%">Ligue : <b>#Ligue</b> </td>
                     </tr>
                     <tr>
-                        <td></td>
+                        <td><b>#JA</b></td>
                         <td> </td>
                         <td>Date : <b>#Date</b></td>
                         <td>Heure : <b>#Heure</b></td>

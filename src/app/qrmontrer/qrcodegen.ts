@@ -23,7 +23,7 @@
 "use strict";
 
 import { Color } from '@nativescript/core/color';
-import { Align, Canvas, Cap, DashPathEffect, LinearGradient, Paint, Path, RadialGradient, Rect, RectF, Style, TileMode, createRect, createRectF } from '@nativescript-community/ui-canvas';
+import { Canvas, Paint, createRect } from '@nativescript-community/ui-canvas';
 
 	/*---- QR Code symbol class ----*/
 

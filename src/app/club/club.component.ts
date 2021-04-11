@@ -14,15 +14,12 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { GridLayout, Label, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
-import { Session } from "inspector";
+import { Component } from "@angular/core";
+import { Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 import { Page } from "@nativescript/core/ui/page";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
-
-import { RespeqttDb } from "../db/dbRespeqtt";
 import { EltListeClub, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 

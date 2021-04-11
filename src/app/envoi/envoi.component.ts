@@ -14,8 +14,8 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { Label, Button, EventData } from "@nativescript/core";
+import { Component } from "@angular/core";
+import { Button, EventData } from "@nativescript/core";
 
 
 @Component({

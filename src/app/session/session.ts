@@ -1,6 +1,19 @@
-import { stringify } from "@angular/compiler/src/util";
-import { Component } from "@angular/core";
-import { numberProperty } from "@nativescript-community/ui-canvas/shapes/shape";
+/*******************************************************************************/
+/* This program is free software: you can redistribute it and/or modify        */
+/*     it under the terms of the Lesser GNU General Public License as          */
+/*     published by the Free Software Foundation, either version 3 of the      */
+/*     License, or (at your option) any later version.                         */
+/*                                                                             */
+/*     This program is distributed in the hope that it will be useful,         */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/*     GNU General Public License for more details.                            */
+/*                                                                             */
+/*     You should have received a copy of the GNU General Public License       */
+/*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+/*                                                                             */
+/*******************************************************************************/
+
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules } from "../db/RespeqttDAO";
 import { toSQL, bool2SQL, SQL2bool } from "../outils/outils";
