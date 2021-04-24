@@ -21,7 +21,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
-import { ListeFormules, Partie } from "../db/RespeqttDAO";
+import { ListeFormules, Partie, Licencie, EltListeLicencie } from "../db/RespeqttDAO";
 
 @Component({
     templateUrl: "./qrscan.component.html",
@@ -133,15 +133,15 @@ export class QRScanComponent implements OnInit{
                     }
                     // lire le JSON et aller à la page de saisie des résultats
                     iPartie = SessionAppli.listeParties[this.iPartie].JsonToPartie(result.text);
+                    console.log("Partie " + iPartie.toString());
                     // aller à la page de saisie des scores
                     if(iPartie >=0) {
                         this.router.navigate(["resultat/" + iPartie]);
+                        return;
                     } else {
                         alert("QRCode incorrect");
                     }
-
                   }
-
                   // si c'est un résultat
                   if(this.quoi == "RESULTAT") {
                     console.log("-- Scan RESULTAT --");
@@ -155,7 +155,8 @@ export class QRScanComponent implements OnInit{
                     }
                     // retour à la page de lancement des parties
                     this.router.navigate(["lancement"]);
-                  }
+                    return;
+                }
                   if(this.quoi == "COMPO") {
                     console.log("-- Scan COMPO --");
                     // lire le JSON et mettre à jour la compo de l'équipe selon le coté
@@ -172,6 +173,15 @@ export class QRScanComponent implements OnInit{
                                         + SessionAppli.equipeX[i].prenom + " "
                                         + SessionAppli.equipeX[i].points + "pts");
                             }
+                            const licCapitaine:number = SessionAppli.JsonToCapitaine(result.text);
+                            Licencie.get(licCapitaine, SessionAppli.clubX.id).then(j =>{
+                                if(j) {
+                                    SessionAppli.capitaineX = j as EltListeLicencie;
+                                } else {
+                                    alert("Licence " + licCapitaine + " inconnue");
+                                }
+                            }, error => {alert("La licence " + licCapitaine.toString() + " ne fait pas partie du club " + SessionAppli.clubX.nom);
+                            });
                         }
                     } else {
                         SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.nbJoueurs, SessionAppli.clubA.id, this.cote);
@@ -186,13 +196,20 @@ export class QRScanComponent implements OnInit{
                                         + SessionAppli.equipeA[i].prenom + " "
                                         + SessionAppli.equipeA[i].points + "pts");
                             }
+                            const licCapitaine:number = SessionAppli.JsonToCapitaine(result.text);
+                            Licencie.get(licCapitaine, SessionAppli.clubA.id).then(j =>{
+                                if(j) {
+                                    SessionAppli.capitaineA = j as EltListeLicencie;
+                                } else {
+                                    alert("Licence " + licCapitaine + " inconnue");
+                                }
+                            }, error => {alert("La licence " + licCapitaine.toString() + " ne fait pas partie du club " + SessionAppli.clubA.nom);
+                            });                        }
                         }
                     }
                     // retour à la page de compo des équipes
                     this.router.navigate(["preparation"]);
-                  }
-
-
+                    return;
                 }, (errorMessage) => {
                   console.log("No scan : " + errorMessage);
                 }

@@ -27,7 +27,7 @@ export class SessionAppli {
     public static listeRencontres:Array<EltListeRencontre>=[];
     public static recoitCoteX = false;
     public static clubChoisi:number = -1;
-    public static rencontreChoisie = -1;
+    public static rencontreChoisie = -1;        // id de la rencontre en cours dans la table des rencontres (!= index dans ListeRencontres[])
     public static titreRencontre = "";
     public static clubA:Club=null;
     public static clubX:Club=null;
@@ -110,7 +110,7 @@ export class SessionAppli {
     }
 
     // encode l'équipe en JSON
-    public static EquipetoJSon(equipe:Array<EltListeLicencie>, numClub:number):string {
+    public static EquipetoJSon(equipe:Array<EltListeLicencie>, numClub:number, licCapitaine: number):string {
         var json:string='{"club":"';
 
         json = json + numClub.toString() + '", "equipe":[';
@@ -125,11 +125,20 @@ export class SessionAppli {
             json = json + '"cartons":"'  + equipe[i].cartons + '",';
             json = json + '"points":"'  + equipe[i].points + '"}';
         }
-        json = json + ']}';
+        json = json + '], "capitaine":"' + licCapitaine + '"}';
 
         console.log("Equipe json =" + json);
 
         return json;
+    }
+
+    // extrait le capitaine du json de l'équipe
+    public static JsonToCapitaine(json:string):number {
+        var data;
+
+        data = JSON.parse(json);
+
+        return Number(data.capitaine);
     }
 
     // décode le JSON en équipe
@@ -183,6 +192,8 @@ export class SessionAppli {
 
         var feuille:string;
         const f:FormuledeRencontre=ListeFormules.getFormule(SessionAppli.formule);
+
+        console.log("Formule : " + f.id);
 
         // d'abord, mettre le score à jour
         this.MajScore();
@@ -278,31 +289,51 @@ export class SessionAppli {
         console.log("parties...");
         var rx: RegExp;
         var iDouble = 0;
-        for(var p = 0; p < SessionAppli.listeParties.length; p++) {
-            // sets
-            for(var s = 0 ; s < SessionAppli.listeParties[p].sets.length; s++) {
-                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].sets[s].score.toString(), "#P" + (p+1).toString() + "S" + (s+1).toString());
+        const nbParties = (f.desc.length + 1)/3;
+        var s:number;
+
+        for(var p = 0; p < nbParties; p++) {
+            s = 0;
+            // si on a une partie jouée, on la note
+            if(p < SessionAppli.listeParties.length) {
+                // sets
+                for(s = 0 ; s < SessionAppli.listeParties[p].sets.length; s++) {
+                    feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].sets[s].score.toString(), "#P" + (p+1).toString() + "S" + (s+1).toString());
+                }
             }
-            // on complète avec des scores vides
+            // on complète les sets non joués avec des scores vides
             var nbSets = SessionAppli.nbSetsGagnants * 2 - 1;
             for(var n = s; n < nbSets; n++) {
                 feuille = this.CompleteFeuille(feuille, "", "#P" + (p+1).toString() + "S" + (n+1).toString());
             }
-            // score équipe A
-            feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(0, 1), "#P" + (p+1).toString() + "SA");
+            if(p < SessionAppli.listeParties.length) {
+                // score équipe A
+                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(0, 1), "#P" + (p+1).toString() + "SA");
+                // score équipe X
+                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(2, 1), "#P" + (p+1).toString() + "SX");
 
-            // score équipe X
-            feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(2, 1), "#P" + (p+1).toString() + "SX");
-
-            // gestion des doubles : remplacer les intitulés
-            if(!SessionAppli.listeParties[p].simple) {
-                iDouble++;
-                var doubles:string[] = SessionAppli.listeParties[p].desc.split(" vs ");
-                if(doubles[0]) {
-                    feuille = this.CompleteFeuille(feuille, doubles[0].substr(1), "#Double" + (iDouble).toString() + "A");
+                // gestion des doubles : remplacer les intitulés
+                if(!SessionAppli.listeParties[p].simple) {
+                    iDouble++;
+                    var doubles:string[] = SessionAppli.listeParties[p].desc.split(" vs ");
+                    if(doubles[0]) {
+                        feuille = this.CompleteFeuille(feuille, doubles[0].substr(1), "#Double" + (iDouble).toString() + "A");
+                    }
+                    if(doubles[1]) {
+                        feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length - 1), "#Double" + (iDouble).toString() + "X");
+                    }
                 }
-                if(doubles[1]) {
-                    feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length - 1), "#Double" + (iDouble).toString() + "X");
+
+            } else {
+                // score équipe A
+                feuille = this.CompleteFeuille(feuille, "", "#P" + (p+1).toString() + "SA");
+                // score équipe X
+                feuille = this.CompleteFeuille(feuille, "", "#P" + (p+1).toString() + "SX");
+                // gestion des doubles : remplacer les intitulés
+                if(!SessionAppli.listeParties[p].simple) {
+                    iDouble++;
+                    feuille = this.CompleteFeuille(feuille, "", "#Double" + (iDouble).toString() + "A");
+                    feuille = this.CompleteFeuille(feuille, "", "#Double" + (iDouble).toString() + "X");
                 }
             }
         }

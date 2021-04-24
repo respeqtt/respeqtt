@@ -18,7 +18,7 @@ import { Component } from "@angular/core";
 import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie, Club, Licencie } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
@@ -51,31 +51,25 @@ export class PlacerComponent{
         // récupération du routeur pour naviguer
         this.routerExt = _routerExtensions;
 
-        // liste des places
-        var debut:number;
-        if (this.cote) {
-            debut = 23; // W
-        } else {
-            debut = 1; // A
-        }
-        // init de la liste des places
-        for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
-            this.listePlaces.push(this.alphabet.charAt(i+debut));
-        }
-
         // recherche du club correspondant
-        if(this.cote) {
+        // liste des places
+        const f:FormuledeRencontre = ListeFormules.getFormule(SessionAppli.formule);
+        if (this.cote) {
             this.clubChoisi = SessionAppli.clubX;
             this.equipe = SessionAppli.equipeX;
-        }
-        else {
+            // init de la liste des places
+            for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
+                this.listePlaces.push(f.joueursX);
+                this.equipe[i].place = f.joueursX;
+            }
+        } else {
             this.clubChoisi = SessionAppli.clubA;
             this.equipe = SessionAppli.equipeA;
-        }
-
-        // init du tableau des places : dans l'ordre de l'équipe
-        for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
-            this.equipe[i].place = this.alphabet.charAt(i+debut);
+            // init de la liste des places
+            for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
+                this.listePlaces.push(f.joueursA);
+                this.equipe[i].place = f.joueursA;
+            }
         }
 
         if(SessionAppli.equipeA) {
@@ -148,7 +142,7 @@ export class PlacerComponent{
             equipeFinale.push(this.equipe[i]);
         }
         // tracer le json
-        console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id));
+        console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine));
 
         if(this.cote) {
             SessionAppli.equipeX = equipeFinale;
@@ -159,7 +153,7 @@ export class PlacerComponent{
     }
 
     onQRCodeTap(args: EventData) {
-        const quoi:string= SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id);
+        const quoi:string= SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine);
         const titre:string=SessionAppli.titreRencontre + " équipe " + this.clubChoisi.nom;
         const dim:number = SessionAppli.dimEcran - 40;
 

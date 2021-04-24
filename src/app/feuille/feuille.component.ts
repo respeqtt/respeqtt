@@ -124,47 +124,47 @@ export class FeuilleComponent {
         })
         .catch(() => {
             console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+
         });
     }
 
 
-        // Fichier PDF
-        onPDF(args: EventData) {
-            let button = args.object as Button;
+    // Fichier PDF
+    onPDF(args: EventData) {
+        let button = args.object as Button;
 
-            // First get the required permissions
-            // Note: this permissions should also be in your AndroidManifest.xml file as:
-            //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            // (Included by Nativescript)
-            const permissions = require('nativescript-permissions')
-            permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .then(() => {
-                console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
-                // Get the publicly accessable Downloads directory path
-                const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
-                console.log('sdDownloadPath: ' + sdDownloadPath)
+        // First get the required permissions
+        // Note: this permissions should also be in your AndroidManifest.xml file as:
+        //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        // (Included by Nativescript)
+        const permissions = require('nativescript-permissions')
+        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .then(() => {
+            console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
+            // Get the publicly accessable Downloads directory path
+            const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
+            console.log('sdDownloadPath: ' + sdDownloadPath)
 
-                // Get a specific folder in that path (will be created if it does not exist)
-                const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
-                console.log('RESPEQTT path: ' + myAppFolder.path)
+            // Get a specific folder in that path (will be created if it does not exist)
+            const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
+            console.log('RESPEQTT path: ' + myAppFolder.path)
 
-                // Get a file in that path (will be created if it does not exist)
-                // Note: In this case we try to get a unique file every time this code is run
-                // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
-                let pdfPath:string = myAppFolder.getFile('feuille-de-match.pdf').path;
-                    console.log('myFile path: ' + pdfPath)
-        //        let pdfPath: string = fs.knownFolders.documents().getFile('feuille-de-match.pdf').path;
+            // Get a file in that path (will be created if it does not exist)
+            // Note: In this case we try to get a unique file every time this code is run
+            // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
+            let pdfPath:string = myAppFolder.getFile('feuille-de-match.pdf').path;
+                console.log('myFile path: ' + pdfPath)
+    //        let pdfPath: string = fs.knownFolders.documents().getFile('feuille-de-match.pdf').path;
 
-                // convertit la feuille de match en PDF
-                html2PdfFile(SessionAppli.feuilleDeMatch, pdfPath);
+            // convertit la feuille de match en PDF
+            html2PdfFile(SessionAppli.feuilleDeMatch, pdfPath);
 
-                // Ouvrir le lecteur de PDF
-                Utils.openFile(pdfPath);
-            })
-            .catch(() => {
-                console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
-            });
-
+            // Ouvrir le lecteur de PDF
+            Utils.openFile(pdfPath);
+        })
+        .catch(() => {
+            console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+        });
     }
 
 

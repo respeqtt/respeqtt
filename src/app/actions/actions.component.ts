@@ -64,6 +64,7 @@ export class ActionsComponent{
 
             // Chargement des formules
             ListeFormules.Init();
+            console.log("Liste des formules chargée (" + ListeFormules.tabFormules.length + " formules)");
 
             // on ne lance les parties que si la compo est figée
             this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;

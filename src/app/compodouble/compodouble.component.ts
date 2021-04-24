@@ -274,7 +274,11 @@ export class CompoDoubleComponent{
         if(this.cote == "A") club = SessionAppli.clubA.nom;
         else                 club = SessionAppli.clubX.nom;
 
-        this.routerExt.navigate(["/qrmontrer/" + json + "/" + SessionAppli.dimEcran + "/" + "Compo doubles " + club]);
+        const titre:string="Compo doubles " + club;
+        const dim:number = SessionAppli.dimEcran - 40;
+
+         this.routerExt.navigate(["attente/" + json + "/" + dim + "/" + titre + "/compodouble/"]);
+
     }
 
     onValiderTap(args: EventData) {

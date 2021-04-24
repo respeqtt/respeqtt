@@ -123,9 +123,7 @@ export class LancementComponent{
     onQRCode(args: EventData) {
         let button = args.object as Button;
 
- //       this.routerExt.navigate(["qrmontrer/" + quoi + "/" + dim + "/" + titre]);
     }
-
 
     onFermer(args: EventData) {
         let button = args.object as Button;
