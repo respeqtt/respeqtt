@@ -14,15 +14,15 @@ Application de saisie et de restitution des scores du championnat par équipes d
 
 # TO DO list
 
-    Echange de QRCode pour la compo des doubles
-    page verso de la feuille de match avec réserves, réclamations et rapport du JA
-    API SPID (entrantes : joueurs et équipes ; sortante : résultats)
-    valider la gestion des cartons
-    Tests finaux
-    revoir le look ?
-    Tests avec Android 11 ?
-    Déployer dans GoogleStore
-    Produire et tester une version iPhone
+- Echange de QRCode pour la compo des doubles
+- page verso de la feuille de match avec réserves, réclamations et rapport du JA
+- API SPID (entrantes : joueurs et équipes ; sortante : résultats)
+- valider la gestion des cartons
+- Tests finaux
+- revoir le look ?
+- Tests avec Android 11 ?
+- Déployer dans GoogleStore
+- Produire et tester une version iPhone
 
 
 # Outils
