@@ -13,11 +13,17 @@ Application de saisie et de restitution des scores du championnat par équipes d
 - fonctionne quelle que soit la formule de la compétition (nb de joueurs, nb de parties, nb de sets par partie)
 
 # TO DO list
-- revoir responsive pour les pages de compo et de saisie des résultats
-- revoir saisie des doubles pour permettre annuler au milieu
-- envoi feuille de match format texte ou md ? par mail? Sait composer en html mais ne sait pas visualiser (partager le fichier avec explorateur) ni intégrer la mise en forme en tant que corps du mail (trop gros + mise en forme pas gérée)
-- API SPID entrante
-- API SPID sortante
+
+- Echange de QRCode pour la compo des doubles
+- page verso de la feuille de match avec réserves, réclamations et rapport du JA
+- API SPID (entrantes : joueurs et équipes ; sortante : résultats)
+- valider la gestion des cartons
+- Tests finaux
+- revoir le look ?
+- Tests avec Android 11 ?
+- Déployer dans GoogleStore
+- Produire et tester une version iPhone
+
 
 # Outils
 Développement avec NativeScript
