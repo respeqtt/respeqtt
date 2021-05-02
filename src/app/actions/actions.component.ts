@@ -17,7 +17,7 @@
 import { Component } from "@angular/core";
 import { Tabs, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { ListeFormules, EltListeRencontre, Rencontre, Partie } from "../db/RespeqttDAO";
+import { ListeFormules, EltListeRencontre, Rencontre, Partie, FormuledeRencontre } from "../db/RespeqttDAO";
 import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
@@ -30,7 +30,7 @@ var dialogs = require("tns-core-modules/ui/dialogs");
     styleUrls: ["../global.css"]
 })
 export class ActionsComponent{
-    routerExt: RouterExtensions;            // pour navigation
+    router: RouterExtensions;                     // pour navigation
     preparer:boolean=false;                       // activation du bouton : préparer la feuille de match
     lancer: boolean=false;                        // activation du bouton : lancer les parties
     valider:boolean=false;                        // activation du bouton : valider le score
@@ -40,7 +40,7 @@ export class ActionsComponent{
     modeRencontre:boolean=SessionAppli.modeRencontre;   // mode rencontre ou mode saisie équipe/saisie de score hors rencontre
 
     constructor(private _routerExtensions: RouterExtensions) {
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // Init de la BDD
         RespeqttDb.Init().then(ok => {
@@ -88,15 +88,18 @@ export class ActionsComponent{
     ngOnInit(): void {
 
         // calcul de la largeur de l'écran
-        var mobile:Mobile= new Mobile;
+        let mobile:Mobile= new Mobile;
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
+
+        console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele);
+
     }
 
     onFeuille(args: EventData) {
         let button = args.object as Button;
 
         // consulter ou envoyer la feuille de match
-        this.routerExt.navigate(["feuille"]);
+        this.router.navigate(["feuille"]);
     }
 
     onValiderScore(args: EventData) {
@@ -126,14 +129,14 @@ export class ActionsComponent{
                 cancelButtonText:"ANNULER"
                 }).then(r => {
                     if(r.result) {
-                        this.routerExt.navigate(["valider/"+ SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+                        this.router.navigate(["valider/"+ SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
                 } else {
                     console.log("VALIDATION ANNULEE");
                     return;
                 }
             });
         } else {
-            this.routerExt.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+            this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
         }
     }
 
@@ -193,15 +196,15 @@ export class ActionsComponent{
         // vérifier si on peut passer sur la page de lancement des parties
         // inutile : le bouton est inactif si pas this.lancer
         if(this.lancer) {
-            this.routerExt.navigate(["lancement"]);
+            this.router.navigate(["lancement"]);
         }
     }
 
     onPreparer(args: EventData) {
         if(SessionAppli.rencontreChoisie >= 0) {
-            this.routerExt.navigate(["preparation"]);
+            this.router.navigate(["preparation"]);
         } else {
-            this.routerExt.navigate(["choixrencontre"]);
+            this.router.navigate(["choixrencontre"]);
         }
     }
 
@@ -214,7 +217,7 @@ export class ActionsComponent{
             SessionAppli.tab = 2;
             // préparation de la session
             if(SessionAppli.rencontreChoisie < 0) {
-                var p:Partie;
+                let p:Partie;
                 SessionAppli.rencontreChoisie = 0;
                 p = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
                 p.desc = "PARTIE IMPORTEE";
@@ -222,7 +225,7 @@ export class ActionsComponent{
                 console.log("Partie  à scanner :" + SessionAppli.listeParties[0].desc);
             }
             // appeler la page de scan des parties
-            this.routerExt.navigate(["/qrscan/PARTIE/0"]);
+            this.router.navigate(["/qrscan/PARTIE/0"]);
         }
 
     }
@@ -231,19 +234,19 @@ export class ActionsComponent{
     onClub(args: EventData) {
         SessionAppli.tab = 1;
         // appeler la page de compo des équipes
-        this.routerExt.navigate(["clubs/actions"]);
+        this.router.navigate(["clubs/actions"]);
     }
 
     onJoueurs(args: EventData) {
         SessionAppli.tab = 1;
         // appeler la page de compo des équipes
-        this.routerExt.navigate(["joueurs"]);
+        this.router.navigate(["joueurs"]);
     }
 
     onRencontre(args: EventData) {
         SessionAppli.tab = 1;
         // appeler la page de choix de rencontre
-        this.routerExt.navigate(["choixrencontre"]);
+        this.router.navigate(["choixrencontre"]);
     }
 
     onCompo(args: EventData) {
@@ -253,8 +256,52 @@ export class ActionsComponent{
             SessionAppli.rencontreChoisie = 0;
         }
         // appeler la page de compo des équipes
-        this.routerExt.navigate(["preparation"]);
+        this.router.navigate(["preparation"]);
     }
+
+
+    onCompoDoubles(args: EventData) {
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        // si on a déjà une équipe de saisie on propose de l'utiliser
+        let cote:string="";
+        let texteEquipe:string="\n";
+        const f:FormuledeRencontre=ListeFormules.getFormule(SessionAppli.formule);
+        if(SessionAppli.equipeX.length > 0) {
+            cote = "X";
+            for(let i=0; i < SessionAppli.equipeX.length; i++ ) {
+                texteEquipe = texteEquipe + SessionAppli.equipeX[i].nom + " " + SessionAppli.equipeX[i].prenom + "\n";
+            }
+        } else {
+            if(SessionAppli.equipeA.length > 0) {
+                cote = "A";
+                for(let i=0; i < SessionAppli.equipeA.length; i++ ) {
+                    texteEquipe = texteEquipe + SessionAppli.equipeA[i].nom + " " + SessionAppli.equipeA[i].prenom + "\n";
+                }
+            }
+        }
+        if(cote != "" && f.id > 0) {
+            dialogs.prompt({title:"Préférence",
+            message:"Voulez-vous saisir les doubles à partir de l'équipe en cours : " + texteEquipe,
+            okButtonText:"GARDER",
+            cancelButtonText:"SCANNER UNE AUTRE EQUIPE"
+            }).then(r => {
+                if(r.result) {
+                    console.log("!!! On garde l'équipe !!!");
+                    // aller à la page de compo des doubles
+                    this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()]);
+                } else {
+                    // appeler la page de scan des doubles
+                    console.log("-> qrscan/EQUIPE/0");
+                    this.router.navigate(["qrscan/EQUIPE/0"]);
+                }
+            });
+        }
+    }
+
 
     onPartie(args: EventData) {
         // préparation de la session
@@ -263,7 +310,7 @@ export class ActionsComponent{
             SessionAppli.rencontreChoisie = 0;
         }
         // appeler la page de scan des parties
-        this.routerExt.navigate(["qrscan/PARTIE/0"]);
+        this.router.navigate(["qrscan/PARTIE/0"]);
     }
 
 

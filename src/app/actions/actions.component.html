@@ -37,6 +37,7 @@
             <Button text="Télécharger les joueurs" flexGrow="1" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Choisir une rencontre"   flexGrow="1" (tap)="onRencontre($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Composer son équipe"     flexGrow="1" (tap)="onCompo($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Composer les doubles"    flexGrow="1" (tap)="onCompoDoubles($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Saisir une partie"       flexGrow="1" (tap)="onPartie($event)" [isenabled]="!this.modeRencontre"></Button>
         </FlexboxLayout>
     </TabContentItem>

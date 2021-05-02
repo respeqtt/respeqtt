@@ -24,6 +24,10 @@ export class Mobile {
         this.langue = Device.language;
     }
 
+    public OS():string {
+        return this.estAndroid ? "android" : "IOS";
+    }
+
 }
 
 export class StringListElt {

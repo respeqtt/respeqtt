@@ -109,8 +109,52 @@ export class SessionAppli {
         return scoreComplet;
     }
 
+    // encode les doubles en JSON
+    public static DoublestoJSon(doubles:Array<string>, numClub:number):string {
+        let json:string = '{"club":"' + numClub.toString() + '", "doubles":[';
+
+        for(let i=0; i < doubles.length; i++) {
+            if(i>0) json = json + ', ';
+            json = json + '{"double":"' + doubles[i] + '"}'
+        }
+        json = json + ']}';
+        return json;
+    }
+
+    // convertit un message json en compo de doubles
+    public static JsonToDoubles (json:string, cote:boolean) {
+        let data;
+        // analyse du JSON en entrée
+        data = JSON.parse(json);
+
+        let numClub:number = data.club;
+        let attendu = cote ? SessionAppli.clubX.id : SessionAppli.clubA.id;
+        if(numClub == attendu) {
+            let iDouble = 0;
+            // chercher les doubles dans la liste des parties
+            for(let p=0; p < SessionAppli.listeParties.length; p++) {
+                if(!SessionAppli.listeParties[p].simple) {
+                    // compléter la compo du double de la session avec le double saisi
+                    // si ce sont les doubles X, on complète après vs
+                    let finA:number=SessionAppli.listeParties[p].desc.search(" vs ");
+                    if(cote) {
+                        SessionAppli.listeParties[p].desc = SessionAppli.listeParties[p].desc.substr(0, finA + 4) + data.doubles[iDouble].double + " = ";
+                    } else {
+                        SessionAppli.listeParties[p].desc = "#" + data.doubles[iDouble].double + " vs " + SessionAppli.listeParties[p].desc.substr(finA + 5);
+                    }
+                } else {
+                }
+            }
+        } else {
+            console.log("Le club n°" + numClub.toString() + " n'est pas celui attendu");
+        }
+
+    }
+
+
+
     // encode l'équipe en JSON
-    public static EquipetoJSon(equipe:Array<EltListeLicencie>, numClub:number, licCapitaine: number):string {
+    public static EquipetoJSon(equipe:Array<EltListeLicencie>, numClub:number, licCapitaine: number, formule:number):string {
         var json:string='{"club":"';
 
         json = json + numClub.toString() + '", "equipe":[';
@@ -125,7 +169,8 @@ export class SessionAppli {
             json = json + '"cartons":"'  + equipe[i].cartons + '",';
             json = json + '"points":"'  + equipe[i].points + '"}';
         }
-        json = json + '], "capitaine":"' + licCapitaine + '"}';
+        json = json + '], "capitaine":"' + licCapitaine + '",';
+        json = json + '"formule":"' + formule.toString() + '"}';
 
         console.log("Equipe json =" + json);
 
@@ -141,30 +186,70 @@ export class SessionAppli {
         return Number(data.capitaine);
     }
 
-    // décode le JSON en équipe
-    public static JsonToEquipe(json:string, nbJoueurs:number, club:number, cote:boolean):Array<EltListeLicencie> {
+    // extrait la formule du json de l'équipe
+    public static JsonToFormule(json:string):number {
         var data;
-        var equipe:Array<EltListeLicencie>=[];
 
         data = JSON.parse(json);
+
+        return Number(data.formule);
+    }
+
+
+    // extrait le club du json de l'équipe
+    public static JsonToClub(json:string):number {
+        var data;
+
+        data = JSON.parse(json);
+
+        return Number(data.club);
+    }
+
+
+    // décode le JSON en équipe
+    public static JsonToEquipe(json:string, club:number, coteAttendu:string):Array<EltListeLicencie> {
+        let data;
+        let equipe:Array<EltListeLicencie>=[];
+        let cote : string;
+
+        data = JSON.parse(json);
+
+        // récupérer la formule avec l'équipe
+        const numFormule:number = Number(data.formule);
+
+        const f:FormuledeRencontre = ListeFormules.getFormule(numFormule);
+
         // controles
-        if(data.club == club) {
+        if(data.club == club || club == null) {
             for(var i = 0; i < data.equipe.length; i++) {
-                const codePlace = data.equipe[i].place.charCodeAt(0);
-                if((cote && codePlace >= "Z".charCodeAt(0) - nbJoueurs)
-                || (!cote && codePlace < "A".charCodeAt(0) + nbJoueurs)) {
-                    // ajouter le joueur dans la liste
-                    var  elt:EltListeLicencie = new EltListeLicencie();
-                    elt.id = Number(data.equipe[i].licence);
-                    elt.place = data.equipe[i].place;
-                    elt.nom = data.equipe[i].nom;
-                    elt.prenom = data.equipe[i].prenom;
-                    elt.cartons = Number(data.equipe[i].cartons);
-                    elt.points = Number(data.equipe[i].points);
-                    equipe.push(elt);
-                } else {
-                    console.log("!!! Place pas cohérente avec le côté " + (cote ? "X" : "A"));
+                const place = data.equipe[i].place.charAt(0);
+
+                // controle du coté
+                console.log("Joueur" + i.toString());
+                console.log("Cherche place=" + place);
+                cote = f.coteDePlace(place);
+                if (cote != coteAttendu && coteAttendu != null) {
+                    console.log("!!! Ce n'est pas les doubles du coté attendu " + f.desc);
                     equipe = [];
+                } else {
+                    switch(cote){
+                        case 'A' :
+                        case 'X' :
+                            // ajouter le joueur dans la liste
+                            var  elt:EltListeLicencie = new EltListeLicencie();
+                            elt.id = Number(data.equipe[i].licence);
+                            elt.place = data.equipe[i].place;
+                            elt.nom = data.equipe[i].nom;
+                            elt.prenom = data.equipe[i].prenom;
+                            elt.cartons = Number(data.equipe[i].cartons);
+                            elt.points = Number(data.equipe[i].points);
+                            equipe.push(elt);
+                        break;
+                        default :
+                            // controle de la place dans la formule
+                            console.log("!!! Place pas connue de la formule " + f.desc);
+                            equipe = [];
+                    }
                 }
             }
         } else {

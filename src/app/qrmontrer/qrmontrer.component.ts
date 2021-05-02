@@ -118,7 +118,12 @@ export class QRMontrerComponent implements OnInit{
 
         // retourne à la page d'appel
         goBack() {
-            this.router.navigate([this.retour]);
+            if(this.retour == "<<back") {
+                this.router.backToPreviousPage();
+                this.router.backToPreviousPage();
+            } else {
+                this.router.navigate([this.retour]);
+            }
         }
 
         onTap(args: EventData) {

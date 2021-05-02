@@ -19,30 +19,20 @@ import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } f
 
 
 
-// renvoie le code de la première lettre dans la liste des lettres de joueurs
-export function debut(s:string):number {
-    return s.charCodeAt(0);
-}
-
-// renvoie les deux lettres (clubA + clubX) qui décrivent la partie
-// n = rang de la partie recherchée, à partir de 1
-export function getPartie(n: number, s:string):string {
-        const debut = (n-1)*3;
-        const fin = debut + 2;
-        return s.substring(debut, fin);
-    }
-
-// renvoie le nombre de parties
-export function getNbParties(s:string):number {
-        return (s.length + 1)/3;
-    }
-
-
 export class FormuledeRencontre {
-    id:number;      // nombre de parties sur la feuille de match
-    desc:string;    // description des parties
+    id:number;          // nombre de parties sur la feuille de match
+    desc:string;        // description des parties
     joueursA:string;    // liste des lettres des joueurs coté A
     joueursX:string;    // liste des lettres des joueurs coté X
+    nbDoubles:number;   // nb de doubles à disputer
+
+    public constructor(f:FormuledeRencontre) {
+        this.id = f.id;
+        this.desc = f.desc
+        this.joueursA = f.joueursA;
+        this.joueursX = f.joueursX;
+        this.nbDoubles = f.nbDoubles;
+    }
 
     // renvoie la première lettre du coté demandé
     public debut(cote:string):number {
@@ -68,7 +58,14 @@ export class FormuledeRencontre {
         return (this.desc.length + 1)/3;
     }
 
-
+    // renvoie le coté si la lettre est dans la formule
+    public coteDePlace(place:string):string {
+        for(let i = 0; i < this.joueursA.length; i++) {
+            if(this.joueursA.charAt(i) == place) return "A";
+            if(this.joueursX.charAt(i) == place) return "X";
+        }
+        return "?";
+    }
 };
 
 export class EltListeRencontre {
@@ -102,18 +99,18 @@ export class Rencontre{
 
     // renvoie la liste des rencontres en BDD pour affichage sur la page des rencontres
     public static getListe() {
-        var liste:Array<any>;
-        var n:number;
+        let liste:Array<any>;
+        let n:number;
         // requêtes SQL
-        var selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
+        let selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
 
         let promise = new Promise(function(resolve, reject) {
 
             RespeqttDb.db.all(selListe).then(rows => {
                 liste = [];
                 n = 0;
-                for(var row in rows) {
-                    var elt = new EltListeRencontre;
+                for(let row in rows) {
+                    let elt = new EltListeRencontre;
                     elt.id = Number(rows[row][0]);
                     console.log("li" + n, "id=" + elt.id + "/" + rows[row][0]);
                     elt.division = rows[row][1];
@@ -139,7 +136,7 @@ export class Rencontre{
     public static SIM_LoadListe():void {
 
         // création de 3 clubs
-        var sqlClub =`insert into Club (clu_kn, clu_va_nom) values (`;
+        let sqlClub =`insert into Club (clu_kn, clu_va_nom) values (`;
 
         let clubs= [
             `1690162, 'Valenc''In Pierre TT')`,
@@ -158,14 +155,14 @@ export class Rencontre{
            `4, 1690162, 1690221, '2021/04/05 09H00', 2, 5, 4, 14, 3, 2, 0, 'R3', 'AURA', 'A')`
        ];
 
-        for (var j in clubs) {
+        for(let j in clubs) {
             RespeqttDb.db.execSQL(sqlClub + clubs[j]).then(id => {
                 console.log("Club " + clubs[j] + " inséré");
                 }, error => {
                     console.log("ECHEC INSERT Club " + error.toString());
                 });
         }
-        for (var j in rencontres) {
+        for(let j in rencontres) {
             RespeqttDb.db.execSQL(sqlRen + rencontres[j]).then(id => {
                 console.log("Rencontre " + rencontres[j] + " insérée");
                 }, error => {
@@ -268,7 +265,7 @@ export class Club{
             RespeqttDb.db.all(Club.selListe).then(rows => {
                 liste = [];
                 n = 0;
-                for(var row in rows) {
+                for(let row in rows) {
                     var elt = new EltListeClub;
                     elt.numero = Number(rows[row][0]);
                     console.log("club" + n, "num=" + elt.numero + "/" + rows[row][0]);
@@ -396,7 +393,7 @@ export class Licencie{
             RespeqttDb.db.all(Licencie.selListe + where).then(rows => {
                 liste = [];
                 n = 0;
-                for(var row in rows) {
+                for(let row in rows) {
                     var elt = new EltListeLicencie;
                     elt.id = Number(rows[row][0]);
                     console.log("li" + n, "id=" + elt.id + "/" + rows[row][0]);
@@ -441,7 +438,7 @@ export class Licencie{
             `1690221, 690205, 'MARTIN', 'Charlotte', 1234, 1, 0, 1)`
         ];
 
-        for (var j in joueurs) {
+        for(let j in joueurs) {
             RespeqttDb.db.execSQL(sql + joueurs[j]).then(id => {
                 console.log("Joueur " + joueurs[j] + " inséré");
                 }, error => {
@@ -475,13 +472,13 @@ export class Partie{
 
         if(formule) {
             // mettre en forme les parties
-            n = getNbParties(formule.desc);
+            n = formule.getNbParties();
             console.log("Nb parties=" + n);
-            for(var i:number=0; i < SessionAppli.nbJoueurs; i++) {
+            for(let i:number=0; i < SessionAppli.nbJoueurs; i++) {
                 console.log("J" + (i+1) + " A = " + (forfaitA ? "(forfait)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(forfait)" : eqX[i].nom));
             }
-            for(var i:number = 0; i<n; i++) {
-                partie = new Partie(formule, getPartie(i+1, formule.desc), eqA, eqX, forfaitA, forfaitX);
+            for(let i:number = 0; i<n; i++) {
+                partie = new Partie(formule, formule.getPartie(i+1), eqA, eqX, forfaitA, forfaitX);
                 liste.push(partie);
             }
             return liste;
@@ -493,9 +490,9 @@ export class Partie{
     // p vide -> partie créée vide
     constructor(f:FormuledeRencontre, p:string, eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean) {
 
-        var joueur:EltListeLicencie;
-        const debutA:number=debut(f.joueursA);
-        const debutX:number=debut(f.joueursX);
+        let joueur:EltListeLicencie;
+        const debutA:number=f.debut("A");
+        const debutX:number=f.debut("X");
 
         if(p != ""){
             // pas sélectionnée
@@ -561,7 +558,7 @@ export class Partie{
         this.sets=[];
 
         // cas des parties disputées
-        for(var i=0; i < result.length; i++) {
+        for(let i=0; i < result.length; i++) {
             if(Set.AVainqueur(result[i].score)) {
                 ptsA++;
             } else {
@@ -620,7 +617,7 @@ export class Partie{
              + '", "res": [';
 
         // Coder le résultat des sets en JSON
-        for(var i = 0; i < this.sets.length; i++) {
+        for(let i = 0; i < this.sets.length; i++) {
             if(i>0) json = json + ","
             json = json + '{"set": "' + i + '", "score": "' + this.sets[i].score  + '"}';
         }
@@ -645,7 +642,7 @@ export class Partie{
 
         if(iPartie >= 0 && iPartie < 30) {
             // on crée assez de parties pour avoir celle que l'on veut
-            for(var i=SessionAppli.listeParties.length; i < iPartie+1 ; i++) {
+            for(let i=SessionAppli.listeParties.length; i < iPartie+1 ; i++) {
                 var p:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
                 SessionAppli.listeParties.push(p);
             }
@@ -671,8 +668,8 @@ export class Partie{
 
     // convertit un message json en score d'une partie
     public static JsonToScore (json:string):number {
-        var data;
-        var iPartie:number = -1;
+        let data;
+        let iPartie:number = -1;
 
         // analyse du JSON en entrée
         data = JSON.parse(json);
@@ -686,7 +683,7 @@ export class Partie{
             var listeSets:Array<Set>=[];
             var s:Set;
             console.log(data.res.length.toString() + " sets dans le scan");
-            for(var i=0; i < data.res.length; i++) {
+            for(let i=0; i < data.res.length; i++) {
                 s = new Set(data.res[i].score);
                 listeSets.push(s);
             }
@@ -753,7 +750,7 @@ export class Partie{
     public static PersisteListeParties(rencontre:number, parties:Array<Partie>) {
 
         // écriture de la liste des parties en BDD
-        for(var i = 0; i < parties.length; i++) {
+        for(let i = 0; i < parties.length; i++) {
             Partie.PersistePartie(rencontre, parties[i], i);
         }
 
@@ -768,7 +765,7 @@ export class Partie{
         var sql:string = `select par_vn_num integer, par_va_desc,par_vn_jouA, par_vn_jouX, par_vn_double, par_va_score
               from Partie where par_ren_kn = ` + rencontre;
         RespeqttDb.db.all(sql).then(rows => {
-            for(var row in rows) {
+            for(let row in rows) {
                 var rang = Number(rows[row][0]);
                 var elt:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
 
@@ -868,8 +865,8 @@ export class Set{
     public static PersisteSets(rencontre:number, parties:Array<Partie>) {
 
 
-        for(var i=0; i < parties.length; i++) {
-            for(var j=0; j < parties[i].sets.length; j++) {
+        for(let i=0; i < parties.length; i++) {
+            for(let j=0; j < parties[i].sets.length; j++) {
                 Set.PersisteSet(rencontre, i, parties[i].sets[j], j);
             }
         }
@@ -880,7 +877,7 @@ export class Set{
 
         var sql:string = `select set_par_kn, set_vn_num, set_va_score from Set_ren where set_ren_kn = ` + rencontre;
         RespeqttDb.db.all(sql).then(rows => {
-            for(var row in rows) {
+            for(let row in rows) {
                 var numPartie:number;
                 var elt:Set = new Set("999");
 
@@ -901,7 +898,7 @@ export class Set{
 
 export class ListeFormules {
     // gestion de la table des formules
-    static tabFormules:FormuledeRencontre[] = null;  // table des formules
+    static tabFormules:FormuledeRencontre[] = [];  // table des formules
     // formules
     // 0 pour les parties hors rencontre (SessionAppli.formule = 0)
     static json:string=`{
@@ -910,40 +907,48 @@ export class ListeFormules {
                 "id": "0",
                 "desc": "AX",
                 "joueursA": "A",
-                "joueursX": "X"
+                "joueursX": "X",
+                "nbDoubles":"0"
             },
             {
                 "id": "1",
                 "desc": "AX",
                 "joueursA": "A",
-                "joueursX": "X"
+                "joueursX": "X",
+                "nbDoubles":"0"
             },
             {
                 "id": "5",
                 "desc": "AX BY 11 AY BX",
                 "joueursA": "A B",
-                "joueursX": "X Y"
+                "joueursX": "X Y",
+                "nbDoubles":"1"
             },
             {
                 "id": "14",
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 AY CW DX BZ",
                 "joueursA": "A B C D",
-                "joueursX": "W X Y Z"
+                "joueursX": "W X Y Z",
+                "nbDoubles":"2"
             },
             {
                 "id": "18",
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ",
                 "joueursA": "A B C D",
-                "joueursX": "W X Y Z"
+                "joueursX": "W X Y Z",
+                "nbDoubles":"2"
             }
         ]
     }`;
 
     // charge la table des formules
     public static Init() {
-        this.tabFormules = JSON.parse(this.json).formules;
-        for(var i=0; i < this.tabFormules.length; i++) {
-            console.log("Formule " + this.tabFormules[i].id + " = " + this.tabFormules[i].desc);
+        let mesFormules:FormuledeRencontre[] = JSON.parse(this.json).formules as FormuledeRencontre[];
+
+        for(let i=0; i < mesFormules.length; i++) {
+            let maFormule:FormuledeRencontre = new FormuledeRencontre(mesFormules[i] as FormuledeRencontre);
+            console.log("Formule " + maFormule.id + " = " + maFormule.desc);
+            this.tabFormules.push(maFormule);
         }
 
     }
@@ -951,7 +956,7 @@ export class ListeFormules {
     // renvoie la formule complete
     public static getFormule(id:number):FormuledeRencontre {
 
-        for(var i = 0; i < this.tabFormules.length; i++) {
+        for(let i = 0; i < this.tabFormules.length; i++) {
             if(this.tabFormules[i].id == id) {
                 return this.tabFormules[i];
             }
@@ -969,14 +974,14 @@ export class Compo{
     public static PersisteEquipe(rencontre:number, equipe:Array<EltListeLicencie>, coteX:boolean) {
 
         console.log("Equipe de " + equipe.length + " joueurs");
-        for(var i = 0; i < equipe.length; i++) {
-            Compo.PersisteJoueur(equipe[i], (coteX ? 10 : 0) + i, rencontre);
+        for(let i = 0; i < equipe.length; i++) {
+            Compo.PersisteJoueur(equipe[i], rencontre);
         }
     }
 
-    public static PersisteJoueur(joueur:EltListeLicencie, rang:number, rencontre:number) {
+    public static PersisteJoueur(joueur:EltListeLicencie, rencontre:number) {
 
-        var insert: string  = `insert into compo (cpo_ren_kn, cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points,
+        var insert: string  = `insert into compo (cpo_ren_kn, cpo_va_place, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points,
             cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons) values (`;
         var values:string;
         var update:string  = "update Compo set cpo_lic_kn = " + joueur.id.toString() + ", "
@@ -988,16 +993,16 @@ export class Compo{
         + "cpo_vn_feminin = " + bool2SQL(joueur.feminin) + ", "
         + "cpo_vn_cartons = " + joueur.cartons.toString()
         + " where cpo_ren_kn = " + rencontre.toString()
-        + " and cpo_vn_rang = " + rang.toString();
+        + " and cpo_va_place = " + toSQL(joueur.place);
 
         console.log(update);
         RespeqttDb.db.execSQL(update).then(n => {
             if(n > 0) {
-                console.log("Joueur " + rang + " mis à jour en BDD");
+                console.log("Joueur " + joueur.place + " mis à jour en BDD");
             } else {
                 // le joueur n'existe pas => insert
                 values = rencontre + ", "
-                       + rang.toString() + ", "  // l'équipe X commence à 10
+                       + toSQL(joueur.place) + ", "
                        + joueur.id.toString() + ", "
                        + toSQL(joueur.nom) + ", "
                        + toSQL(joueur.prenom) + ", "
@@ -1008,7 +1013,7 @@ export class Compo{
                        + joueur.cartons.toString() + ")";
 
                 RespeqttDb.db.execSQL(insert + values).then(id => {
-                    console.log("Joueur " + rang + " inséré en BDD");
+                    console.log("Joueur " + joueur.place + " inséré en BDD");
                 }, error2 => {
                     console.log("Echec insertion dans la table Compo", error2);
                 });
@@ -1022,14 +1027,15 @@ export class Compo{
     // recharge les équipes de la rencontre dans la session en cours
     public static RechargeEquipes(rencontre:number) {
 
-        var sql:string = `select cpo_vn_rang, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons
+        var sql:string = `select cpo_va_place, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons
                from Compo where cpo_ren_kn = ` + rencontre; + " order by cpo_vn_num asc"
         RespeqttDb.db.all(sql).then(rows => {
-            for(var row in rows) {
+            for(let row in rows) {
                 var rang = Number(rows[row][0]);
                 var elt:EltListeLicencie = new EltListeLicencie();
 
                 elt.id = Number(rows[row][1]);
+                elt.place = rows[row][0];
                 elt.nom = rows[row][2];
                 elt.prenom = rows[row][3];
                 elt.points = Number(rows[row][4]);
@@ -1037,7 +1043,7 @@ export class Compo{
                 elt.etranger = SQL2bool(Number(rows[row][6]));
                 elt.feminin = SQL2bool(Number(rows[row][7]));
                 elt.cartons = Number(rows[row][8]);
-                if(rang > 9) {
+                if(elt.place.charAt(0) > "M") {
                     // équipe X
                     SessionAppli.equipeX.push(elt);
                 } else {

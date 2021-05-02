@@ -26,6 +26,7 @@ import { ClubComponent } from "./club/club.component";
 import { PreparationComponent } from "./preparation/preparation.component";
 import { CompoComponent } from "./compo/compo.component";
 import { CompoDoubleComponent } from "./compodouble/compodouble.component";
+import { CompoDoubleExtComponent } from "./compodoubleext/compodoubleext.component";
 import { PlacerComponent } from "./placer/placer.component";
 import { LancementComponent } from "./lancement/lancement.component";
 import { EnvoiComponent } from "./envoi/envoi.component";
@@ -48,6 +49,7 @@ const routes: Routes = [
     { path: "preparation", component: PreparationComponent },
     { path: "compo/:cote", component: CompoComponent },
     { path: "compoDouble/:cote/:numDouble/:nbDoubles", component: CompoDoubleComponent },  // coté = A ou X ; numDouble = numéro du double à composer ; nbDoubles = nb de doubles
+    { path: "compoDoubleExt/:cote/:numDouble/:nbDoubles", component: CompoDoubleExtComponent },  // coté = A ou X ; numDouble = numéro du double à composer ; nbDoubles = nb de doubles
     { path: "placer/:cote", component: PlacerComponent },
     { path: "lancement", component: LancementComponent },
     { path: "envoi", component: EnvoiComponent },

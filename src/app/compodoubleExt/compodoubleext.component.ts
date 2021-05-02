@@ -26,11 +26,11 @@ var dialogs = require("tns-core-modules/ui/dialogs");
 
 
 @Component({
-    templateUrl: "./compodouble.component.html",
+    templateUrl: "./compodoubleext.component.html",
     moduleId:module.id,
     styleUrls: ["../global.css"]
 })
-export class CompoDoubleComponent{
+export class CompoDoubleExtComponent{
     listeJoueurs:Array<EltListeLicencie>;
     maListe:Observable;
     numDouble:number;
@@ -41,7 +41,6 @@ export class CompoDoubleComponent{
     doublesA:string[];
     doublesX:string[];
     iDouble:number[]=[];
-    scan:boolean=false;
 
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
@@ -152,10 +151,9 @@ export class CompoDoubleComponent{
             this.numDouble++;
             this.SaisieDouble(this.cote, this.numDouble);
         } else {
-            // si numDouble = nbDoubles et club qui reçoit : demander compo autre club
-            if(this.numDouble == this.nbDoubles
-              && ((this.cote == "X" && SessionAppli.recoitCoteX) || (this.cote == "A" && !SessionAppli.recoitCoteX)) ) {
-                // demander confirmation avant de changer de coté
+            // si numDouble = nbDoubles : montrer le QRCode
+            if(this.numDouble == this.nbDoubles) {
+                // demander confirmation avant de montrer le QRCode
                 var texteDoubles="";
                 for(var i = 0; i < this.nbDoubles; i++) {
                     if(this.cote == "X") {
@@ -171,17 +169,7 @@ export class CompoDoubleComponent{
                 }).then(r => {
                     if(r.result) {
                         console.log("!!! Compo des doubles validée !!!");
-                        console.log("Changer de coté");
-                        // permettre le scan
-                        this.scan  = true;
-                        this.numDouble = 1;
-                        console.log("Saisie compo double " + this.numDouble + ", club " + (this.cote == "X" ? "A" : "X"));
-                        if(this.cote =="X") {
-                            this.cote = "A"
-                        } else {
-                            this.cote = "X"
-                        }
-                        this.SaisieDouble(this.cote, this.numDouble);
+                        this.QrCode();
                     } else {
                         console.log("!!! Compo des doubles annulée !!!");
                         this.numDouble = 1;
@@ -264,44 +252,25 @@ export class CompoDoubleComponent{
         }
     }
 
-    onScanTap(args: EventData) {
-        // mémoriser les doubles déjà saisis
-        for(var i = 0 ; i < this.nbDoubles; i++) {
-            SessionAppli.listeParties[this.iDouble[i]].desc = "#"
-                + (this.doublesA.length > 0 ? this.doublesA[i] : "")
-                + " vs "
-                + (this.doublesX.length > 0 ? this.doublesX[i] : "")
-                + " = ";
-            // mettre à jour le score si un des doubles est forfait
-            this.MajScoreDoubleForfait(this.iDouble[i]);
-            console.log("Double[" + this.iDouble[i].toString() + "] = " + SessionAppli.listeParties[this.iDouble[i]].desc);
-        }
-
-        // appeler la page de scan
-        console.log("/qrscan/DOUBLES/" + this.cote);
-        this.routerExt.navigate(["/qrscan/DOUBLES/" + this.cote]);
-    }
-
-    onQRCodeTap(args: EventData) {
+    private QrCode() {
         var json:string="";
-
 
         // montrer l'équipe pour demander la compo des doubles
         var club:string;
         if(this.cote == "A") {
-            club = SessionAppli.clubA.nom;
-            json = SessionAppli.EquipetoJSon(SessionAppli.equipeA, SessionAppli.clubA.id, SessionAppli.capitaineA.id, SessionAppli.formule);
+            club = SessionAppli.clubA.id.toString();
+            json = SessionAppli.DoublestoJSon(this.doublesA, SessionAppli.clubA.id);
         }
         else {
-            club = SessionAppli.clubX.nom;
-            json = SessionAppli.EquipetoJSon(SessionAppli.equipeX, SessionAppli.clubX.id, SessionAppli.capitaineX.id, SessionAppli.formule);
+            club = SessionAppli.clubX.id.toString();
+            json = SessionAppli.DoublestoJSon(this.doublesX, SessionAppli.clubX.id);
         }
-
+        console.log("Doubles: " + json);
 
         const titre:string="Compo doubles " + club;
         const dim:number = SessionAppli.dimEcran - 40;
 
-         this.routerExt.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"]);
+         this.routerExt.navigate(["attente/" + json + "/" + dim + "/" + titre + "/actions/0"]);
 
     }
 
@@ -344,6 +313,7 @@ export class CompoDoubleComponent{
         this.MemoDouble(double);
         this.DoubleSuivant();
     }
+
 
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;

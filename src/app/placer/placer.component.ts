@@ -60,7 +60,7 @@ export class PlacerComponent{
             // init de la liste des places
             for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
                 this.listePlaces.push(f.joueursX);
-                this.equipe[i].place = f.joueursX;
+                this.equipe[i].place = f.joueursX.charAt(i*2);
             }
         } else {
             this.clubChoisi = SessionAppli.clubA;
@@ -68,7 +68,7 @@ export class PlacerComponent{
             // init de la liste des places
             for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
                 this.listePlaces.push(f.joueursA);
-                this.equipe[i].place = f.joueursA;
+            this.equipe[i].place = f.joueursA.charAt(i*2);
             }
         }
 
@@ -86,7 +86,7 @@ export class PlacerComponent{
         this.listeJoueurs = new Observable();
         this.listeJoueurs.set("listeJoueurs", new ObservableArray(this.equipe));
         for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
-            console.log("Joueur[" + (i+1) + "]= " + this.equipe[i].id);
+            console.log("Joueur[" + (i+1) + "]= " + this.equipe[i].place + "/" + this.equipe[i].id);
             this.equipe[i].sel = false;
         }
     }
@@ -142,7 +142,7 @@ export class PlacerComponent{
             equipeFinale.push(this.equipe[i]);
         }
         // tracer le json
-        console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine));
+        console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
 
         if(this.cote) {
             SessionAppli.equipeX = equipeFinale;
@@ -153,7 +153,7 @@ export class PlacerComponent{
     }
 
     onQRCodeTap(args: EventData) {
-        const quoi:string= SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine);
+        const quoi:string= SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule);
         const titre:string=SessionAppli.titreRencontre + " équipe " + this.clubChoisi.nom;
         const dim:number = SessionAppli.dimEcran - 40;
 

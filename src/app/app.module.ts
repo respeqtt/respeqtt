@@ -28,6 +28,7 @@ import { ClubComponent } from "./club/club.component";
 import { PreparationComponent } from "./preparation/preparation.component";
 import { CompoComponent } from "./compo/compo.component";
 import { CompoDoubleComponent } from "./compodouble/compodouble.component";
+import { CompoDoubleExtComponent } from "./compodoubleext/compodoubleext.component";
 import { PlacerComponent } from "./placer/placer.component";
 import { LancementComponent } from "./lancement/lancement.component";
 import { ResultatComponent } from "./resultat/resultat.component";
@@ -62,6 +63,7 @@ import { AppRoutingModule } from "./app-routing.module";
         PreparationComponent,
         CompoComponent,
         CompoDoubleComponent,
+        CompoDoubleExtComponent,
         PlacerComponent,
         RencontreComponent,
         ChoixRencontreComponent,

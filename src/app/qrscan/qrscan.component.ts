@@ -21,7 +21,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
-import { ListeFormules, Partie, Licencie, EltListeLicencie } from "../db/RespeqttDAO";
+import { ListeFormules, Partie, Licencie, EltListeLicencie, FormuledeRencontre, Club } from "../db/RespeqttDAO";
 
 @Component({
     templateUrl: "./qrscan.component.html",
@@ -60,6 +60,28 @@ export class QRScanComponent implements OnInit{
             this.titre = "Scan de la partie";
             this.sousTitre = "au choix";
 
+        }
+
+        // si on scanne une compo de double, on est en mode rencontre
+        if(this.quoi == "EQUIPE") {
+            this.titre = "Scan d'une équipe";
+            this.sousTitre = "pour composer les doubles";
+            if(this._route.snapshot.paramMap.get("param") == "X") {
+                this.cote = true;
+            } else {
+                this.cote = false;
+            }
+        }
+
+        // si on scanne une compo de double, on est en mode rencontre
+        if(this.quoi == "DOUBLES") {
+            this.titre = "Scan de la composition des doubles";
+            this.sousTitre = "de l'équipe " + this._route.snapshot.paramMap.get("param");
+            if(this._route.snapshot.paramMap.get("param") == "X") {
+                this.cote = true;
+            } else {
+                this.cote = false;
+            }
         }
 
         // si on scanne le résultat d'une partie, mémoriser son indice dans la liste des parties en cours
@@ -142,6 +164,57 @@ export class QRScanComponent implements OnInit{
                         alert("QRCode incorrect");
                     }
                   }
+                  // si c'est une équipe pour la compo des doubles
+                  if(this.quoi == "EQUIPE") {
+                    console.log("-- Scan EQUIPE --");
+                    // lire le JSON pour permettre la compo des doubles
+                    let equipe:EltListeLicencie[] = SessionAppli.JsonToEquipe(result.text, null, null);
+                    let iClub:number = SessionAppli.JsonToClub(result.text);
+                    let club = new Club;
+                    club.id  = iClub;
+                    club.nom = iClub.toString();
+                    if(equipe) {
+                        //trouver le coté
+                        let cote:string;
+                        if(equipe[0].place.charCodeAt(0) < "M".charCodeAt(0)) {
+                            cote ="A";
+                            SessionAppli.equipeA = equipe;
+                            SessionAppli.clubA = club;
+
+                        }
+                        else {
+                            cote = "X";
+                            SessionAppli.equipeX = equipe;
+                            SessionAppli.clubX = club;
+                        }
+                        // aller à la page de compo des doubles
+                        // trouver le nb de doubles
+                        const nFormule = SessionAppli.JsonToFormule(result.text);
+                        console.log("Cherche formule=" + result.text + ", trouvé = " + nFormule.toString());
+                        const f:FormuledeRencontre=ListeFormules.getFormule(nFormule);
+                        if(f) {
+                            console.log("appel de : " + "compoDouble/" + cote + "/1/" + f.nbDoubles.toString())
+                            this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()]);
+                        }
+                        else {
+                            console.log("Pas trouvé la formule " + nFormule.toString());
+                        }
+                    } else {
+                        alert("QRCode incorrect");
+                    }
+
+                    return;
+                  }
+                  // si c'est un double
+                  if(this.quoi == "DOUBLES") {
+                    console.log("-- Scan DOUBLES --");
+                    var iPartie:number;
+                    // lire le JSON et mettre à jour la liste des parties avec la compo des doubles
+                    SessionAppli.JsonToDoubles(result.text, this.cote);
+                    // retour à la page de lancement des parties
+                    this.router.navigate(["lancement"]);
+                    return;
+                  }
                   // si c'est un résultat
                   if(this.quoi == "RESULTAT") {
                     console.log("-- Scan RESULTAT --");
@@ -156,12 +229,12 @@ export class QRScanComponent implements OnInit{
                     // retour à la page de lancement des parties
                     this.router.navigate(["lancement"]);
                     return;
-                }
+                  }
                   if(this.quoi == "COMPO") {
                     console.log("-- Scan COMPO --");
                     // lire le JSON et mettre à jour la compo de l'équipe selon le coté
                     if(this.cote) {
-                        SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.nbJoueurs, SessionAppli.clubX.id, this.cote);
+                        SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubX.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeX.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
@@ -184,7 +257,7 @@ export class QRScanComponent implements OnInit{
                             });
                         }
                     } else {
-                        SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.nbJoueurs, SessionAppli.clubA.id, this.cote);
+                        SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubA.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeA.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
@@ -223,10 +296,16 @@ export class QRScanComponent implements OnInit{
     onFermer(args: EventData) {
         switch(this.quoi) {
             case "PARTIE":
-                    this.router.navigate(["resultat/" + this.iPartie]);
+                this.router.navigate(["resultat/" + this.iPartie]);
             break;
             case "COMPO":
                 this.router.navigate(["preparation"]);
+            break;
+            case "EQUIPE":
+                this.router.navigate(["actions"]);
+            break;
+            case "DOUBLES":
+                this.router.navigate(["actions"]);
             break;
         }
     }
