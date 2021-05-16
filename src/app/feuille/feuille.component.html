@@ -10,9 +10,11 @@
 <FlexboxLayout flexDirection="column">
         <Label class="titre" [text]="this.titre" flexGrow="0" flexShrink="0" ></Label>
         <Label class="sous-titre" [text]="this.sousTitre" flexGrow="1" flexShrink="1" ></Label>
-        <Button text="Copier" backgroundColor="blue" (tap)="onCopier($event)" flexGrow="0" flexShrink="0" ></Button>
-        <Button text="Consulter" backgroundColor="blue" (tap)="onConsulter($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Consulter recto" backgroundColor="blue" (tap)="onRecto($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Consulter verso" backgroundColor="blue" (tap)="onVerso($event)" flexGrow="0" flexShrink="0" ></Button>
         <!-- Button text="PDF" backgroundColor="blue" (tap)="onPDF($event)" flexGrow="0" flexShrink="0" ></Button -->
+        <Button text="Copier recto" backgroundColor="blue" (tap)="onCopierRecto($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Copier verso" backgroundColor="blue" (tap)="onCopierVerso($event)" flexGrow="0" flexShrink="0" ></Button>
         <Button text="Fermer" backgroundColor="darkblue" (tap)="onFermer($event)" flexGrow="0" flexShrink="0" ></Button>
     </FlexboxLayout>
 

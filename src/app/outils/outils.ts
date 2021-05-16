@@ -75,6 +75,17 @@ export function toSQL(s:string):string {
     return "'" + s.replace(pattern, insert) + "'";
 }
 
+// échappe les <> dans le HTML
+export function toHTML(s:string):string {
+    let res:string;
+    let pattern:RegExp = /</g;
+    let insert:string = "&lt";
+    res = s.replace(pattern, insert);
+    pattern = />/g;
+    insert = "&gt";
+    return res.replace(pattern, insert);
+}
+
 // traduit un booléen en entier (VRAI = 1, FAUX = 0)
 export function bool2SQL(b:boolean):number {
     return b ? 1: 0;

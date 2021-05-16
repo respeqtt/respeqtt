@@ -16,11 +16,13 @@
 
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules } from "../db/RespeqttDAO";
-import { toSQL, bool2SQL, SQL2bool } from "../outils/outils";
+import { toSQL, bool2SQL, SQL2bool, toHTML } from "../outils/outils";
 
 import { Feuille18 } from "./feuille18";    // championnat par équipes départemental Rhone etc
 import { Feuille14 } from "./feuille14";    // championnat par équipes régional et national
 import { Feuille5 }  from "./feuille5";     // coupe du Rhone
+
+import { Verso }  from "./verso";           // verso de toutes les feuilles
 
 export class SessionAppli {
 
@@ -61,6 +63,7 @@ export class SessionAppli {
     public static formule:number=0;
     public static date:string="";
     public static lieu:string="";
+    public static versoFeuille:string="";
 
     // sleep
     public static delay(ms: number){
@@ -275,7 +278,7 @@ export class SessionAppli {
     // remplir la feuille de match avec les infos de la session et de la rencontre passée en paramètre
     public static RemplirLaFeuille(r:Rencontre) {
 
-        var feuille:string;
+        let feuille:string;
         const f:FormuledeRencontre=ListeFormules.getFormule(SessionAppli.formule);
 
         console.log("Formule : " + f.id);
@@ -301,11 +304,15 @@ export class SessionAppli {
 
         // Juge Arbitre (nom, prénom, adresse)
         console.log("Juge arbitre ...");
-        var ja:string="";
         if(SessionAppli.nomJA != "") {
-            ja = SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.adresseJA;
-        }
-        feuille = this.CompleteFeuille(feuille, ja, "#JA");
+            feuille = this.CompleteFeuille(feuille, SessionAppli.nomJA, "#NomJA");
+            feuille = this.CompleteFeuille(feuille, SessionAppli.licenceJA.toString(), "#LicJA");
+            feuille = this.CompleteFeuille(feuille, SessionAppli.adresseJA, "#AdresseJA");
+        } else {
+            feuille = this.CompleteFeuille(feuille, "(pas de Juge Arbitre)", "#NomJA");
+            feuille = this.CompleteFeuille(feuille, "", "#LicJA");
+            feuille = this.CompleteFeuille(feuille, "", "#AdresseJA");
+            }
 
         console.log("Rencontre n°" + r.id);
         // Lieu de la rencontre
@@ -313,8 +320,8 @@ export class SessionAppli {
         // Ligue
         feuille = this.CompleteFeuille(feuille, r.ligue, "#Ligue");
         // Date heure
-        var date:string;
-        var heure:string;
+        let date:string;
+        let heure:string;
         date = SessionAppli.date.substr(0, SessionAppli.date.indexOf(" ")-1);
         feuille = this.CompleteFeuille(feuille, date, "#Date");
         heure = SessionAppli.date.substr(SessionAppli.date.indexOf(" ")+1);
@@ -372,12 +379,12 @@ export class SessionAppli {
 
         // Parties
         console.log("parties...");
-        var rx: RegExp;
-        var iDouble = 0;
+        let rx: RegExp;
+        let iDouble = 0;
         const nbParties = (f.desc.length + 1)/3;
-        var s:number;
+        let s:number;
 
-        for(var p = 0; p < nbParties; p++) {
+        for(let p = 0; p < nbParties; p++) {
             s = 0;
             // si on a une partie jouée, on la note
             if(p < SessionAppli.listeParties.length) {
@@ -387,8 +394,8 @@ export class SessionAppli {
                 }
             }
             // on complète les sets non joués avec des scores vides
-            var nbSets = SessionAppli.nbSetsGagnants * 2 - 1;
-            for(var n = s; n < nbSets; n++) {
+            let nbSets = SessionAppli.nbSetsGagnants * 2 - 1;
+            for(let n = s; n < nbSets; n++) {
                 feuille = this.CompleteFeuille(feuille, "", "#P" + (p+1).toString() + "S" + (n+1).toString());
             }
             if(p < SessionAppli.listeParties.length) {
@@ -400,12 +407,13 @@ export class SessionAppli {
                 // gestion des doubles : remplacer les intitulés
                 if(!SessionAppli.listeParties[p].simple) {
                     iDouble++;
+                    console.log("Double : " + SessionAppli.listeParties[p].desc);
                     var doubles:string[] = SessionAppli.listeParties[p].desc.split(" vs ");
                     if(doubles[0]) {
                         feuille = this.CompleteFeuille(feuille, doubles[0].substr(1), "#Double" + (iDouble).toString() + "A");
                     }
                     if(doubles[1]) {
-                        feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length - 1), "#Double" + (iDouble).toString() + "X");
+                        feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length), "#Double" + (iDouble).toString() + "X");
                     }
                 }
 
@@ -429,7 +437,7 @@ export class SessionAppli {
         // Score Equipe X
         feuille = this.CompleteFeuille(feuille, SessionAppli.scoreX.toString(), "#ScoreX");
         // Nombre de réserves
-        var nbR:number;
+        let nbR:number;
         nbR = (SessionAppli.reserveClubA == "" ? 0 : 1) + (SessionAppli.reserveClubX == "" ? 0 : 1);
         if(nbR > 0) {
             feuille = this.CompleteFeuille(feuille, nbR.toString(), "#NbRes");
@@ -444,11 +452,11 @@ export class SessionAppli {
             feuille = this.CompleteFeuille(feuille, "---", "#NbRecl");
         }
         // Nombre de cartons
-        var nbC:number=0;
+        let nbC:number=0;
         console.log("Nb joueurs = " + SessionAppli.nbJoueurs);
         console.log("Nb joueurs eq A= " + SessionAppli.equipeA.length);
         console.log("Nb joueurs eq X= " + SessionAppli.equipeX.length);
-        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
+        for(let i = 0; i < SessionAppli.nbJoueurs; i++) {
             if(SessionAppli.equipeA[i].cartons > 0) nbC++;
             if(SessionAppli.equipeX[i].cartons > 0) nbC++;
         }
@@ -490,16 +498,150 @@ export class SessionAppli {
         console.log("!!! Feuille remplie !!!");
 
         SessionAppli.feuilleDeMatch = feuille;
+
+        // Remplir le verso
+        let verso:string = Verso.FeuilleVide();
+
+        // Cartons
+        let nbCartons:number = 1;
+        for(let i = 0; i < SessionAppli.nbJoueurs; i++) {
+            if(SessionAppli.equipeA[i].cartons > 0) {
+                verso = this.Cartons(verso, SessionAppli.equipeA[i], SessionAppli.clubA, nbCartons);
+                nbCartons++;
+            }
+            if(SessionAppli.equipeX[i].cartons > 0) {
+                verso = this.Cartons(verso, SessionAppli.equipeX[i], SessionAppli.clubX, nbCartons);
+                nbCartons++;
+            }
+        }
+        for(let i = nbCartons; i < 10; i++) {
+            verso = this.Cartons(verso, null, null, i);
+        }
+
+        // JA et capitaines
+        // Juge Arbitre (nom, prénom, adresse)
+        console.log("Juge arbitre ...");
+        if(SessionAppli.nomJA != "") {
+            verso = this.CompleteFeuille(verso, SessionAppli.nomJA, "#NomJA");
+            verso = this.CompleteFeuille(verso, SessionAppli.licenceJA.toString(), "#LicJA");
+        } else {
+            verso = this.CompleteFeuille(verso, "(pas de Juge Arbitre)", "#NomJA");
+            verso = this.CompleteFeuille(verso, "", "#LicJA");
+        }
+
+        verso = this.CompleteFeuille(verso, SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom, "#CapitaineA");
+        verso = this.CompleteFeuille(verso, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
+        verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom, "#CapitaineX");
+        verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
+
+        // Réserves et Réclamation
+        let nRetR:number = 0;
+        if(SessionAppli.reserveClubA != "") {
+            nRetR++;
+            verso = this.CompleteFeuille(verso, SessionAppli.reserveClubA, "#Re" + nRetR.toString());
+
+        }
+        if(SessionAppli.reserveClubX != "") {
+            nRetR++;
+            verso = this.CompleteFeuille(verso, SessionAppli.reserveClubX, "#Re" + nRetR.toString());
+
+        }
+        if(SessionAppli.reclamationClubA != "") {
+            nRetR++;
+            verso = this.CompleteFeuille(verso, SessionAppli.reclamationClubA, "#Re" + nRetR.toString());
+
+        }
+        if(SessionAppli.reclamationClubX != "") {
+            nRetR++;
+            verso = this.CompleteFeuille(verso, SessionAppli.reclamationClubX, "#Re" + nRetR.toString());
+
+        }
+        for(let i=nRetR; i < 10; i++) {
+            verso = this.CompleteFeuille(verso, "", "#Re" + i.toString());
+        }
+
+        // Rapport du JA
+        let liRap:number = 1;
+        if(SessionAppli.rapportJA != "") {
+            let debut:number = 0;
+            let finLigne:number = SessionAppli.rapportJA.search(/\n/);
+            if(finLigne < 0) finLigne = SessionAppli.rapportJA.length;
+            let li:string = SessionAppli.rapportJA.substring(debut, finLigne-1);
+            verso = this.CompleteFeuille(verso, toHTML(li), "#Rap" + liRap.toString());
+            while(finLigne >= 0 && liRap < 9) {
+                liRap++;
+                debut = finLigne;
+                finLigne = SessionAppli.rapportJA.search(/\n/);
+                li = SessionAppli.rapportJA.substring(debut+1, finLigne-1);
+                verso = this.CompleteFeuille(verso, toHTML(li), "#Rap" + liRap.toString());
+            }
+            // dernière ligne (si on a déjà 8 lignes, on met le reste du rapport dans la 9e)
+            li = SessionAppli.rapportJA.substring(debut+1, SessionAppli.rapportJA.length);
+            verso = this.CompleteFeuille(verso, toHTML(li), "#Rap" + liRap.toString());
+        }
+        for(let i=liRap; i < 10; i++) {
+            verso = this.CompleteFeuille(verso, "", "#Rap" + i.toString());
+        }
+
+        SessionAppli.versoFeuille = verso;
+    }
+
+    private static Cartons(verso:string, joueur:EltListeLicencie, club:Club, i:number):string {
+        if(joueur == null) {
+            verso = this.CompleteFeuille(verso, "", "#CJ" + i.toString());
+            verso = this.CompleteFeuille(verso, "", "#CClub" + i.toString());
+            verso = this.CompleteFeuille(verso, "" , "#CJaune" + i.toString());
+            verso = this.CompleteFeuille(verso, "" , "#CJR1." + i.toString());
+            verso = this.CompleteFeuille(verso, "" , "#CJR2." + i.toString());
+            verso = this.CompleteFeuille(verso, "" , "#CRouge" + i.toString());
+            verso = this.CompleteFeuille(verso, "" , "#MotifC" + i.toString());
+        } else {
+            let nbJaunes = joueur.cartons % 10;
+            let nbRouges = joueur.cartons / 10;
+            console.log(joueur.nom + " " + joueur.prenom + "=" + nbJaunes.toString() + " jaunes et " + Math.floor(nbRouges).toString()  + " rouges");
+            if(nbJaunes > 0) {
+                verso = this.CompleteFeuille(verso, joueur.nom + " " + joueur.prenom, "#CJ" + i.toString());
+                verso = this.CompleteFeuille(verso, club.nom , "#CClub" + i.toString());
+                verso = this.CompleteFeuille(verso, "" , "#MotifC" + i.toString());
+                switch(nbJaunes){
+                    case 1 : // 1 jaune
+                    verso = this.CompleteFeuille(verso, "OUI" , "#CJaune" + i.toString());
+                    verso = this.CompleteFeuille(verso, "" , "#CJR1." + i.toString());
+                    verso = this.CompleteFeuille(verso, "" , "#CJR2." + i.toString());
+                    break;
+                    case 0 :
+                    break;
+                    case 2 : // 2 jaunes
+                    verso = this.CompleteFeuille(verso, "" , "#CJaune" + i.toString());
+                    verso = this.CompleteFeuille(verso, "OUI" , "#CJR1." + i.toString());
+                    verso = this.CompleteFeuille(verso, "" , "#CJR2." + i.toString());
+                    break;
+                    default : // > 3 jaunes ou plus
+                    verso = this.CompleteFeuille(verso, "" , "#CJaune" + i.toString());
+                    verso = this.CompleteFeuille(verso, "" , "#CJR1." + i.toString());
+                    verso = this.CompleteFeuille(verso, "OUI" , "#CJR2." + i.toString());
+                }
+            }
+            if(nbRouges >= 1) {
+                verso = this.CompleteFeuille(verso, "" , "#MotifC" + i.toString());
+                verso = this.CompleteFeuille(verso, joueur.nom + " " + joueur.prenom, "#CJ" + i.toString());
+                verso = this.CompleteFeuille(verso, club.nom , "#CClub" + i.toString());
+                verso = this.CompleteFeuille(verso, "" , "#CJaune" + i.toString());
+                verso = this.CompleteFeuille(verso, "" , "#CJR1." + i.toString());
+                verso = this.CompleteFeuille(verso, "" , "#CJR2." + i.toString());
+            verso = this.CompleteFeuille(verso, "OUI" , "#CRouge" + i.toString());
+            } else {
+                verso = this.CompleteFeuille(verso, "" , "#CRouge" + i.toString());
+            }
+    }
+        return verso;
     }
 
     private static RemplitJoueurs(joueurs:string, equipe:EltListeLicencie[], feuille:string):string {
 
-        var debut:number;
-        var fin:number;
-        var j:string;
-        var rx: RegExp;
+        let j:string;
 
-        for(var i = 0; i < equipe.length; i++) {
+        for(let i = 0; i < equipe.length; i++) {
             j = joueurs.charAt(2*i);
             // Id
             feuille = this.CompleteFeuille(feuille, equipe[i].id.toString(), "#Id" + j);
@@ -508,12 +650,12 @@ export class SessionAppli {
             // Pts
             feuille = this.CompleteFeuille(feuille, equipe[i].points.toString(), "#Pts" + j);
             // MutEtr
-            var m:string = (equipe[i].mute ? "M" : "") + (equipe[i].etranger ? "E" : "");
+            let m:string = (equipe[i].mute ? "M" : "") + (equipe[i].etranger ? "E" : "");
             feuille = this.CompleteFeuille(feuille, m, "#MutEtr" + j);
             // NbCart
-            var c: string;
-            var nbJ:number;
-            var nbR:number;
+            let c: string;
+            let nbJ:number;
+            let nbR:number;
             nbJ = equipe[i].cartons %10;
             nbR = Math.floor(equipe[i].cartons/10);
             c = (nbJ > 0 ? nbJ.toString() + " jaunes" : "") + (nbR > 0 ? nbR.toString() + " rouges" : "");
@@ -584,7 +726,8 @@ export class SessionAppli {
             ses_vn_nbSetsGagnants,
             ses_vn_formule,
             ses_va_date,
-            ses_va_lieu
+            ses_va_lieu,
+            ses_va_verso
             )`;
         var values:string;
 
@@ -619,7 +762,8 @@ export class SessionAppli {
                + SessionAppli.nbSetsGagnants + ", "
                + SessionAppli.formule + ", "
                + toSQL(SessionAppli.date) + ", "
-               + toSQL(SessionAppli.lieu) + " "
+               + toSQL(SessionAppli.lieu) + ", "
+               + toSQL(SessionAppli.versoFeuille) + " "
                   + ") ";
 
         // insertion en BDD
@@ -675,7 +819,8 @@ export class SessionAppli {
             + "ses_vn_nbSetsGagnants = " + SessionAppli.nbSetsGagnants + ", "
             + "ses_vn_formule = " + SessionAppli.formule + ", "
             + "ses_va_date = " + toSQL(SessionAppli.date) + ", "
-            + "ses_va_lieu = " + toSQL(SessionAppli.lieu) + " "
+            + "ses_va_lieu = " + toSQL(SessionAppli.lieu) + ", "
+            + "ses_va_verso = " + toSQL(SessionAppli.versoFeuille) + " "
             + "where ses_ren_kn = " + SessionAppli.rencontreChoisie;
 
         // màj en BDD
@@ -760,7 +905,8 @@ export class SessionAppli {
             ses_vn_nbSetsGagnants,
             ses_vn_formule,
             ses_va_date,
-            ses_va_lieu
+            ses_va_lieu,
+            ses_va_verso
         from Session where ses_ren_kn = ` + rencontre;
 
         var clubA:number;
@@ -826,7 +972,7 @@ export class SessionAppli {
                 SessionAppli.formule = Number(row[27]);
                 SessionAppli.date = row[28];
                 SessionAppli.lieu = row[29];
-
+                SessionAppli.versoFeuille = row[30];
 
                 // retrouver les clubs
                 Club.getClub(clubA).then(c =>{
@@ -913,5 +1059,6 @@ export class SessionAppli {
                     SessionAppli.formule=0;
                     SessionAppli.date="";
                     SessionAppli.lieu="";
+                    SessionAppli.versoFeuille="";
     }
 }

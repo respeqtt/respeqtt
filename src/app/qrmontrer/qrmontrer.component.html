@@ -12,7 +12,9 @@
         <Label  [text] = "this.titre"></Label>
         <cv:CanvasView [width]="this.dimEcran" [height]="this.dimEcran" (draw)="draw($event)" (onDraw)="draw($event)"> </cv:CanvasView>
         <Button text="Fermer"  (tap)="goBack()"></Button>
+        <!--
         <Label  [text] = "this.trace"></Label>
+        -->
     </StackLayout>
 
 </Page>

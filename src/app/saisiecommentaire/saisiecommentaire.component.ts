@@ -19,7 +19,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
-import { URLtoStringSansQuote } from "../outils/outils";
+import { URLtoStringSansQuote, HeureMinCourante } from "../outils/outils";
 
 @Component({
     templateUrl: "./saisiecommentaire.component.html",
@@ -57,7 +57,7 @@ export class SaisieCommentaireComponent {
                         if(SessionAppli.reserveClubA != "") {
                             this.saisie = SessionAppli.reserveClubA;
                         }
-                        this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "\n";
                     break;
                     case "RESERVE-C" :
                         console.log("Reserve :" + SessionAppli.reserveClubA);
@@ -75,7 +75,7 @@ export class SaisieCommentaireComponent {
                             const partie:number = Number(this.retour.substr(9))+1;
                             this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
                         }
-                        this.saisie = this.saisie + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "\n";
                     break;
                 }
             break;
@@ -87,7 +87,7 @@ export class SaisieCommentaireComponent {
                         if(SessionAppli.reserveClubX != "") {
                             this.saisie = SessionAppli.reserveClubX;
                         }
-                        this.saisie = this.saisie + "POSEE A " + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "\n";
                     break;
                     case "RESERVE-C" :
                         console.log("Reserve :" + SessionAppli.reserveClubX);
@@ -105,7 +105,7 @@ export class SaisieCommentaireComponent {
                             const partie:number = Number(this.retour.substr(9))+1;
                             this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
                         }
-                        this.saisie = this.saisie + maintenant.getHours().toString() + ":" + maintenant.getMinutes().toString() + "\n";
+                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "\n";
                     break;
                 }
             break;

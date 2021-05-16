@@ -89,7 +89,7 @@ export class FeuilleComponent {
     }
 
     // Fichier HTML + ouverture navigateur
-    onConsulter(args: EventData) {
+    onRecto(args: EventData) {
         let button = args.object as Button;
 
         // First get the required permissions
@@ -116,6 +116,46 @@ export class FeuilleComponent {
 
             // écrire le fichier HTML
             htmlFile.writeText(SessionAppli.feuilleDeMatch).then(() => {
+                console.log("Fichier HTML écrit");
+                // Consulter
+                Utils.openFile(htmlFile.path);
+            })
+            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`))
+        })
+        .catch(() => {
+            console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+
+        });
+    }
+
+    // Fichier HTML + ouverture navigateur
+    onVerso(args: EventData) {
+        let button = args.object as Button;
+
+        // First get the required permissions
+        // Note: this permissions should also be in your AndroidManifest.xml file as:
+        //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        // (Included by Nativescript)
+        const permissions = require('nativescript-permissions')
+        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .then(() => {
+            console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
+            // Get the publicly accessable Downloads directory path
+            const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
+            console.log('sdDownloadPath: ' + sdDownloadPath)
+
+            // Get a specific folder in that path (will be created if it does not exist)
+            const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
+            console.log('RESPEQTT path: ' + myAppFolder.path)
+
+            // Get a file in that path (will be created if it does not exist)
+            // Note: In this case we try to get a unique file every time this code is run
+            // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
+            let htmlFile:File = myAppFolder.getFile('verso.html');
+                console.log('Fichier HTML : ' + htmlFile.path)
+
+            // écrire le fichier HTML
+            htmlFile.writeText(SessionAppli.versoFeuille).then(() => {
                 console.log("Fichier HTML écrit");
                 // Consulter
                 Utils.openFile(htmlFile.path);
@@ -176,12 +216,20 @@ onQRCode(args: EventData) {
 
 }
 
-onCopier(args: EventData) {
+onCopierRecto(args: EventData) {
     let button = args.object as Button;
 
     // Copier dans le presse papier
     CopieDansPressePapier(SessionAppli.feuilleDeMatch);
     console.log("Feuille copiée dans le presse papier");
+}
+
+onCopierVerso(args: EventData) {
+    let button = args.object as Button;
+
+    // Copier dans le presse papier
+    CopieDansPressePapier(SessionAppli.versoFeuille);
+    console.log("Verso copié dans le presse papier");
 }
 
 

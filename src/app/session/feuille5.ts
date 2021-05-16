@@ -57,7 +57,7 @@ export class Feuille5 {
                         <td colspan="2" style="width:25%">Ligue : <b>#Ligue</b> </td>
                     </tr>
                     <tr>
-                        <td><b>#JA</b></td>
+                        <td><b>#NomJA</b></td>
                         <td> </td>
                         <td>Date : <b>#Date</b></td>
                         <td>Heure : <b>#Heure</b></td>
@@ -65,14 +65,14 @@ export class Feuille5 {
                         <td>Poule : <b>#Poule</b></td>
                     </tr>
                     <tr>
-                        <td></td>
+                        <td>#LicJA</td>
                         <td> </td>
                         <td style="text-align:center">#National</td>
                         <td style="text-align:center">#Régional</td>
                         <td colspan="2" style="text-align:center">#Départemental</td>
                     </tr>
                     <tr>
-                        <td></td>
+                        <td>#AdresseJA</td>
                         <td> </td>
                         <td style="text-align:center">#Masculin</td>
                         <td style="text-align:center">#Féminin</td>

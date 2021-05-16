@@ -95,6 +95,7 @@ export class RespeqttDb {
                 ses_vn_formule integer,
                 ses_va_date text,
                 ses_va_lieu text,
+                ses_va_verso text,
                 FOREIGN KEY (ses_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
