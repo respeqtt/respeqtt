@@ -186,7 +186,7 @@ export class PlacerComponent{
     onCapitaine(args: EventData) {
 
         // si joueur sélectionné alors on le prend comme capitaine
-        if(this.joueurSel >=0) {
+        if(this.joueurSel >=0 && this.equipe[this.joueurSel].id > 9) {
             this.licenceCapitaine = this.equipe[this.joueurSel].id;
         }
         if(this.licenceCapitaine != null) {
@@ -213,7 +213,7 @@ export class PlacerComponent{
             }, error => {alert("Erreur :" + error.toString())
             });
         } else {
-            alert("Merci de choisir un joueur ou de saisir le numéro de licence du capitaine");
+            alert("Merci de choisir un joueur présent ou de saisir le numéro de licence du capitaine");
         }
     }
 

@@ -21,6 +21,8 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { toURL } from "../outils/outils";
 
+var dialogs = require("tns-core-modules/ui/dialogs");
+
 @Component({
     templateUrl: "./valider.component.html",
     moduleId:module.id,
@@ -83,14 +85,21 @@ export class ValiderComponent{
     onTapValidate(args: EventData) {
         let button = args.object as Button;
 
-        console.log("SCORE VALIDE");
-        SessionAppli.scoreValide = true;
+        // Demander confirmation
+        dialogs.prompt({title:"Confirmation",
+        message:"Etes vous sûr de valider la rencontre ?",
+        okButtonText:"VALIDER",
+        cancelButtonText:"ANNULER"
+        }).then(r => {
+            console.log("SCORE VALIDE");
+            SessionAppli.scoreValide = true;
 
-        // mémoriser la validation du score
-        SessionAppli.Persiste();
+            // mémoriser la validation du score
+            SessionAppli.Persiste();
 
 
-        this.routeur.navigate(["actions"]);
+            this.routeur.navigate(["actions"]);
+        });
     }
 
     onTapClose(args: EventData) {

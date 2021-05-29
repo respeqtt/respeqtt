@@ -190,30 +190,36 @@ export class PreparationComponent{
     onValiderFeuille(args: EventData) {
         let button = args.object as Button;
 
-        // vérifier que les deux équipes ont été saisies ou forfait
-        if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
-        || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
-            alert("Les deux équipes n'ont pas été renseignées.");
-            return;
-        } else {
-            // passer en mode rencontre
-            SessionAppli.modeRencontre = true;
-            // figer la composition des deux équipes
-            SessionAppli.compoFigee = true;
-            // mémoriser la date de la rencontre
-            SessionAppli.date = Maintenant();
-            console.log("Date heure de la rencontre :" + SessionAppli.date);
-            // mémoriser le lieu de la rencontre
-            SessionAppli.lieu = this.lieu;
-            // désactiver les boutons
-            this.modif = !SessionAppli.compoFigee;
-            this.switchActif = !SessionAppli.compoFigee;
-            this.resValid = !SessionAppli.compoFigee;
+        // Demander confirmation
+        dialogs.prompt({title:"Confirmation",
+        message:"Etes vous sûr de valider la composition des équipes ?",
+        okButtonText:"VALIDER",
+        cancelButtonText:"ANNULER"
+        }).then(r => {
+            // vérifier que les deux équipes ont été saisies ou forfait
+            if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
+            || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
+                alert("Les deux équipes n'ont pas été renseignées.");
+                return;
+            } else {
+                // passer en mode rencontre
+                SessionAppli.modeRencontre = true;
+                // figer la composition des deux équipes
+                SessionAppli.compoFigee = true;
+                // mémoriser la date de la rencontre
+                SessionAppli.date = Maintenant();
+                console.log("Date heure de la rencontre :" + SessionAppli.date);
+                // mémoriser le lieu de la rencontre
+                SessionAppli.lieu = this.lieu;
+                // désactiver les boutons
+                this.modif = !SessionAppli.compoFigee;
+                this.switchActif = !SessionAppli.compoFigee;
+                this.resValid = !SessionAppli.compoFigee;
+            }
 
-        }
-
-        // sauvegarder la session en BDD
-        SessionAppli.Persiste();
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste();
+        });
     }
 
     // Compo équipe A
