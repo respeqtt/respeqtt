@@ -39,7 +39,7 @@ ns plugin add nativescript-sqlite
 ns plugin add nativescript-social-share
 ns plugin add nativescript-html2pdf
 ns plugin add nativescript-permissions
-#corriger 2 vulnérabilités mineures
+#corriger les vulnérabilités
 npm audit fix
 
 
@@ -59,8 +59,12 @@ aller dans "paramètres\option de développement" activer le debogague USB
 
 ### Dans la fenêtre terminal, taper :
 
-tns run android --clean 
+ns run android --clean 
+ns build android
+ns debug android
 
 Si le téléchargement se bloque ou si les traces de la console n'apparaissent pas, débrancher et rebrancher immédiatement le téléphone. 
 
+### Pour publier sur le playstore, il faut compiler en release et signer la version :
+ns build android --release --key-store-path _fichier-keystore-avec-son-chemin_ --key-store-password ' _mot-de-passe_ ' --key-store-alias _alias_ --key-store-alias-password ' _mot-de-passe_ '
 
