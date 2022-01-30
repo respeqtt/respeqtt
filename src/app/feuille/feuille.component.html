@@ -1,21 +1,22 @@
 <Page     xmlns="http://schemas.nativescript.org/tns.xsd">
 
-<ActionBar title="RespeqTT">
-    <StackLayout orientation="horizontal"
-    ios:horizontalAlignment="center"
-    android:horizontalAlignment="left">
-        <Image src="res://icon" class="action-image" ></Image>
-    </StackLayout>
-</ActionBar>
-<FlexboxLayout flexDirection="column">
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
+        </StackLayout>
+    </ActionBar>
+    
+    <FlexboxLayout flexDirection="column">
         <Label class="titre" [text]="this.titre" flexGrow="0" flexShrink="0" ></Label>
         <Label class="sous-titre" [text]="this.sousTitre" flexGrow="1" flexShrink="1" ></Label>
-        <Button text="Consulter recto" backgroundColor="blue" (tap)="onRecto($event)" flexGrow="0" flexShrink="0" ></Button>
-        <Button text="Consulter verso" backgroundColor="blue" (tap)="onVerso($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Consulter recto" class="bouton" (tap)="onRecto($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Consulter verso" class="bouton" (tap)="onVerso($event)" flexGrow="0" flexShrink="0" ></Button>
         <!-- Button text="PDF" backgroundColor="blue" (tap)="onPDF($event)" flexGrow="0" flexShrink="0" ></Button -->
-        <Button text="Copier recto" backgroundColor="blue" (tap)="onCopierRecto($event)" flexGrow="0" flexShrink="0" ></Button>
-        <Button text="Copier verso" backgroundColor="blue" (tap)="onCopierVerso($event)" flexGrow="0" flexShrink="0" ></Button>
-        <Button text="Fermer" backgroundColor="darkblue" (tap)="onFermer($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Copier recto" class="bouton" (tap)="onCopierRecto($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="Copier verso" class="bouton" (tap)="onCopierVerso($event)" flexGrow="0" flexShrink="0" ></Button>
+        <Button text="FERMER" class="bouton" (tap)="onFermer($event)" flexGrow="0" flexShrink="0" ></Button>
     </FlexboxLayout>
 
 </Page>

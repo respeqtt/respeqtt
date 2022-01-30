@@ -1,0 +1,45 @@
+<ActionBar title="RespeqTT" >
+    <StackLayout orientation="horizontal">
+        <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+        <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+        <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
+    </StackLayout>
+</ActionBar>
+
+<FlexboxLayout flexDirection="column" backgroundColor="lightblue">
+    <Label class="titre" text="AJOUTER UN JOUEUR" flexGrow="0" flexShrink="0"></Label>
+    <Label class = "sous-titre" [text] = "this.descClub" flexGrow="0" flexShrink="0"> </Label>
+    <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+        <Label class = "normal" text="Nom" flexGrow="1" flexShrink="1"></Label>
+        <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="20" (blur)="onBlurNom($event)"></TextField>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+        <Label class = "normal" text="Prénom" flexGrow="1" flexShrink="1"></Label>
+        <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="20" (blur)="onBlurPrenom($event)"></TextField>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+        <Label class = "normal" text="Licence" flexGrow="1" flexShrink="1"></Label>
+        <TextField class="form"  flexGrow="1" flexShrink="1" secure="false" maxLength="10" keyboardType="number" (blur)="onBlurLicence($event)" ></TextField>
+        <Label class = "normal" text="Points" flexGrow="1" flexShrink="1"></Label>
+        <TextField class="form"  flexGrow="1" flexShrink="1" secure="false" maxLength="4" keyboardType="number" (focus)="onFocusPoints($event)" (blur)="onBlurPoints($event)" ></TextField>
+    </FlexboxLayout>
+    <Label text="" flexGrow="10" flexShrink="10"></Label>
+    <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+        <Label class = "switch-label" text="" flexGrow="1" flexShrink="1"></Label>
+        <Switch checked="false" (checkedChange)="onMuteChange($event)"  flexGrow="0" flexShrink="0"></Switch>
+        <Label class = "switch-label" text="Muté" flexGrow="1" flexShrink="1"></Label>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+        <Label class = "switch-label" text="Masculin" flexGrow="1" flexShrink="1"></Label>
+        <Switch checked="false" (checkedChange)="onFemininChange($event)"  flexGrow="0" flexShrink="0"></Switch>
+        <Label class = "switch-label" text="Féminine" flexGrow="1" flexShrink="1"></Label>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+        <Label class = "switch-label" text="Français" flexGrow="1" flexShrink="1"></Label>
+        <Switch checked="false" (checkedChange)="onEtrangerChange($event)"  flexGrow="0" flexShrink="0"></Switch>
+        <Label class = "switch-label" text="Etranger" flexGrow="1" flexShrink="1"></Label>
+    </FlexboxLayout>
+
+    <Button text="VALIDER" class="bouton" flexGrow="0" flexShrink="0" (tap)="onValider($event)"></Button>
+    <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" [nsRouterLink]="['/joueurs']"></Button>
+</FlexboxLayout>

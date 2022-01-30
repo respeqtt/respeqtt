@@ -19,7 +19,9 @@ import { Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 
 import { EltListeLicencie, Licencie, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
-
+import { RouterExtensions } from "@nativescript/angular";
+import { ActivatedRoute } from "@angular/router";
+import { RespeqttDb } from "../db/dbRespeqtt";
 
 @Component({
     templateUrl: "./joueurs.component.html",
@@ -30,11 +32,32 @@ export class JoueursComponent{
     listeJoueurs:Array<EltListeLicencie>;
     maListe:ListView;
     descClub:string = "";
+    routerExt: RouterExtensions;
+    clubChoisi:boolean=false;
+    joueurSel:boolean=false;
+    version: string;
 
-    constructor() {
 
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
+
+        // récupération du routeur pour naviguer
+        this.routerExt = _routerExtensions;
+
+        // est-ce qu'un club a été choisi
+        if(SessionAppli.clubChoisi > 0) {
+            this.clubChoisi = true;
+        }
+
+        console.log("Rechargement de la liste des joueurs : clubChoisi=" + this.clubChoisi.toString());
         Licencie.getListe(SessionAppli.clubChoisi).then(liste => {
-            this.listeJoueurs = liste  as Array<EltListeLicencie>;
+            let listePasTriee = liste  as Array<EltListeLicencie>;
+
+            // on trie par ordre alpbabétique
+            this.listeJoueurs = listePasTriee.sort((e1, e2)=> (e1.nom + " " + e1.prenom).localeCompare(e2.nom + " " + e2.prenom));
+            
             if(this.listeJoueurs != null) {
                 console.log(this.listeJoueurs.length.toString() + " joueurs");
             }
@@ -54,7 +77,7 @@ export class JoueursComponent{
 
      onDelTap(args: EventData) {
         let button = args.object as Button;
-        let sql = "delete from Licencie where id in (";
+        let sql = "delete from Licencie where lic_kn in (";
         let del = "";
 
         // construit la requête SQL des éléments à supprimer
@@ -74,23 +97,20 @@ export class JoueursComponent{
             del = del + ")";
             // trace la requête avant exécution
             console.log(del);
-/*
+
             RespeqttDb.db.execSQL(del).then(id=>{
                 console.log("Joueurs supprimés");
+                // relire la liste des joueurs
+                Licencie.getListe(SessionAppli.clubChoisi).then(liste => {
+                    this.listeJoueurs = liste  as Array<EltListeLicencie>;
+                    if(this.listeJoueurs != null) {
+                        console.log(this.listeJoueurs.length.toString() + " joueurs");
+                    }
+                }, error => {
+                });
             }, error => {
                 console.log("Impossible de supprimer les joueurs : " + error.toString());
             });
-*/
-            // relire la liste des joueurs
-            Licencie.getListe(SessionAppli.clubChoisi).then(liste => {
-                this.listeJoueurs = liste  as Array<EltListeLicencie>;
-                if(this.listeJoueurs != null) {
-                    console.log(this.listeJoueurs.length.toString() + " joueurs");
-                }
-            }, error => {
-
-            });
-
         }
         else {
             alert("Aucun élément n'est sélectionné.")
@@ -108,10 +128,14 @@ export class JoueursComponent{
             }
             this.maListe.refresh();
         }, error => {
-
         });
-
     }
+
+    onAjouter(args: EventData) {
+        // appeler la page de saisie des joueurs
+        this.routerExt.navigate(["/ajouterJoueurs/" + this.descClub]);
+    }
+
 
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;
@@ -130,8 +154,15 @@ export class JoueursComponent{
 
         // sélectionner le joueur
         this.listeJoueurs[index].sel = !this.listeJoueurs[index].sel;
-        console.log("Joueur choisi : " + this.listeJoueurs[index].id);
 
+        this.joueurSel = false;
+        for(let i=0; i < this.listeJoueurs.length; i++) {
+            if(this.listeJoueurs[i].sel){
+                this.joueurSel = true;
+            }
+        }
+
+        console.log("Joueur choisi : " + this.listeJoueurs[index].id);
     }
 
 }

@@ -2,11 +2,11 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
     </ActionBar>
     <FlexboxLayout flexDirection="column" justifyContent="flex-start">
@@ -18,12 +18,12 @@
             <Label class = "switch-label" [text]="this.clubX" flexGrow="1" flexShrink="1"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1" [visibility]="(this.modif ? 'visible' : 'collapsed')">
-            <Button text="Composer équipe A"     flexShrink="1" flexGrow="1" backgroundColor="blue" (tap)="onCompoA($event)"></Button>
-            <Button text="Composer équipe X"     flexShrink="1" flexGrow="1" backgroundColor="darkblue" (tap)="onCompoX($event)"></Button>
+            <Button text="Composer équipe A"  class="bouton"   flexShrink="1" flexGrow="1" (tap)="onCompoA($event)"></Button>
+            <Button text="Composer équipe X"  class="bouton"   flexShrink="1" flexGrow="1" (tap)="onCompoX($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1" [visibility]="(this.modif ? 'collapsed' : 'visible')">
             <Button class="cartonJaune" min-width= "20" width= "20" flexGrow="0" flexShrink="0" horizontalAlignment="left"  (tap)="onJaune($event)" [isenabled]="this.cartonsActifs"></Button>
-            <Button text="Voir les cartons" min-width= "100" width= "200" flexGrow="1" flexShrink="1" horizontalAlignment="center"  (tap)="onVoirCartons($event)"></Button>
+            <Button text="Voir les cartons" class="bouton" min-width= "100" width= "200" flexGrow="1" flexShrink="1" horizontalAlignment="center"  (tap)="onVoirCartons($event)"></Button>
             <Button class="cartonRouge" min-width= "20" width= "20" flexGrow="0" flexShrink="0" horizontalAlignment="right" (tap)="onRouge($event)" [isenabled]="this.cartonsActifs"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="0" flexShrink="0">
@@ -45,21 +45,21 @@
             </ListView>
         </FlexboxLayout>
         <FlexboxLayout height = "60" min-height = "60" flexDirection="row" flexGrow="0" flexShrink="1" justifyContent="space-between">
-            <Label class="lieu" text="Lieu" flexGrow="0.2" flexShrink="1"></Label>
-            <TextField class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="40" [(ngModel)]='this.lieu'
-                    [visibility]="(this.resValid ? 'visible' : 'collapse')">
+            <Label class="normal" text="Lieu" flexGrow="0.2" flexShrink="1"></Label>
+            <TextField style.margin="0" style.padding="0" class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="40" [text]='this.lieu'
+                    [visibility]="(this.resValid ? 'visible' : 'collapse')"  (focus)="onFocusLieu($event)" (blur)="onBlurLieu($event)">
             </TextField>
-        <TextView class="lieu" [text="this.lieu" flexGrow="1" flexShrink="1" secure="false" maxLength="20" [(ngModel)]='this.lieu'
+        <TextView class="lieu" [text]="this.lieu" flexGrow="1" flexShrink="1" secure="false" maxLength="20"
                          [visibility]="(this.resValid ? 'collapse' : 'visible')"  [isenabled]="this.resValid">
             </TextView>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button [text]="this.btnResA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveA($event)"></Button>
-            <Button [text]="this.btnResX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReserveX($event)"></Button>
+            <Button [text]="this.btnResA" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveA($event)"></Button>
+            <Button [text]="this.btnResX" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveX($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button text="VALIDER" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
-            <Button text="FERMER"  flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onFermer($event)"></Button>
+            <Button text="VALIDER" class="bouton" flexGrow="1" flexShrink="1" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
+            <Button text="FERMER"  class="bouton" flexGrow="1" flexShrink="1" (tap)="onFermer($event)"></Button>
         </FlexboxLayout>
     </FlexboxLayout>
 </Page>

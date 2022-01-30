@@ -21,7 +21,7 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { toURL } from "../outils/outils";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
     templateUrl: "./valider.component.html",

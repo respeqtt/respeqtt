@@ -2,13 +2,14 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
     </ActionBar>
+    
     <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
         <Label class="titre" [text]="this.titre"></Label>
         <Label class="sous-titre" [text]="this.sousTitre"></Label>
@@ -21,5 +22,6 @@
                 </StackLayout>
             </ng-template>
         </ListView>
+        <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" [nsRouterLink]="['/actions']"></Button>
     </FlexboxLayout>
 </Page>

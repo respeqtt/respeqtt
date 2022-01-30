@@ -1,17 +1,17 @@
 <Page xmlns:cv="@nativescript-community/ui-canvas">
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
-    </ActionBar>
+    </ActionBar>   
 
     <StackLayout  horizontalAlignment="center">
         <Label  [text] = "this.titre"></Label>
         <cv:CanvasView [width]="this.dimEcran" [height]="this.dimEcran" (draw)="draw($event)" (onDraw)="draw($event)"> </cv:CanvasView>
-        <Button text="Fermer"  (tap)="goBack()"></Button>
+        <Button class="bouton" text="Fermer"  (tap)="goBack()"></Button>
         <!--
         <Label  [text] = "this.trace"></Label>
         -->

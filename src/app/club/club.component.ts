@@ -32,10 +32,14 @@ import { SessionAppli } from "../session/session";
 export class ClubComponent{
     listeClubs:Array<EltListeClub>;
     retour:string;                      // page appelante
+    version:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
 
         this.retour = this._route.snapshot.paramMap.get("retour");
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         Club.getListe().then(liste => {
             this.listeClubs = liste  as Array<EltListeClub>;
@@ -65,6 +69,13 @@ export class ClubComponent{
         const page: Page = button.page;
         // retour à l'appelant (passé en paramètre de l'appel)
         this._routerExtensions.navigate([this.retour]);
+    }
+
+    onAddClub(args: ItemEventData) {
+        const index = args.index;
+
+        // Afficher la page de saisie du nom et du numéro de club
+        this._routerExtensions.navigate(["ajouterClub"]);
     }
 
 }

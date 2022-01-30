@@ -10,16 +10,16 @@
 /*     GNU General Public License for more details.                            */
 /*                                                                             */
 /*     You should have received a copy of the GNU General Public License       */
-/*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+//*     along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 /*                                                                             */
 /*******************************************************************************/
 
 import { Component, ChangeDetectionStrategy } from "@angular/core";
-import { Button, EventData, Switch, ItemEventData } from "@nativescript/core";
+import { Button, EventData, Switch, ItemEventData, TextField } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 import { EltListeLicencie, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
@@ -50,6 +50,9 @@ export class PreparationComponent{
     lieu:string="";
     carton:couleur=null;
     cartonsActifs:boolean=true;
+    version:string;
+
+    tf:TextField=null;
 
 
     private MajLibBoutonsReserves() {
@@ -67,6 +70,9 @@ export class PreparationComponent{
     }
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         this.routeur = routerExtensions;
         this.recoitCoteX=false;
         this.titreRencontre = SessionAppli.titreRencontre;
@@ -110,6 +116,11 @@ export class PreparationComponent{
         // on fixe le mode rencontre en fonction de l'onglet sur lequel on est
         SessionAppli.modeRencontre = SessionAppli.tab == 0;
 
+        // on inverse si besoin
+        if(SessionAppli.recoitCoteX) {
+            this.EchangerCotes();
+        }
+
         this.modif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
         this.switchActif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
         this.resValid = (SessionAppli.modeRencontre && !SessionAppli.compoFigee) && !SessionAppli.scoreValide;
@@ -121,10 +132,8 @@ export class PreparationComponent{
     ngOnInit(): void {
     }
 
-    onCheckedChange(args: EventData) {
-        var s:string=SessionAppli.reserveClubA;
-        let sw = args.object as Switch;
-        this.recoitCoteX = sw.checked; // boolean
+    private EchangerCotes() {
+        let s:string=SessionAppli.reserveClubA;
         let c = SessionAppli.clubA;
         let cap = SessionAppli.capitaineA;
         let e = SessionAppli.equipeA;
@@ -156,7 +165,27 @@ export class PreparationComponent{
         }
 
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
+
     }
+
+    onCheckedChange(args: EventData) {
+        let sw = args.object as Switch;
+        this.recoitCoteX = sw.checked; // boolean
+
+        this.EchangerCotes();
+    }
+
+    onBlurLieu(args: EventData) {
+        let t = args.object as TextField;
+
+        this.lieu = t.text;
+        console.log("Lieu:" + this.lieu);
+    } 
+
+    onFocusLieu(args: EventData) {
+        this.tf = args.object as TextField;
+        console.log("Dans lieu");
+    }         
 
     onReserveA(args: EventData) {
         let button = args.object as Button;
@@ -210,6 +239,9 @@ export class PreparationComponent{
                 SessionAppli.date = Maintenant();
                 console.log("Date heure de la rencontre :" + SessionAppli.date);
                 // mémoriser le lieu de la rencontre
+                if(this.tf != null){
+                    this.lieu = this.tf.text;
+                }
                 SessionAppli.lieu = this.lieu;
                 // désactiver les boutons
                 this.modif = !SessionAppli.compoFigee;
@@ -219,6 +251,8 @@ export class PreparationComponent{
 
             // sauvegarder la session en BDD
             SessionAppli.Persiste();
+            // retourner à la page des actions
+            this.routeur.navigate(["actions"]);
         });
     }
 

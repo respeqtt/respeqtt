@@ -22,7 +22,7 @@ import { EltListeLicencie } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 
 @Component({
@@ -42,9 +42,13 @@ export class CompoDoubleComponent{
     doublesX:string[];
     iDouble:number[]=[];
     scan:boolean=false;
+    version:string;
 
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         // récupération du coté et du numéro de double en paramètre
         this.cote = this._route.snapshot.paramMap.get("cote");
         this.numDouble = Number(this._route.snapshot.paramMap.get("numDouble"));
@@ -164,16 +168,14 @@ export class CompoDoubleComponent{
                         texteDoubles = texteDoubles + "\n" + "Double " + (i+1).toString() + ": " + this.doublesA[i];
                     }
                 }
-                dialogs.prompt({title:"Confirmation",
-                message:"Merci de valider la composition suivante pour les doubles : " + texteDoubles,
-                okButtonText:"VALIDER",
-                cancelButtonText:"ANNULER"
-                }).then(r => {
-                    if(r.result) {
-                        console.log("!!! Compo des doubles validée !!!");
-                        console.log("Changer de coté");
-                        // permettre le scan
-                        this.scan  = true;
+                // si un seul double on ne demande pas de confirmation mais on informe
+                if(this.nbDoubles == 1) {
+                    dialogs.alert({
+                        title: "Composition du double",
+                        message: "Voici la composition du double :" + texteDoubles,
+                        okButtonText: "OK"
+                    }).then(() => {
+                        console.log("Composition OK");
                         this.numDouble = 1;
                         console.log("Saisie compo double " + this.numDouble + ", club " + (this.cote == "X" ? "A" : "X"));
                         if(this.cote =="X") {
@@ -182,12 +184,33 @@ export class CompoDoubleComponent{
                             this.cote = "X"
                         }
                         this.SaisieDouble(this.cote, this.numDouble);
-                    } else {
-                        console.log("!!! Compo des doubles annulée !!!");
-                        this.numDouble = 1;
-                        this.SaisieDouble(this.cote, this.numDouble);
-                    }
-                });
+                    });
+                } else {
+                    dialogs.prompt({title:"Confirmation",
+                    message:"Merci de valider la composition suivante pour les doubles : " + texteDoubles,
+                    okButtonText:"VALIDER",
+                    cancelButtonText:"ANNULER"
+                    }).then(r => {
+                        if(r.result) {
+                            console.log("!!! Compo des doubles validée !!!");
+                            console.log("Changer de coté");
+                            // permettre le scan
+                            this.scan  = true;
+                            this.numDouble = 1;
+                            console.log("Saisie compo double " + this.numDouble + ", club " + (this.cote == "X" ? "A" : "X"));
+                            if(this.cote =="X") {
+                                this.cote = "A"
+                            } else {
+                                this.cote = "X"
+                            }
+                            this.SaisieDouble(this.cote, this.numDouble);
+                        } else {
+                            console.log("!!! Compo des doubles annulée !!!");
+                            this.numDouble = 1;
+                            this.SaisieDouble(this.cote, this.numDouble);
+                        }
+                    });
+                }
             } else {
                 // demander confirmation avant de fermer
                 var texteDoubles="";
@@ -198,13 +221,14 @@ export class CompoDoubleComponent{
                         texteDoubles = texteDoubles + "\n" + "Double " + (i+1).toString() + ": " + this.doublesA[i];
                     }
                 }
-                dialogs.prompt({title:"Confirmation",
-                message:"Merci de valider la composition suivante pour les doubles : " + texteDoubles,
-                okButtonText:"VALIDER",
-                cancelButtonText:"ANNULER"
-                }).then(r => {
-                    if(r.result) {
-                        console.log("!!! Compo des doubles validée !!!");
+                // si un seul double on ne demande pas de confirmation mais on informe
+                if(this.nbDoubles == 1) {
+                    dialogs.alert({
+                        title: "Composition du double",
+                        message: "Voici la composition du double :" + texteDoubles,
+                        okButtonText: "OK"
+                    }).then(() => {
+                        console.log("Composition OK");
                         // mettre à jour la session
                         this.MajDoubleDansSession();
 
@@ -213,21 +237,39 @@ export class CompoDoubleComponent{
 
                         // retour à la page des parties
                         this.routerExt.navigate(["lancement"]);
-                    } else {
-                        console.log("!!! Compo des doubles annulée !!!");
-                        this.numDouble = 1;
-                        if(this.cote == "X") {
-                            for(var i = 0; i < SessionAppli.equipeX.length; i++) {
-                                SessionAppli.equipeX[i].double = 0;
-                            }
+                    });
+                } else {
+                    dialogs.prompt({title:"Confirmation",
+                    message:"Merci de valider la composition suivante pour les doubles : " + texteDoubles,
+                    okButtonText:"VALIDER",
+                    cancelButtonText:"ANNULER"
+                    }).then(r => {
+                        if(r.result) {
+                            console.log("!!! Compo des doubles validée !!!");
+                            // mettre à jour la session
+                            this.MajDoubleDansSession();
+
+                            // sauvegarder la session en BDD
+                            SessionAppli.Persiste();
+
+                            // retour à la page des parties
+                            this.routerExt.navigate(["lancement"]);
                         } else {
-                            for(var i = 0; i < SessionAppli.equipeA.length; i++) {
-                                SessionAppli.equipeA[i].double = 0;
+                            console.log("!!! Compo des doubles annulée !!!");
+                            this.numDouble = 1;
+                            if(this.cote == "X") {
+                                for(var i = 0; i < SessionAppli.equipeX.length; i++) {
+                                    SessionAppli.equipeX[i].double = 0;
+                                }
+                            } else {
+                                for(var i = 0; i < SessionAppli.equipeA.length; i++) {
+                                    SessionAppli.equipeA[i].double = 0;
+                                }
                             }
+                            this.SaisieDouble(this.cote, this.numDouble);
                         }
-                        this.SaisieDouble(this.cote, this.numDouble);
-                    }
-                });
+                    });
+                }
             }
         }
     }

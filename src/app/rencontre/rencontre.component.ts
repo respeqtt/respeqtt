@@ -20,6 +20,7 @@ import { Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import {Router} from "@angular/router";
+import {RespeqttDb} from "../db/dbRespeqtt";
 
 @Component({
     templateUrl: "./rencontre.component.html",
@@ -29,8 +30,12 @@ import {Router} from "@angular/router";
 export class RencontreComponent{
     listeRencontres:Array<EltListeRencontre>;
     maListe:ListView;
+    version:string;
 
     constructor(private router: Router) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;
             SessionAppli.listeRencontres = this.listeRencontres;
@@ -45,7 +50,7 @@ export class RencontreComponent{
 
     onDelTap(args: EventData) {
         let button = args.object as Button;
-        let sql = "delete from Rencontre where id in (";
+        let sql = "delete from Rencontre where ren_kn in (";
         let del = "";
 
         // construit la requête SQL des éléments à supprimer
@@ -65,19 +70,19 @@ export class RencontreComponent{
             del = del + ")";
             // trace la requête avant exécution
             console.log(del);
-/*
+
             RespeqttDb.db.execSQL(del).then(id=>{
                 console.log("Rencontres supprimées");
+                // relire la table
+                Rencontre.getListe().then(liste => {
+                    this.listeRencontres = liste as Array<EltListeRencontre>;
+                }, error => {
+                    console.log("Impossible de lire la liste des rencontres : " + error.toString());
+                });
             }, error => {
                 console.log("Impossible de supprimer les rencontres : " + error.toString());
             });
-*/
-            // relire la table
-            Rencontre.getListe().then(liste => {
-                this.listeRencontres = liste as Array<EltListeRencontre>;
-            }, error => {
-                console.log("Impossible de lire la liste des rencontres : " + error.toString());
-            });
+
         }
         else {
             alert("Aucun élément n'est sélectionné.")
@@ -106,6 +111,10 @@ export class RencontreComponent{
         });
     }
 
+    onAjouterTap(args: EventData) {
+        let button = args.object as Button;
+        this.router.navigate(["ajouterRencontre"]);
+    }
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;
     }

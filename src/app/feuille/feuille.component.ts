@@ -23,7 +23,7 @@ import { Rencontre } from "../db/RespeqttDAO";
 
 import { Utils } from "@nativescript/core";
 
-const fs = require("tns-core-modules/file-system");
+const fs = require("@nativescript/core/file-system");
 
 
 import { File } from "@nativescript/core/file-system";
@@ -56,8 +56,12 @@ export class FeuilleComponent {
     titre:string;
     sousTitre:string;
     path:string;
+    version:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         this.routeur = _routerExtensions;
         this.titre = "Feuille de match";
@@ -96,23 +100,23 @@ export class FeuilleComponent {
         // Note: this permissions should also be in your AndroidManifest.xml file as:
         //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         // (Included by Nativescript)
-        const permissions = require('nativescript-permissions')
+        const permissions = require('nativescript-permissions');
         permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         .then(() => {
-            console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
+            console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée pour le RECTO');
             // Get the publicly accessable Downloads directory path
-            const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString()
-            console.log('sdDownloadPath: ' + sdDownloadPath)
+            const sdDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).toString();
+            console.log('sdDownloadPath: ' + sdDownloadPath);
 
             // Get a specific folder in that path (will be created if it does not exist)
-            const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'))
-            console.log('RESPEQTT path: ' + myAppFolder.path)
+            const myAppFolder = fs.Folder.fromPath(fs.path.join(sdDownloadPath, 'RESPEQTT'));
+            console.log('RESPEQTT path: ' + myAppFolder.path);
 
             // Get a file in that path (will be created if it does not exist)
             // Note: In this case we try to get a unique file every time this code is run
             // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
             let htmlFile:File = myAppFolder.getFile('feuille-de-match.html');
-                console.log('Fichier HTML : ' + htmlFile.path)
+                console.log('Fichier HTML : ' + htmlFile.path);
 
             // écrire le fichier HTML
             htmlFile.writeText(SessionAppli.feuilleDeMatch).then(() => {
@@ -120,10 +124,10 @@ export class FeuilleComponent {
                 // Consulter
                 Utils.openFile(htmlFile.path);
             })
-            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`))
+            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`));
         })
-        .catch(() => {
-            console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
+        .catch(err => {
+            console.error("Erreur lors de l'écriture de la feuille de match", err);
 
         });
     }

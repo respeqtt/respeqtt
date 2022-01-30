@@ -1,44 +1,45 @@
 
-<ActionBar title="RespeqTT">
-    <StackLayout orientation="horizontal"
-    ios:horizontalAlignment="center"
-    android:horizontalAlignment="left">
-        <Image src="res://icon" class="action-image" ></Image>
+<ActionBar title="RespeqTT" >
+    <StackLayout orientation="horizontal">
+        <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+        <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+        <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
     </StackLayout>
 </ActionBar>
 
-<Tabs [selectedIndex]="this.tab" (selectedIndexChanged)="onTabChanged($event)">
-    <TabStrip class="special" [isenabled]="this.modeRencontre">
-        <TabStripItem>
-            <Label text="A domicile"></Label>
-            <Image src="font://&#xf015;" class="fas"></Image>
-        </TabStripItem>
-        <TabStripItem class="special" [isenabled]="!this.modeRencontre">
-            <Label text="A l'extérieur"></Label>
-            <Image src="font://&#xf6bb;" class="fas"></Image>
-        </TabStripItem>
-    </TabStrip>
-
-    <TabContentItem > <!-- A domicile -->
+<TabView [selectedIndex]="this.tab" (selectedIndexChanged)="onTabChanged($event)">
+    <StackLayout *tabItem="{title: 'A domicile', iconSource: 'res://domicile'}" [isenabled]="this.modeRencontre">    
+        <!-- A domicile , iconSource: 'font://&#xf015;', class:'fas' -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-            <Button text="Télécharger les rencontres"       class="-primary -rounded-lg" flexGrow="1" [nsRouterLink]="['../rencontre']"></Button>
-            <Button text="Télécharger les joueurs"          class="-primary -rounded-lg" flexGrow="1" [nsRouterLink]="['../joueurs']"></Button>
-            <Button [text]="(this.lancer ? 'Consulter les équipes' : 'Choisir une rencontre')" class="-primary -rounded-lg" flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
-            <Button text="Gérer les parties"                class="-primary -rounded-lg" flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
-            <Button text="Valider le score de la rencontre" class="-primary -rounded-lg" flexGrow="1" (tap)="onValiderScore($event)" [isenabled]="this.valider"></Button>
-            <Button text="Feuille de match"                 class="-primary -rounded-lg" flexGrow="1" (tap)="onFeuille($event)" [isenabled]="this.lancer"></Button>
-            <Button text="Envoyer à SPID"                   class="-primary -rounded-lg" flexGrow="1" (tap)="onEnvoyerASPID($event)" [isenabled]="this.spid"></Button>
-            <Button text="Abandonner la rencontre en cours" class="-primary -rounded-lg" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.abandonner"></Button>
+            <Button [text]="(this.lancer ? 'Consulter les équipes' : 'Choisir une rencontre')" class="bouton" flexGrow="1" (tap)="onPreparer($event)" [isenabled]="this.preparer"></Button>
+            <Button text="Gérer les parties"                class="bouton" flexGrow="1" (tap)="onLancement($event)" [isenabled]="this.lancer"></Button>
+            <Button text="Valider le score de la rencontre" class="bouton" flexGrow="1" (tap)="onValiderScore($event)" [isenabled]="this.valider"></Button>
+            <Button text="Feuille de match"                 class="bouton" flexGrow="1" (tap)="onFeuille($event)" [isenabled]="this.lancer"></Button>
+            <Button text="Envoyer à SPID"                   class="bouton" flexGrow="1" (tap)="onEnvoyerASPID($event)" [isenabled]="this.spid"></Button>
+            <Button text="Abandonner la rencontre en cours" class="bouton" flexGrow="1" (tap)="onAbandonner($event)" [isenabled]="this.abandonner"></Button>
         </FlexboxLayout>
-    </TabContentItem>
+    </StackLayout>
 
-    <TabContentItem> <!-- A l'extérieur -->
+    <StackLayout *tabItem="{title: 'A l\'extérieur', iconSource: 'res://exterieur'}" [isenabled]="!this.modeRencontre">    
+        <!-- A l'extérieur , iconSource: 'font://&#xf6bb;', class:'fas' -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-            <Button text="Télécharger les joueurs" class="-primary -rounded-lg" flexGrow="1" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
-            <Button text="Choisir une rencontre"   class="-primary -rounded-lg" flexGrow="1" (tap)="onRencontre($event)" [isenabled]="!this.modeRencontre"></Button>
-            <Button text="Composer son équipe"     class="-primary -rounded-lg" flexGrow="1" (tap)="onCompo($event)" [isenabled]="!this.modeRencontre"></Button>
-            <Button text="Composer les doubles"    class="-primary -rounded-lg" flexGrow="1" (tap)="onCompoDoubles($event)" [isenabled]="!this.modeRencontre"></Button>
-            <Button text="Saisir une partie"       class="-primary -rounded-lg" flexGrow="1" (tap)="onPartie($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Choisir une rencontre"   class="bouton" flexGrow="1" (tap)="onRencontre($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Composer son équipe"     class="bouton" flexGrow="1" (tap)="onCompo($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Composer les doubles"    class="bouton" flexGrow="1" (tap)="onCompoDoubles($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Saisir une partie"       class="bouton" flexGrow="1" (tap)="onPartie($event)" [isenabled]="!this.modeRencontre"></Button>
         </FlexboxLayout>
-    </TabContentItem>
-</Tabs>
+    </StackLayout>
+
+    <StackLayout *tabItem="{title: 'Préparation', iconSource: 'res://prepa'}">    
+        <!-- Sans SPID , iconSource: 'font://&#xf256;', class:'fas' -->
+        <FlexboxLayout flexDirection="column" justifyContent="flex-start">
+            <Button text="Télécharger les rencontres"  class="bouton" flexGrow="1" [nsRouterLink]="['../rencontre']"></Button>
+            <Button text="Télécharger les joueurs"     class="bouton" flexGrow="1" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
+            <Button text="Saisir un club"              class="bouton" flexGrow="1" [nsRouterLink]="['../ajouterClub']"></Button>
+<!--
+            <Button text="Télécharger RESPEQTT"        class="bouton" flexGrow="1" (tap)="onDownload($event)"></Button>
+            <Button text="Installer RESPEQTT"          class="bouton" (tap)="onInstructions($event)"></Button>
+-->            
+        </FlexboxLayout>
+    </StackLayout>
+</TabView>

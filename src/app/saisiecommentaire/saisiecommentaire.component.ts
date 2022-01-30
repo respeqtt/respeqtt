@@ -20,6 +20,10 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
 import { URLtoStringSansQuote, HeureMinCourante } from "../outils/outils";
+import { ElementRef, ViewChild } from "@angular/core";
+import { TextView } from "@nativescript/core";
+
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
     templateUrl: "./saisiecommentaire.component.html",
@@ -28,14 +32,22 @@ import { URLtoStringSansQuote, HeureMinCourante } from "../outils/outils";
  })
 export class SaisieCommentaireComponent {
     router:RouterExtensions;
-    titre:string;
+    titre:string="";
     sousTitre:string;
-    saisie:string;
-    auteur:string;
-    retour:string;
+    saisie:string="";
+    auteur:string="";
+    retour:string="";
     consult:boolean=true;
+    version:string;
+
+    tv:TextView=null;              // pour récupérer le textView de la saisie
+
+    @ViewChild('tvSaisie') tvSaisie: ElementRef;  // pour récupérer le textView dont l'id est #tvSaisie
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         this.router = _routerExtensions;
         this.titre =  this._route.snapshot.paramMap.get("quoi");
@@ -114,42 +126,81 @@ export class SaisieCommentaireComponent {
                 this.sousTitre = this.auteur;
                 console.log("Auteur=" + this.auteur);
         }
+        console.log("Fin constructeur");
     }
 
+    
+    ngAfterViewInit() {
+        this.tv = this.tvSaisie.nativeElement;     // mémoriser le textView dans le composant (cf onTapValidate)
+        console.log("afterViewInit=" + this.saisie);
+        this.tv.text = this.saisie;
+    } 
 
      onTapValidate(args: EventData) {
-        let button = args.object as Button;
         let auteur:string;
 
         // mémoriser la saisie
+        this.saisie = this.tv.text;
+        console.log("Obs:" + this.saisie);
+        
         if(this.titre == "RESERVE") {
-            // mémoriser la réserve de l'équipe indiquée
-            if(this.auteur == "A") {
-                SessionAppli.reserveClubA = this.saisie;
-                auteur = SessionAppli.clubA.nom;
-            } else {
-                SessionAppli.reserveClubX = this.saisie;
-                auteur = SessionAppli.clubX.nom;
-            }
-            alert("Texte de la réserve posée par le club " + auteur + ": " + this.saisie);
+            dialogs.prompt({title:"Confirmation",
+                message:"Texte de la réserve posée par le club " + auteur + ": " + this.saisie,
+                okButtonText:"VALIDER",
+                cancelButtonText:"ANNULER"
+                }).then(r => {
+                    if(r.result) {
+                        // mémoriser la réserve de l'équipe indiquée
+                        if(this.auteur == "A") {
+                            SessionAppli.reserveClubA = this.saisie;
+                            auteur = SessionAppli.clubA.nom;
+                        } else {
+                            SessionAppli.reserveClubX = this.saisie;
+                            auteur = SessionAppli.clubX.nom;
+                        }
+                } else {
+                    console.log("RESERVE ANNULEE");
+                    return;
+                }
+            });
         }
         if(this.titre == "RECLAMATION") {
-            // mémoriser la réclamation de l'équipe indiquée
-            if(this.auteur == "A") {
-                SessionAppli.reclamationClubA = this.saisie;
-                auteur = SessionAppli.clubA.nom;
-            } else {
-                SessionAppli.reclamationClubX = this.saisie;
-                auteur = SessionAppli.clubX.nom;
-            }
-            alert("Texte de la réclamation posée par le club " + auteur + ": " + this.saisie);
+            dialogs.prompt({title:"Confirmation",
+                message:"Texte de la réclamation posée par le club " + auteur + ": " + this.saisie,
+                okButtonText:"VALIDER",
+                cancelButtonText:"ANNULER"
+                }).then(r => {
+                    if(r.result) {
+                        // mémoriser la réclamation de l'équipe indiquée
+                        if(this.auteur == "A") {
+                            SessionAppli.reclamationClubA = this.saisie;
+                            auteur = SessionAppli.clubA.nom;
+                        } else {
+                            SessionAppli.reclamationClubX = this.saisie;
+                            auteur = SessionAppli.clubX.nom;
+                        }
+                } else {
+                    console.log("RECLAMATION ANNULEE");
+                    return;
+                }
+            });
         }
         if(this.titre == "RAPPORT") {
-            // mémoriser le rapport du JA (RAS par défaut)
-            console.log("Saisie :" + this.saisie);
-            SessionAppli.rapportJA = this.saisie;
-            if(this.saisie != "") {
-                alert("Texte du rapport du JA " + this.auteur + ": " + SessionAppli.rapportJA);
+            if(this.saisie) {
+                dialogs.prompt({title:"Confirmation",
+                    message:"Texte du rapport du JA " + this.auteur + ": " + this.saisie,
+                    okButtonText:"VALIDER",
+                    cancelButtonText:"ANNULER"
+                    }).then(r => {
+                        if(r.result) {
+                            // mémoriser le rapport du JA (RAS par défaut)
+                            console.log("Saisie :" + this.saisie);
+                            SessionAppli.rapportJA = this.saisie;
+                    } else {
+                        console.log("RAPPORT JA ANNULE");
+                        return;
+                    }
+                });
             }
         }
         // sauvegarder la session en BDD

@@ -1,0 +1,46 @@
+<!--Page xmlns="http://schemas.nativescript.org/tns.xsd"
+      xmlns:rb="nativescript-radiobutton">
+-->
+
+<ActionBar title="RespeqTT" >
+    <StackLayout orientation="horizontal">
+        <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+        <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+        <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
+    </StackLayout>
+</ActionBar>
+
+    <StackLayout alignment="vertical" backgroundColor="lightblue">
+        <Label class="titre" text="Ajouter une rencontre"></Label>
+        <Label class="sous-titre" [text]=this.titreRencontre></Label>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Label class = "normal" text="Division" flexGrow="1" flexShrink="1"></Label>
+            <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="3" (blur)="onBlurDivision($event)"></TextField>
+            <Label class = "normal" text="Poule" flexGrow="1" flexShrink="1"></Label>
+            <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" [(ngModel)]='this.poule' (blur)="onBlurPoule($event)"></TextField>
+            <Label class = "normal" text="Phase" flexGrow="1" flexShrink="1"></Label>
+            <TextField  class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.phase' (blur)="onBlurPhase($event)">"</TextField>
+            <Label class = "normal" text="Journée" flexGrow="1" flexShrink="1"></Label>
+            <TextField  class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.journee' (blur)="onBlurJournee($event)"></TextField>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="space-between">
+            <ListPicker class="list-picker" [items]="this.listeEchelons" [(ngModel)]="this.echelon" (selectedIndexChange)= "onEchelon($event)" flexGrow="1" flexShrink="1"></ListPicker>
+            <ListPicker class="list-picker" [items]="this.listeFormules" [(ngModel)]="this.formule" (selectedIndexChange)= "onFormule($event)" flexGrow="1" flexShrink="1"></ListPicker>
+            <ListPicker class="list-picker" [items]="this.listeLigues" [(ngModel)]="this.ligue" (selectedIndexChange)= "onLigue($event)" flexGrow="1" flexShrink="1"></ListPicker>
+        </FlexboxLayout>
+        <DatePicker class="date-picker" (dateChange)="onDateChange($event)" [date]="this.date"></DatePicker>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Label class = "normal" text="Nb sets gagnants" flexGrow="1" flexShrink="1"></Label>
+            <TextField  class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.nbSets'  (blur)="onBlurNbSets($event)"></TextField>
+            </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Label class = "switch-label" text="Masculin" flexGrow="1" flexShrink="1"></Label>
+            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" ></Switch>
+            <Label class = "switch-label" text="Féminin" flexGrow="1" flexShrink="1"></Label>
+        </FlexboxLayout>
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+            <Button text="AJOUTER LA RENCONTRE"  class="bouton" flexGrow="0" flexShrink="0"  (tap)="onAjouter($event)"></Button>
+            <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>
+        </FlexboxLayout>
+    </StackLayout>
+<!--/Page-->

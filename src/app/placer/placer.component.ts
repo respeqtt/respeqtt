@@ -17,10 +17,12 @@
 import { Component } from "@angular/core";
 import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
+import { ElementRef, ViewChild } from "@angular/core";
 import { RouterExtensions } from "@nativescript/angular";
 import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
+import { TextField } from "@nativescript/core";
 
 
 @Component({
@@ -39,8 +41,16 @@ export class PlacerComponent{
     listePlaces:Array<string> = [];
     capitaine:string="";
     licenceCapitaine:number=null;
+    version:string;
+
+    tf:TextField=null;              // pour récupérer le textfield de la licence
+
+    @ViewChild('tfLic') tfLic: ElementRef;  // pour récupérer le textfield dont l'id est #tfLic
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         // récupération du coté en paramètre
         console.log("COTE=" + this._route.snapshot.paramMap.get("cote"));
         if(this._route.snapshot.paramMap.get("cote") =="A") {
@@ -48,6 +58,8 @@ export class PlacerComponent{
         } else {
             this.cote = true;
         }
+
+
         // récupération du routeur pour naviguer
         this.routerExt = _routerExtensions;
 
@@ -90,6 +102,11 @@ export class PlacerComponent{
             this.equipe[i].sel = false;
         }
     }
+
+    
+ngAfterViewInit() {
+    this.tf = this.tfLic.nativeElement;     // mémoriser le textField dans le composant (cf onCapitaine)
+} 
 
     ngOnInit(args: EventData): void {
     }
@@ -188,6 +205,8 @@ export class PlacerComponent{
         // si joueur sélectionné alors on le prend comme capitaine
         if(this.joueurSel >=0 && this.equipe[this.joueurSel].id > 9) {
             this.licenceCapitaine = this.equipe[this.joueurSel].id;
+            this.tf.text = this.licenceCapitaine.toString();            // ecrire le n° de licence dans le text du textField
+            console.log("Licence du capitaine:" + this.licenceCapitaine);
         }
         if(this.licenceCapitaine != null) {
             console.log("licence du capitaine choisi = " + this.licenceCapitaine);

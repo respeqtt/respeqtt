@@ -26,6 +26,7 @@ import { Verso }  from "./verso";           // verso de toutes les feuilles
 
 export class SessionAppli {
 
+    public static version = "ns8-0.9"
     public static listeRencontres:Array<EltListeRencontre>=[];
     public static recoitCoteX = false;
     public static clubChoisi:number = -1;
@@ -305,7 +306,7 @@ export class SessionAppli {
         // Juge Arbitre (nom, prénom, adresse)
         console.log("Juge arbitre ...");
         if(SessionAppli.nomJA != "") {
-            feuille = this.CompleteFeuille(feuille, SessionAppli.nomJA, "#NomJA");
+            feuille = this.CompleteFeuille(feuille, SessionAppli.nomJA + " " + SessionAppli.prenomJA, "#NomJA");
             feuille = this.CompleteFeuille(feuille, SessionAppli.licenceJA.toString(), "#LicJA");
             feuille = this.CompleteFeuille(feuille, SessionAppli.adresseJA, "#AdresseJA");
         } else {
@@ -522,7 +523,7 @@ export class SessionAppli {
         // Juge Arbitre (nom, prénom, adresse)
         console.log("Juge arbitre ...");
         if(SessionAppli.nomJA != "") {
-            verso = this.CompleteFeuille(verso, SessionAppli.nomJA, "#NomJA");
+            verso = this.CompleteFeuille(verso, SessionAppli.nomJA + " " + SessionAppli.prenomJA, "#NomJA");
             verso = this.CompleteFeuille(verso, SessionAppli.licenceJA.toString(), "#LicJA");
         } else {
             verso = this.CompleteFeuille(verso, "(pas de Juge Arbitre)", "#NomJA");

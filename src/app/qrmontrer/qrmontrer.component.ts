@@ -25,6 +25,7 @@ import { registerElement } from '@nativescript/angular';
 import { Paint, CanvasView, Canvas, createRect } from '@nativescript-community/ui-canvas';
 import { Color } from '@nativescript/core/color';
 import { URLtoString } from "../outils/outils";
+import { SessionAppli } from '../session/session';
 
 @Component({
     templateUrl: "./qrmontrer.component.html",
@@ -40,10 +41,13 @@ export class QRMontrerComponent implements OnInit{
     trace:string;
     router:RouterExtensions;
     retour:string;          // page appelante
-
+    version:string;
 
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         this.dimEcran = 300;
         this.aDessiner= true;
         this.trace = "";

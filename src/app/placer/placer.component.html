@@ -1,13 +1,14 @@
 <Page>
     <script src="https://kit.fontawesome.com/4ac1ebb706.js" crossorigin="anonymous"></script>
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
     </ActionBar>
+    
     <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
         <Label class="titre" text="PLACEMENT JOUEURS" flexGrow="0" flexShrink="0"></Label>
         <Label class = "sous-titre" [text] = "this.clubChoisi.nom" flexGrow="0" fleShrink="1"> </Label>
@@ -22,19 +23,20 @@
             </ng-template>
         </ListView>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="&#xf139;" class="fas" min-width= "100" width= "1000" flex-grow="1" backgroundColor="blue" (tap)="onUp($event)"></Button>
-            <Button text="&#xf13a;" class="fas" min-width= "100" width= "1000" flex-grow="1" backgroundColor="blue" (tap)="onDown($event)"></Button>
+            <Button class="bouton" text="&#xf139;" class="fas" min-width= "100" width= "1000" flex-grow="1" (tap)="onUp($event)"></Button>
+            <Button class="bouton" text="&#xf13a;" class="fas" min-width= "100" width= "1000" flex-grow="1" (tap)="onDown($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="Capitaine" min-width= "200" width= "1000" flex-grow="1" backgroundColor="blue" (tap)="onCapitaine($event)"></Button>
-            <TextField hint="licence" min-width= "200" width= "1000" flexGrow="1" flexShrink="0.3" secure="false" maxLength="20" keyboardType="number" [(ngModel)]='this.licenceCapitaine'></TextField>
+            <Button text="Capitaine" class="bouton" min-width= "200" width= "1000" flex-grow="1" flexShrink="1" (tap)="onCapitaine($event)"></Button>
+            <TextField #tfLic hint="licence" min-width= "200" width= "1000" flexGrow="1" flexShrink="1" secure="false" maxLength="20" keyboardType="number" [(ngModel)]='this.licenceCapitaine'></TextField>
         </FlexboxLayout>
-        <Label [text]="this.capitaine" min-width= "50" width= "1000" flexGrow="0" flexShrink="1"></Label>
+        <Label [text]="this.capitaine" class = "centree" min-width= "50" width= "1000" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" backgroundColor="blue"     (tap)="onAnnulerTap($event)"></Button>
-            <Button text="QR CODE" class="-primary -rounded-lg" color="whitesmoke" min-width= "50" width= "1000" flex-grow="1" backgroundColor="darkblue" (tap)="onQRCodeTap($event)"></Button>
-            <Button text="VALIDER" min-width= "50" width= "1000" flex-grow="1" backgroundColor="blue"     (tap)="onValiderTap($event)"></Button>
+            <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onAnnulerTap($event)"></Button>
+            <Button text="QR CODE" min-width= "50" width= "1000" flex-grow="1" class="bouton" (tap)="onQRCodeTap($event)"></Button>
+            <Button text="VALIDER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onValiderTap($event)"></Button>
         </FlexboxLayout>
+        <Label text="" flexGrow="10" flexShrink="10"></Label>
     </FlexboxLayout>
 
 </Page>

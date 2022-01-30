@@ -22,11 +22,11 @@
             <Label [text]="this.scoreX" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="1" flexShrink="1">
-            <Button [text]="this.btnRecA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamA($event)"></Button>
-            <Button [text]="this.btnRecX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" (tap)="onReclamX($event)"></Button>
+            <Button class="bouton" [text]="this.btnRecA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReclamA($event)"></Button>
+            <Button class="bouton" [text]="this.btnRecX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
-        <Button text="Juge Arbitre" horizontalAlignment="stretch" (tap)="onJA($event)" flexGrow="1" flexShrink="1"></Button>
-        <Button text="Valider la rencontre" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1" flexShrink="1"></Button>
-        <Button text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
+        <Button class="bouton" text="Juge Arbitre" horizontalAlignment="stretch" (tap)="onJA($event)" flexGrow="1" flexShrink="1"></Button>
+        <Button class="bouton" text="Valider la rencontre" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1"></Button>
+        <Button class="bouton" text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
     </FlexboxLayout>
 </Page>

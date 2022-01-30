@@ -19,8 +19,11 @@ import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { Button, EventData } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
+import { ElementRef, ViewChild } from "@angular/core";
+import { TextField } from "@nativescript/core";
+import { TextView } from "@nativescript/core";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
     templateUrl: "./jugearbitre.component.html",
@@ -34,8 +37,23 @@ export class JugeArbitreComponent {
     adresseJA:string="";
     licenceJA:number;
     valider:boolean=false;
+    version:string;
+
+    tfnom:TextField=null;
+    tfprenom:TextField=null;
+    tvadresse:TextView=null;
+    tflic:TextField=null;
+
+    @ViewChild('tfnom') ERnom: ElementRef;  // pour récupérer le textfield dont l'id est #s1
+    @ViewChild('tfprenom') ERprenom: ElementRef;  // pour récupérer le textfield dont l'id est #s2
+    @ViewChild('tvadresse') ERadresse: ElementRef;  // pour récupérer le textfield dont l'id est #s3
+    @ViewChild('tflic') ERlic: ElementRef;  // pour récupérer le textfield dont l'id est #s4
+
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+
+        // version logicielle
+        this.version = SessionAppli.version;
 
         this.routeur = _routerExtensions;
 
@@ -49,6 +67,20 @@ export class JugeArbitreComponent {
         }
     }
 
+    ngAfterViewInit() {
+        this.tfnom = this.ERnom.nativeElement;     // mémoriser le textView dans le composant
+        this.tfprenom = this.ERprenom.nativeElement;     // mémoriser le textView dans le composant
+        this.tvadresse = this.ERadresse.nativeElement;     // mémoriser le textView dans le composant
+        this.tflic = this.ERlic.nativeElement;     // mémoriser le textView dans le composant
+
+        this.tfnom.text = SessionAppli.nomJA;
+        this.tfprenom.text = SessionAppli.prenomJA;
+        this.tvadresse.text = SessionAppli.adresseJA;
+        this.tflic.text = SessionAppli.licenceJA.toString();
+        console.log("JA " + SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.licenceJA.toString() + " " + SessionAppli.adresseJA)
+
+    } 
+
     onFocus(args: EventData) {
         console.log("Licence JA = " + this.licenceJA);
         this.valider = true;
@@ -56,6 +88,11 @@ export class JugeArbitreComponent {
 
     onTapRapport(args: EventData) {
         let button = args.object as Button;
+
+        this.nomJA = this.tfnom.text;
+        this.prenomJA = this.tfprenom.text;
+        this.adresseJA = this.tvadresse.text;
+        this.licenceJA = Number(this.tflic.text);
 
         // mémoriser les coordonnées du JA pour les retrouver en sortant du rapport
         SessionAppli.nomJA = this.nomJA;
@@ -70,11 +107,19 @@ export class JugeArbitreComponent {
     onTapValider(args: EventData) {
         let button = args.object as Button;0
 
+        this.nomJA = this.tfnom.text;
+        this.prenomJA = this.tfprenom.text;
+        this.adresseJA = this.tvadresse.text;
+        this.licenceJA = Number(this.tflic.text);
+
+
         // mémoriser les coordonnées du JA
         SessionAppli.nomJA = this.nomJA;
         SessionAppli.prenomJA = this.prenomJA;
         SessionAppli.adresseJA = this.adresseJA;
         SessionAppli.licenceJA = this.licenceJA;
+
+        console.log("JA " + SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.licenceJA.toString() + " " + SessionAppli.adresseJA)
 
         this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
     }

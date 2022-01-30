@@ -36,8 +36,12 @@ export class LancementComponent{
     nbParties:number;                       // nb de parties dans la rencontre
     score:string;                           // score en cours
     routerExt: RouterExtensions;            // pour navigation
+    version:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         var ligne:StringListElt;
 

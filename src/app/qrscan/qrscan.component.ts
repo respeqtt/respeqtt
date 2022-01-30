@@ -40,11 +40,14 @@ export class QRScanComponent implements OnInit{
     titre:string;
     sousTitre:string;
     cote:boolean;
-
+    version:string;
 
 
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         this.trace = "";
         this.pause = false;

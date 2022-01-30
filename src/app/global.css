@@ -18,58 +18,14 @@
 }
 .action-label {
     color: whitesmoke;
-    font-size: 24;
+    font-size: 24px;
     font-weight: bold;
     vertical-align: center;
 }
 
-label, button, .liste {
-    font-family: arial, helvetica, sans-serif;
-}
-
-label.titre {
-    background-color: blue;
-    color:white;
-    font-weight: bold;
-    vertical-align: middle;
-}
-
-label.sous-titre {
-    background-color: rgb(44, 89, 141);
-    color:white;
-    font-weight: bold;
-    vertical-align: middle;
-}
-
-label.score {
-    background-color: rgb(44, 89, 141);
-    color:yellow;
-    font-weight: bold;
-    padding: 20px;
-    vertical-align: center;
-}
-
-label {
-    font-size: 1.5em;
-    color: darkblue;
-    background-color: lightslategray;
-    margin: 5px;
-    padding: 0;
-    text-align: center;
-}
-
-label.sets {
-    font-size: 1em;
-    font-weight: bold;
-    color: darkblue;
-    background-color: lightslategray;
-    margin: 0px;
-    padding: 10px;
-    text-align: center;
-}
 
 TextField.sets {
-    font-size: 1em;
+    font-size: 12px;
     color: darkblue;
     background-color: whitesmoke;
     margin: 0px;
@@ -77,7 +33,7 @@ TextField.sets {
 }
 
 .lieu {
-    font-size: 1em;
+    font-size: 12px;
     color: darkblue;
     background-color: lightblue;
     margin: 0px;
@@ -86,45 +42,16 @@ TextField.sets {
 
 label.switch-label {
     text-align: center;
-    background-color: white;
     color:darkblue;
     padding: 50px;
-
+    margin: 0px;    
 }
 
-label.club {
-    text-align: center;
-    background-color: royalblue;
-    color:white;
-    font-weight: bold;
-    padding: 10px;
-}
-
-label.attente {
-    text-align: center;
-    vertical-align: center;
-    background-color: royalblue;
-    color:whitesmoke;
-    font-weight: bold;
-    font-style: italic;
-    padding: 50px;
-    height: 200px;
-}
-
-button {
-    font-size: 2em;
-    font-style: normal;
-    font-weight: bold;
-    color: whitesmoke;
-    background-color: blue;
-    text-align: center;
-    margin: 10px;
-    padding: 0;
-    border-bottom-style: solid;
-    border-bottom-width: 0.5em;
-    border-bottom-color: darkblue;
-}
-
+.switch[checked=true] {
+    color: #ffffff;
+    background-color: #35478c;
+    }
+    
 button.cartonJaune {
     color: black;
     background-color: yellow;
@@ -139,31 +66,26 @@ button.cartonRouge {
     border-bottom-color: red;
 }
 
-textarea {
-    Height: 1em
-}
 
-.list-text {
-    font-size: 200%;
-    color: #131313;
-    background-color: #FFFFFF;
-    margin-top: 8;
-    padding: 0;
-    text-align: left;
-}
-
-.selected {
-    font-size: 1em;
-    color: #131313;
-    background-color: greenyellow;
-    margin: 5px;
-    padding: 5px;
-    text-align: left;
-    height: 40;
-}
+.bouton {
+    color: #35478c;
+    background-color: #35478c;
+    border-color: #35478c;
+    color: #ffffff;
+    border-width: 1;
+    border-radius: 5;
+    }
+    
+  
+.bouton[isEnabled=false] {
+        color: #ffffff;
+        background-color: #9fc5e8;
+        border-color: #9fc5e8;
+    }  
+  
 
 .even {
-    font-size: 2em;
+    font-size: 12px;
     color: #131313;
     background-color: white;
     margin: 5px;
@@ -173,16 +95,99 @@ textarea {
 }
 
 .odd {
-    font-size: 2em;
+    font-size: 12px;
     color: #131313;
-    background-color: paleturquoise;
+    background-color: rgb(195, 222, 248);
     margin: 5px;
     padding: 5px;
     text-align: left;
     height: 40;
 }
 
-.title {
-    font-size: 25;
-    margin: 20;
+label.principal {
+    background-color: #6D81FF;
+    color:black;
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+}
+
+label.version {
+    background-color: #6D81FF;
+    color:lightcyan;
+    font-weight: normal;
+    font-style: italic;
+    vertical-align: middle;
+    text-align: right;
+}
+
+
+label.titre {
+    background-color: blue;
+    color:white;
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+}
+
+label.sous-titre {
+    background-color: rgb(44, 89, 141);
+    color:white;
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+}
+
+label.centree {
+    color:darkblue;
+    font-weight: bold;
+    font-style: italic;
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+label.normal {
+    font-size: 12px;
+    color:darkblue;
+    font-weight: bold;
+    font-style: normal;
+    vertical-align: middle;
+    text-align: left;
+    margin: 0px;
+    padding: 0px;
+}
+
+.form {
+    font-size: 12px;
+    color: darkblue;
+    background-color: lightcyan;
+    margin: 5px;
+    padding: 0px;
+}
+
+.date-picker {
+    background-color: lightcyan;
+    border-color: blue;
+    border-width: 1;
+    border-radius: 10;
+    margin: 0px;
+    padding: 0px;
+    color: navy;
+    vertical-align: middle;
+    font-size: 12px;
+    height:400px;
+}
+
+.list-picker {
+    background-color: lightcyan;
+    border-color: blue;
+    border-width: 1;
+    border-radius: 10;
+    margin: 0px;
+    padding: 0px;
+    color: navy;
+    vertical-align: middle;
+    font-size: 12px;
+    height:400px;
 }

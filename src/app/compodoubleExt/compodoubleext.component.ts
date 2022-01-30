@@ -22,7 +22,7 @@ import { EltListeLicencie } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 
 @Component({
@@ -41,9 +41,13 @@ export class CompoDoubleExtComponent{
     doublesA:string[];
     doublesX:string[];
     iDouble:number[]=[];
+    version:string;
 
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         // récupération du coté et du numéro de double en paramètre
         this.cote = this._route.snapshot.paramMap.get("cote");
         this.numDouble = Number(this._route.snapshot.paramMap.get("numDouble"));

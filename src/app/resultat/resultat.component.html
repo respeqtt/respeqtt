@@ -1,48 +1,46 @@
 <Page    xmlns="http://schemas.nativescript.org/tns.xsd">
-
-
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
     </ActionBar>
-
+    
     <FlexboxLayout flexDirection="column" justifyContent="flex-start">
         <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
-            <Button text="QR Code" flexGrow="1"           (tap)="onTapQRCode($event)"></Button>
-            <Button text="Scan résultat" flexGrow="1" backgroundColor="darkblue" (tap)="onTapScan($event)"></Button>
+            <Button text="QR Code" flexGrow="1" class="bouton" (tap)="onTapQRCode($event)"></Button>
+            <Button text="Scan résultat" flexGrow="1" class="bouton" (tap)="onTapScan($event)"></Button>
         </FlexboxLayout>
         <Label class="sous-titre" text="Résultats" horizontalAlignment="stretch" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="1e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="1er set" flexGrow="1" secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set1' (blur)="onBlur1($event)"></TextField>
+            <TextField #s1 class="sets" hint="1er set" flexGrow="1" secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set1' (blur)="onBlur1($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="2e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="2e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set2' (blur)="onBlur2($event)"></TextField>
+            <TextField #s2 class="sets" hint="2e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set2' (blur)="onBlur2($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="3e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="3e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set3' (blur)="onBlur3($event)"></TextField>
+            <TextField #s3 class="sets" hint="3e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set3' (blur)="onBlur3($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="4e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="4e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set4' (blur)="onBlur4($event)"></TextField>
+            <TextField #s4 class="sets" hint="4e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set4' (blur)="onBlur4($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="5e set" flexGrow="0.5"></Label>
-            <TextField style.margin="0" style.padding="0" class="sets" hint="5e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set5' (blur)="onBlur5($event)"></TextField>
+            <TextField #s5 class="sets" hint="5e set" flexGrow="1"  secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set5' (blur)="onBlur5($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
-            <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamA($event)"></Button>
-            <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" backgroundColor="blue" [isenabled]="this.reclam" (tap)="onReclamX($event)"></Button>
+            <Button text="Réclamation club A" flexGrow="1" flexShrink="1" width= "1000" min-width="100" class="bouton" [isenabled]="this.reclam" (tap)="onReclamA($event)"></Button>
+            <Button text="Réclamation club X" flexGrow="1" flexShrink="1" width= "1000" min-width="100" class="bouton" [isenabled]="this.reclam" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button text="VALIDER" horizontalAlignment="stretch" flexGrow="1" flexShrink="1" backgroundColor="darkblue" (tap)="onTapValidate($event)"></Button>
-            <Button text="FERMER"  horizontalAlignment="stretch" flexGrow="1" flexShrink="1" backgroundColor="blue" (tap)="onTapClose($event)"></Button>
+            <Button text="VALIDER" horizontalAlignment="stretch" flexGrow="1" flexShrink="1" class="bouton" (tap)="onTapValidate($event)"></Button>
+            <Button text="FERMER"  horizontalAlignment="stretch" flexGrow="1" flexShrink="1" class="bouton" (tap)="onTapClose($event)"></Button>
         </FlexboxLayout>
 </FlexboxLayout>
 </Page>

@@ -1,19 +1,20 @@
 
     <script src="https://kit.fontawesome.com/4ac1ebb706.js" crossorigin="anonymous"></script>
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
+    <ActionBar title="RespeqTT" >
+        <StackLayout orientation="horizontal">
+            <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
+            <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
+            <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
         </StackLayout>
     </ActionBar>
+    
     <StackLayout alignment="vertical" backgroundColor="lightblue">
         <Label class="titre" text="COMPOSITION DES DOUBLES"></Label>
         <Label class = "sous-titre" [text] = "this.sousTitre"> </Label>
-        <Button text="SCANNER" backgroundColor="blue" (tap)="onScanTap($event)" [isenabled]="this.scan"></Button>
-        <Button text="QRCODE" backgroundColor="darkblue" (tap)="onQRCodeTap($event)" [isenabled]="this.scan"></Button>
-        <Button text="VALIDER"   backgroundColor="darkblue" (tap)="onValiderTap($event)"></Button>
+        <Button text="SCANNER" class="bouton" (tap)="onScanTap($event)" [isenabled]="this.scan"></Button>
+        <Button text="QRCODE" class="bouton" (tap)="onQRCodeTap($event)" [isenabled]="this.scan"></Button>
+        <Button text="VALIDER" class="bouton" (tap)="onValiderTap($event)"></Button>
         <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">

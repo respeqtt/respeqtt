@@ -15,14 +15,14 @@
 /*******************************************************************************/
 
 import { Component } from "@angular/core";
-import { Tabs, Button, EventData } from "@nativescript/core";
+import { TabView, Button, EventData } from "@nativescript/core";
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { ListeFormules, EltListeRencontre, Rencontre, Partie, FormuledeRencontre } from "../db/RespeqttDAO";
 import { Mobile } from "../outils/outils";
 import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
     templateUrl: "./actions.component.html",
@@ -36,14 +36,20 @@ export class ActionsComponent{
     valider:boolean=false;                        // activation du bouton : valider le score
     spid:boolean=false;                           // activation du bouton : envoyer à SPID
     abandonner:boolean=false;                     // activation du bouton : abandonner la rencontre en cours
-    tab:number=SessionAppli.tab;                        // tab présenté
-    modeRencontre:boolean=SessionAppli.modeRencontre;   // mode rencontre ou mode saisie équipe/saisie de score hors rencontre
+    tab:number; //=SessionAppli.tab;                        // tab présenté
+    modeRencontre:boolean; //=SessionAppli.modeRencontre;   // mode rencontre ou mode saisie équipe/saisie de score hors rencontre
+    dim:number;
+    version:string;
 
     constructor(private _routerExtensions: RouterExtensions) {
         this.router = _routerExtensions;
 
+        // version logicielle
+        this.version = SessionAppli.version;
+        console.log("Version logicielle: " + this.version);
         // Init de la BDD
-        RespeqttDb.Init().then(ok => {
+        RespeqttDb.Init().then(ok => { 
+            console.log("BD initialisée");
             // on ne prépare la feuille de match que si on a téléchargé les rencontres
             if(SessionAppli.listeRencontres.length == 0) {
                 Rencontre.getListe().then(liste => {
@@ -53,7 +59,16 @@ export class ActionsComponent{
                         this.preparer = SessionAppli.listeRencontres.length > 0;
                     } else {
                         this.preparer = false;
-                    }
+                    }                    
+                    // positionnement sur l'onglet préparation si pas de rencontre dans la liste
+                    if(this.preparer) this.tab = 0
+                    else              this.tab = 2;
+
+                    // Chargement des formules
+                    ListeFormules.Init();
+                    console.log("Liste des formules chargée (" + ListeFormules.tabFormules.length + " formules)");
+
+                    console.log("Mode rencontre : " + (this.modeRencontre ? "OUI" : "NON"));
                 }, error => {
                     console.log(error);
                     this.preparer = false;
@@ -61,28 +76,21 @@ export class ActionsComponent{
             } else {
                 this.preparer = true;
             }
-
-            // Chargement des formules
-            ListeFormules.Init();
-            console.log("Liste des formules chargée (" + ListeFormules.tabFormules.length + " formules)");
-
-            // on ne lance les parties que si la compo est figée
-            this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;
-            // on ne valide le score que si les parties ont été lancées et si le score n'a pas déjà été validé
-            this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre && !SessionAppli.scoreValide;
-
-            // on n'envoie à SPID que si le scoré a été validé
-            this.spid = SessionAppli.scoreValide && SessionAppli.modeRencontre;
-
             // on ne peut abandonner que si on a commencé et pas validé le score
             this.abandonner = this.preparer && !SessionAppli.scoreValide;
-
-            console.log("Mode rencontre : " + (this.modeRencontre ? "OUI" : "NON"));
-
+            console.log("Préparer=" + this.preparer.toString())
         }, error => {
+            console.log("BD ***PAS*** initialisée");
             console.log(error);
             this.preparer = false;
         });
+        // on ne lance les parties que si la compo est figée
+        this.lancer = SessionAppli.compoFigee && SessionAppli.modeRencontre;
+        // on ne valide le score que si les parties ont été lancées et si le score n'a pas déjà été validé
+        this.valider = (SessionAppli.listeParties.length > 0)  && SessionAppli.modeRencontre && !SessionAppli.scoreValide;
+
+        // on n'envoie à SPID que si le scoré a été validé
+        this.spid = SessionAppli.scoreValide && SessionAppli.modeRencontre;      
     }
 
     ngOnInit(): void {
@@ -90,7 +98,7 @@ export class ActionsComponent{
         // calcul de la largeur de l'écran
         let mobile:Mobile= new Mobile;
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
-
+        this.dim = SessionAppli.dimEcran;
         console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele);
 
     }
@@ -138,6 +146,7 @@ export class ActionsComponent{
         } else {
             this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
         }
+        
     }
 
     onEnvoyerASPID(args: EventData) {
@@ -158,18 +167,20 @@ export class ActionsComponent{
 
 //            this.routerExt.navigate(["envoi"]);
         }
+
     }
 
     onAbandonner(args: EventData) {
         let button = args.object as Button;
 
         dialogs.prompt({title:"Confirmation",
-            message:"Etes vous sûr de vouloir abandonner la rencontre " + SessionAppli.titreRencontre
+            message:"Etes vous sûr de vouloir abandonner la rencontre " //+ SessionAppli.titreRencontre
                     + " ? Les compositions et les résultats seront effacés.",
             okButtonText:"ABANDONNER LA RENCONTRE",
             cancelButtonText:"ANNULER"
             }).then(r => {
                 if(r.result) {
+                    
                     // effacement en BDD
                     SessionAppli.Efface(SessionAppli.rencontreChoisie);
                     SessionAppli.Raz();
@@ -185,6 +196,7 @@ export class ActionsComponent{
                     this.modeRencontre = SessionAppli.modeRencontre;
 
                     alert("Rencontre abandonnée");
+                    
                 } else {
                     console.log("Abandon ANNULE");
                 }
@@ -201,55 +213,88 @@ export class ActionsComponent{
     }
 
     onPreparer(args: EventData) {
+        
         if(SessionAppli.rencontreChoisie >= 0) {
             this.router.navigate(["preparation"]);
         } else {
             this.router.navigate(["choixrencontre"]);
         }
+
     }
 
 
     onTabChanged(args: EventData) {
         // vers quel onglet va-t-on
-        const tab = args.object as Tabs;
-        // onglet 2 = scan de la partie
-        if(tab.selectedIndex == 2) {
-            SessionAppli.tab = 2;
-            // préparation de la session
-            if(SessionAppli.rencontreChoisie < 0) {
-                let p:Partie;
-                SessionAppli.rencontreChoisie = 0;
-                p = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
-                p.desc = "PARTIE IMPORTEE";
-                SessionAppli.listeParties.push(p);
-                console.log("Partie  à scanner :" + SessionAppli.listeParties[0].desc);
-            }
-            // appeler la page de scan des parties
-            this.router.navigate(["/qrscan/PARTIE/0"]);
-        }
+        const tab = args.object as TabView;
+        
+        console.log("Rencontre Choisie :" + SessionAppli.rencontreChoisie);
+        switch(tab.selectedIndex) {
+            case 0 :
+                // rencontre à domicile
+                SessionAppli.tab = 0;
+                console.log("Tab >> rencontre à domicile");
+            break;
 
+            case 1 :
+                // onglet 2 = scan de la partie
+                console.log("Tab >> rencontre à l'extérieur");
+                SessionAppli.tab = 1;
+                // préparation de la session
+                if(SessionAppli.rencontreChoisie < 0) {
+                    let p:Partie;
+//                    SessionAppli.rencontreChoisie = 0;
+                    p = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
+                    p.desc = "PARTIE IMPORTEE";
+                    SessionAppli.listeParties.push(p);
+                    console.log("Partie à scanner :" + SessionAppli.listeParties[0].desc);
+                } else {
+                    // appeler la page de scan des parties
+                    this.router.navigate(["/qrscan/PARTIE/0"]);
+                }
+            break;
+
+            case 2 :
+                // config
+                console.log("Tab >> config");
+                SessionAppli.tab = 2;
+//                this.router.navigate(["/ajouterClub"]);
+            break;
+
+            default : 
+                // ???
+                console.log("Tab >> inconnu : " + tab.selectedIndex);
+
+        }
+        
     }
 
 
     onClub(args: EventData) {
+        
         SessionAppli.tab = 1;
-        // appeler la page de compo des équipes
+        // appeler la page de choix des clubs
         this.router.navigate(["clubs/actions"]);
+        
     }
 
-    onJoueurs(args: EventData) {
+     onJoueurs(args: EventData) {
+         
         SessionAppli.tab = 1;
-        // appeler la page de compo des équipes
+        // appeler la page de téléchargement des joueurs
         this.router.navigate(["joueurs"]);
+        
     }
 
     onRencontre(args: EventData) {
+        
         SessionAppli.tab = 1;
         // appeler la page de choix de rencontre
         this.router.navigate(["choixrencontre"]);
+        
     }
 
     onCompo(args: EventData) {
+        
         // préparation de la session
         if(SessionAppli.rencontreChoisie < 0) {
             SessionAppli.tab = 1;
@@ -257,10 +302,34 @@ export class ActionsComponent{
         }
         // appeler la page de compo des équipes
         this.router.navigate(["preparation"]);
+        
     }
+
+    onDownload(args:EventData) {
+        const titre:string="Télécharger RESPEQTT";
+        const dim:number = SessionAppli.dimEcran - 40;
+        const json:string= "https://www.valencinpierre.fr/wp-content/uploads/2021/07/respeqtt.apk";
+
+         this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"]);
+    }
+
+    onInstructions(args: EventData) {
+        alert(`1) Enregistrer le Fichier .apk sur le téléphone.\n
+              2) Aller dans le menu Paramètres du téléphone,\n
+              3) Aller dans Sécurité\n
+                 Autoriser l'installation d'application de source inconnue\n
+              3bis) Aller dans Applications et notifications\n
+                    Cliquer sur Avancé\n
+                    Cliquer sur Accès spécial\n
+                    Installer des applications inconnues\n
+              4) Trouver respeqtt.apk avec le gestionnaire de fichiers (stockage interne)\n
+              5) Cliquer dessus et confirmer l'installation`
+        );
+    }        
 
 
     onCompoDoubles(args: EventData) {
+        
         // préparation de la session
         if(SessionAppli.rencontreChoisie < 0) {
             SessionAppli.tab = 1;
@@ -300,10 +369,12 @@ export class ActionsComponent{
                 }
             });
         }
+        
     }
 
 
     onPartie(args: EventData) {
+        
         // préparation de la session
         if(SessionAppli.rencontreChoisie < 0) {
             SessionAppli.tab = 1;
@@ -311,7 +382,6 @@ export class ActionsComponent{
         }
         // appeler la page de scan des parties
         this.router.navigate(["qrscan/PARTIE/0"]);
+
     }
-
-
 }

@@ -21,6 +21,7 @@ import { RouterExtensions } from "@nativescript/angular";
 import { SessionAppli } from "../session/session";
 import { Set } from "../db/RespeqttDAO";
 import { toURLQuote, toURL } from "../outils/outils";
+import { ElementRef, ViewChild } from "@angular/core";
 
 
 
@@ -45,10 +46,26 @@ export class ResultatComponent{
     nbJaunesX:number=0;
     nbRougesA:number=0;
     nbRougesX:number=0;
+    version:string;
 
     txfSet1:TextField;
+    tf1:TextField=null;              // pour récupérer le textfield du set1
+    tf2:TextField=null;              // pour récupérer le textfield du set2
+    tf3:TextField=null;              // pour récupérer le textfield du set3
+    tf4:TextField=null;              // pour récupérer le textfield du set4
+    tf5:TextField=null;              // pour récupérer le textfield du set5
+
+    @ViewChild('s1') tfs1: ElementRef;  // pour récupérer le textfield dont l'id est #s1
+    @ViewChild('s2') tfs2: ElementRef;  // pour récupérer le textfield dont l'id est #s2
+    @ViewChild('s3') tfs3: ElementRef;  // pour récupérer le textfield dont l'id est #s3
+    @ViewChild('s4') tfs4: ElementRef;  // pour récupérer le textfield dont l'id est #s4
+    @ViewChild('s5') tfs5: ElementRef;  // pour récupérer le textfield dont l'id est #s5
+
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+        // version logicielle
+        this.version = SessionAppli.version;
+
         this.dim = SessionAppli.dimEcran;
         this.routeur = routerExtensions;
         this.numPartie = Number(_route.snapshot.paramMap.get("partie"));
@@ -80,12 +97,23 @@ export class ResultatComponent{
         }
     }
 
-    ngOnInit() {
+    ngAfterViewInit() {
+        this.tf1 = this.tfs1.nativeElement;     // mémoriser le textView dans le composant
+        this.tf2 = this.tfs2.nativeElement;     // mémoriser le textView dans le composant
+        this.tf3 = this.tfs3.nativeElement;     // mémoriser le textView dans le composant
+        this.tf4 = this.tfs4.nativeElement;     // mémoriser le textView dans le composant
+        this.tf5 = this.tfs5.nativeElement;     // mémoriser le textView dans le composant
 
-    }
+        if(this.set1) this.tf1.text = this.set1;
+        if(this.set2) this.tf2.text = this.set2;
+        if(this.set3) this.tf3.text = this.set3;
+        if(this.set4) this.tf4.text = this.set4;
+        if(this.set5) this.tf5.text = this.set5;
+    } 
 
     onBlur1(args: EventData) {
         let tf = args.object as TextField;
+        this.set1 = tf.text;
         if(!Set.ScoreOK(this.set1)) {
             // score incorrect
             alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
@@ -95,6 +123,7 @@ export class ResultatComponent{
     };
     onBlur2(args: EventData) {
         let tf = args.object as TextField;
+        this.set2 = tf.text;
         if(!Set.ScoreOK(this.set2)) {
             // score incorrect
             alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
@@ -104,6 +133,7 @@ export class ResultatComponent{
     };
     onBlur3(args: EventData) {
         let tf = args.object as TextField;
+        this.set3 = tf.text;
         if(!Set.ScoreOK(this.set3)) {
             // score incorrect
             alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
@@ -113,6 +143,7 @@ export class ResultatComponent{
     };
     onBlur4(args: EventData) {
         let tf = args.object as TextField;
+        this.set4 = tf.text;
         if(!Set.ScoreOK(this.set4)) {
             // score incorrect
             alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
@@ -122,6 +153,7 @@ export class ResultatComponent{
     };
     onBlur5(args: EventData) {
         let tf = args.object as TextField;
+        this.set5 = tf.text;
         if(!Set.ScoreOK(this.set5)) {
             // score incorrect
             alert("Score incorrect : veuillez le saisir sous la forme du nombre de points marqués par le vaincu précédé d'un signe moins (-) si le joueur de l'équipe X est le vainqueur.")
@@ -144,6 +176,12 @@ export class ResultatComponent{
     onReclamA(args: EventData) {
         let button = args.object as Button;
 
+        if(this.tf1.text) this.set1 = this.tf1.text;
+        if(this.tf2.text) this.set2 = this.tf2.text;
+        if(this.tf3.text) this.set3 = this.tf3.text;
+        if(this.tf4.text) this.set4 = this.tf4.text;
+        if(this.tf5.text) this.set5 = this.tf5.text;
+
         if(this.ConstruitScore()) {
             // Afficher le résultat
             console.log("Resultat = " + this.quoi);
@@ -156,6 +194,12 @@ export class ResultatComponent{
 
     onReclamX(args: EventData) {
         let button = args.object as Button;
+
+        if(this.tf1.text) this.set1 = this.tf1.text;
+        if(this.tf2.text) this.set2 = this.tf2.text;
+        if(this.tf3.text) this.set3 = this.tf3.text;
+        if(this.tf4.text) this.set4 = this.tf4.text;
+        if(this.tf5.text) this.set5 = this.tf5.text;
 
         if(this.ConstruitScore()) {
             // Afficher le résultat
@@ -203,6 +247,12 @@ export class ResultatComponent{
     onTapValidate(args: EventData) {
         let button = args.object as Button;
 
+        if(this.tf1.text) this.set1 = this.tf1.text;
+        if(this.tf2.text) this.set2 = this.tf2.text;
+        if(this.tf3.text) this.set3 = this.tf3.text;
+        if(this.tf4.text) this.set4 = this.tf4.text;
+        if(this.tf5.text) this.set5 = this.tf5.text;
+
         if(this.ConstruitScore()) {
             // Afficher le résultat
             console.log("Résultat = " + this.quoi);
@@ -233,6 +283,12 @@ export class ResultatComponent{
     }
 
     onTapQRCode(args: EventData) {
+
+        if(this.tf1.text) this.set1 = this.tf1.text;
+        if(this.tf2.text) this.set2 = this.tf2.text;
+        if(this.tf3.text) this.set3 = this.tf3.text;
+        if(this.tf4.text) this.set4 = this.tf4.text;
+        if(this.tf5.text) this.set5 = this.tf5.text;
         // si pas de set saisi ou score OK
         if(this.ConstruitScore()
         || (this.set1 == null && this.set2 == null && this.set3 == null && this.set4 == null && this.set5 == null)) {

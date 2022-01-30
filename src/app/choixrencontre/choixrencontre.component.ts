@@ -18,7 +18,7 @@ import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { Page, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 import {Router} from "@angular/router";
 
-import { EltListeRencontre, Rencontre, Club } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre, Club, ListeFormules } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
 import { Mobile } from "../outils/outils";
@@ -37,12 +37,16 @@ export class ChoixRencontreComponent {
     demiLargeur:number;
     titre:string;
     sousTitre:string;
+    version:string;
 
     constructor(private router: Router) {
         this.mobile = new Mobile;
         // calcul de la demi largeur pour les boutons
         this.demiLargeur = Math.floor(this.mobile.largeurEcran /2) - 5;
         console.log("Demi-largeur = " + this.demiLargeur);
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         this.titre = "CHOIX DE LA RENCONTRE";
         this.sousTitre = "dans la liste ci-dessous";
@@ -79,10 +83,10 @@ export class ChoixRencontreComponent {
                 // récupérer la description complète de la rencontre
                 Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(ren => {
                     const r: Rencontre = ren as Rencontre;
-                    // mémoriser le nb de joueurs
-                    SessionAppli.nbJoueurs = r.nbJoueurs;
                     // mémoriser la formule
                     SessionAppli.formule = r.formule;
+                    // mémoriser le nb de joueurs
+                    SessionAppli.nbJoueurs = ListeFormules.getFormule(r.formule).getNbJoueurs();
                     // mémoriser le nb de sets gagnants
                     SessionAppli.nbSetsGagnants = r.nbSets;
                     console.log("NbJoueurs = " + SessionAppli.nbJoueurs);

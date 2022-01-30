@@ -22,7 +22,7 @@ import { EltListeLicencie, Licencie, Club } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
-var dialogs = require("tns-core-modules/ui/dialogs");
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 
 @Component({
@@ -38,8 +38,13 @@ export class CompoComponent{
     routerExt: RouterExtensions;
     equipe:Array<EltListeLicencie> = [];
     modeRencontre:boolean = SessionAppli.modeRencontre;
+    version:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+
+        // version logicielle
+        this.version = SessionAppli.version;
+        
         // récupération du coté en paramètre
         console.log("COTE=" + this._route.snapshot.paramMap.get("cote"));
         if(this._route.snapshot.paramMap.get("cote") =="A") {

@@ -18,6 +18,12 @@ import { SessionAppli} from "../session/session";
 import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } from "../outils/outils";
 
 
+class Respeqtt {
+    public static isTest() {
+        return true;
+    }
+}
+
 
 export class FormuledeRencontre {
     id:number;          // nombre de parties sur la feuille de match
@@ -25,6 +31,7 @@ export class FormuledeRencontre {
     joueursA:string;    // liste des lettres des joueurs coté A
     joueursX:string;    // liste des lettres des joueurs coté X
     nbDoubles:number;   // nb de doubles à disputer
+    nbJoueurs:number;   // nb de joueurs par équipe
 
     public constructor(f:FormuledeRencontre) {
         this.id = f.id;
@@ -32,6 +39,7 @@ export class FormuledeRencontre {
         this.joueursA = f.joueursA;
         this.joueursX = f.joueursX;
         this.nbDoubles = f.nbDoubles;
+        this.nbJoueurs = f.nbJoueurs;
     }
 
     // renvoie la première lettre du coté demandé
@@ -56,6 +64,11 @@ export class FormuledeRencontre {
     // renvoie le nombre de parties
     public getNbParties():number {
         return (this.desc.length + 1)/3;
+    }
+
+    // renvoie le nombre de joueurs
+    public getNbJoueurs():number {
+        return this.nbJoueurs;
     }
 
     // renvoie le coté si la lettre est dans la formule
@@ -103,6 +116,7 @@ export class Rencontre{
         let n:number;
         // requêtes SQL
         let selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
+        let order:string=" order by  ren_va_division, ren_va_poule, ren_vn_phase, ren_vn_journee asc";
 
         let promise = new Promise(function(resolve, reject) {
 
@@ -135,6 +149,11 @@ export class Rencontre{
     // simulation, à remplacer par SPID
     public static SIM_LoadListe():void {
 
+        if(!Respeqtt.isTest()) {
+            console.log("--- PAS EN MODE TEST ---");
+            return;
+        }
+
         // création de 3 clubs
         let sqlClub =`insert into Club (clu_kn, clu_va_nom) values (`;
 
@@ -146,13 +165,13 @@ export class Rencontre{
 
         // création des rencontres
         let sqlRen=`insert into Rencontre (ren_kn, ren_club1_kn, ren_club2_kn, ren_vd_date, ren_vn_phase, ren_vn_journee,
-            ren_vn_nb_joueurs, ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin,
+            ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin,
             ren_va_division, ren_va_ligue, ren_va_poule) values (`;
        let rencontres = [
-           `1, 1690162, 1690221, '2020/11/08 09H00', 1, 4, 4, 18, 3, 3, 0, 'PR', 'AURA', 'D')`,
-           `2, 1690162, 1690160, '2020/11/08 09H00', 1, 4, 4, 18, 3, 3, 0, 'D1', 'AURA', 'B')`,
-           `3, 1690162, 1690221, '2021/03/04 09H00', 1, 3, 2,  5, 3, 3, 0, 'C2', 'AURA', 'TF')`,
-           `4, 1690162, 1690221, '2021/04/05 09H00', 2, 5, 4, 14, 3, 2, 0, 'R3', 'AURA', 'A')`
+           `1, 1690162, 1690221, '2020/11/08 09H00', 1, 4, 18, 3, 3, 0, 'PR', 'AURA', 'D')`,
+           `2, 1690162, 1690160, '2020/11/08 09H00', 1, 4, 18, 3, 3, 0, 'D1', 'AURA', 'B')`,
+           `3, 1690162, 1690221, '2021/03/04 09H00', 1, 3,  5, 3, 3, 0, 'C2', 'AURA', 'TF')`,
+           `4, 1690162, 1690221, '2021/04/05 09H00', 2, 5, 14, 3, 2, 0, 'R3', 'AURA', 'A')`
        ];
 
         for(let j in clubs) {
@@ -173,7 +192,7 @@ export class Rencontre{
 
      // renvoie la rencontre complete
      public static getRencontre(id:number) {
-        const select = `select ren_club1_kn, ren_club2_kn, ren_vd_date, ren_vn_phase, ren_vn_journee, ren_vn_nb_joueurs,
+        const select = `select ren_club1_kn, ren_club2_kn, ren_vd_date, ren_vn_phase, ren_vn_journee, 
                             ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin, ren_va_division, ren_va_ligue, ren_va_poule
                         from Rencontre
                         where ren_kn = `
@@ -190,21 +209,20 @@ export class Rencontre{
                     rencontre.date= row[2];
                     rencontre.phase= Number(row[3]);
                     rencontre.journee= Number(row[4]);
-                    rencontre.nbJoueurs= Number(row[5]);
-                    rencontre.formule= Number(row[6]);
-                    rencontre.nbSets= Number(row[7]);
-                    rencontre.echelon= row[8];
-                    rencontre.feminin= Boolean(row[9]);
-                    rencontre.division= row[10];
-                    rencontre.ligue= row[11];
-                    rencontre.poule= row[12];
+                    rencontre.formule= Number(row[5]);
+                    rencontre.nbSets= Number(row[6]);
+                    rencontre.echelon= row[7];
+                    rencontre.feminin= Boolean(row[8]);
+                    rencontre.division= row[9];
+                    rencontre.ligue= row[10];
+                    rencontre.poule= row[11];
 
                     console.log("Trouvé rencontre " + rencontre.id + " div " + rencontre.division + " poule " + rencontre.poule + " ligue " + rencontre.ligue);
 
                     resolve(rencontre);
                 }
                 else {
-                    resolve("Pas trouvé la rencontre " + id.toString());
+                    resolve("Pas trouvé la rencontre ");
                 }
             }, error => {
                 reject(error);
@@ -236,6 +254,75 @@ export class Rencontre{
         return promise;
     }
 
+    private static getNextId() {
+        const select = "select max(ren_kn) as kn from Rencontre";
+        let promise = new Promise(function(resolve, reject) {
+            RespeqttDb.db.get(select).then(row => {
+                if(row) {
+                    let max:number=Number(row[0]);
+                    console.log("Max kn=" + max.toString());
+                    resolve(max+1);
+                }
+                else {
+                    resolve(1);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+        return promise;
+    }
+
+    // Ajoute une rencontre en BDD
+    public static AjouteRencontre(r:Rencontre) {
+
+        let promise = new Promise(function(resolve, reject) {
+                // rechercher la kn à utiliser
+            Rencontre.getNextId().then(nextId => {
+                console.log("ren_kn=" + nextId);                
+                let sql =`insert into Rencontre (ren_kn, ren_club1_kn, ren_club2_kn, ren_vd_date, ren_vn_phase, ren_vn_journee,
+                    ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin,
+                    ren_va_division, ren_va_ligue, ren_va_poule) values (`
+                    + nextId + ", " 
+                    + r.club1 + ", " 
+                    + r.club2 + ", '" 
+                    + r.date + "', " 
+                    + r.phase + ", " 
+                    + r.journee + ", " 
+                    + r.formule + ", " 
+                    + r.nbSets + ", " 
+                    + r.echelon + ", " 
+                    + (r.feminin ? "0" : "1") + ", '" 
+                    + r.division + "', '" 
+                    + r.ligue + "', '" 
+                    + r.poule + "'"
+                    + ")";
+        
+                console.log(sql);
+                RespeqttDb.db.execSQL(sql).then(id => {
+                    console.log("Rencontre " + nextId + " ajoutée");
+                    resolve(nextId);
+                    }, error => {
+                        console.log("ECHEC INSERT Rencontre " + error.toString());
+                        reject(error);
+                    });
+                }, error =>{
+                console.log("Impossible de lire les id des rencontres :" + error.toString());
+                reject(error);
+            });
+        });
+        return promise;
+    }
+    // Supprime une rencontre
+    public static SupprimeRencontre(idRencontre:number) {
+        let sql ="delete from Rencontre where ren_kn=" + idRencontre.toString();
+
+        RespeqttDb.db.execSQL(sql).then(id => {
+            console.log("Rencontre " + idRencontre.toString() + " supprimée");
+            }, error => {
+                console.log("ECHEC DELETE Rencontre " + error.toString());
+            });
+    }
 
 };
 
@@ -260,9 +347,10 @@ export class Club{
     public static getListe() {
         var liste:Array<any>;
         var n:number;
+        let order: string = " order by clu_kn asc";
         let promise = new Promise(function(resolve, reject) {
 
-            RespeqttDb.db.all(Club.selListe).then(rows => {
+            RespeqttDb.db.all(Club.selListe + order).then(rows => {
                 liste = [];
                 n = 0;
                 for(let row in rows) {
@@ -321,6 +409,29 @@ export class Club{
         });
         return promise;
     }
+
+    public static ajouteClub(numero:number, nom:string) {
+        let sqlClub ="insert into Club (clu_kn, clu_va_nom) values (" + numero + ", " + toSQL(nom) + ")";
+
+        RespeqttDb.db.execSQL(sqlClub).then(id => {
+            console.log("Club " + nom + " ajouté");
+            }, error => {
+                console.log("ECHEC INSERT Club " + error.toString());
+            });
+
+    }
+
+    public static supprimeClub(numero:number) {
+        let sqlClub ="delete from Club where clu_kn=" + numero;
+
+        RespeqttDb.db.execSQL(sqlClub).then(id => {
+            console.log("Club " + numero + " supprimé");
+            }, error => {
+                console.log("ECHEC DELETE Club " + error.toString());
+            });
+
+    }
+
 
 };
 
@@ -383,14 +494,39 @@ export class Licencie{
 };
 
 
+    // renvoie un EltListeLicencie (nom, prenom et points) à partir de sa licence
+    public static ajouteLicencie(j:Licencie, club:number) {
+
+        const sql:string="insert into Licencie (lic_va_nom, lic_va_prenom, lic_kn, lic_vn_points, lic_clu_kn, lic_vn_mute, lic_vn_etranger, lic_vn_feminin) values ('"
+        + j.nom + "', '"
+        + j.prenom + "', "
+        + j.id + ", "
+        + j.points + ", "
+        + club + ", "
+        + bool2SQL(j.mute) + ", "
+        + bool2SQL(j.etranger) + ", "
+        + bool2SQL(j.feminin) + ")";
+
+        // insertion en BDD
+        let promise = new Promise(function(resolve, reject) {
+            RespeqttDb.db.execSQL(sql).then(id => {
+                console.log("Joueur ajouté : " + j.id + " " + j.nom + " " + j.prenom + " au club " + club.toString());
+            }, error2 => {
+                console.log("Echec insertion du joueur " + j.id, error2);
+            });
+        });
+        return promise;
+    }
+    
 
     // renvoie la liste en BDD des joueurs du club demandé pour affichage sur la page des joueurs
     public static getListe(clubId:number) {
         var liste:Array<any>;
         var n:number;
         let where = " where lic_clu_kn=" + clubId.toString();
+        let order = " order by lic_va_nom, lic_va_prenom"
         let promise = new Promise(function(resolve, reject) {
-            RespeqttDb.db.all(Licencie.selListe + where).then(rows => {
+            RespeqttDb.db.all(Licencie.selListe + where + order).then(rows => {
                 liste = [];
                 n = 0;
                 for(let row in rows) {
@@ -421,6 +557,12 @@ export class Licencie{
 
     // simulation, à remplacer par SPID
     public static SIM_LoadListe():void {
+
+        if(!Respeqtt.isTest()) {
+            console.log("--- PAS EN MODE TEST ---");
+            return;
+        }
+
         // création des joueurs
         let sql=`insert into Licencie (lic_clu_kn, lic_kn, lic_va_nom, lic_va_prenom, lic_vn_points,
             lic_vn_mute, lic_vn_etranger, lic_vn_feminin) values (`;
@@ -908,35 +1050,40 @@ export class ListeFormules {
                 "desc": "AX",
                 "joueursA": "A",
                 "joueursX": "X",
-                "nbDoubles":"0"
+                "nbDoubles":"0",
+                "nbJoueurs":"1"
             },
             {
                 "id": "1",
                 "desc": "AX",
                 "joueursA": "A",
                 "joueursX": "X",
-                "nbDoubles":"0"
+                "nbDoubles":"0",
+                "nbJoueurs":"1"
             },
             {
                 "id": "5",
                 "desc": "AX BY 11 AY BX",
                 "joueursA": "A B",
                 "joueursX": "X Y",
-                "nbDoubles":"1"
+                "nbDoubles":"1",
+                "nbJoueurs":"2"
             },
             {
                 "id": "14",
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 AY CW DX BZ",
                 "joueursA": "A B C D",
                 "joueursX": "W X Y Z",
-                "nbDoubles":"2"
+                "nbDoubles":"2",
+                "nbJoueurs":"4"
             },
             {
                 "id": "18",
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ",
                 "joueursA": "A B C D",
                 "joueursX": "W X Y Z",
-                "nbDoubles":"2"
+                "nbDoubles":"2",
+                "nbJoueurs":"4"
             }
         ]
     }`;

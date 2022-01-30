@@ -54,6 +54,9 @@ code .
 
 ### Connecter son téléphone ou un émulateur :
 
+activer le mode développeur : paramètres\à propos du téléphone \ cliquer 7 fois sur le numéro de version
+aller dans "paramètres\option de développement" activer le debogague USB
+
 ### Dans la fenêtre terminal, taper :
 
 tns run android --clean 
