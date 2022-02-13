@@ -16,7 +16,8 @@
 
 import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { Page, Button, EventData, ListView, ItemEventData } from "@nativescript/core";
-import {Router} from "@angular/router";
+import { RouterExtensions } from "@nativescript/angular";
+import { ActivatedRoute } from "@angular/router";
 
 import { EltListeRencontre, Rencontre, Club, ListeFormules } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
@@ -38,8 +39,9 @@ export class ChoixRencontreComponent {
     titre:string;
     sousTitre:string;
     version:string;
+    router:RouterExtensions;
 
-    constructor(private router: Router) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         this.mobile = new Mobile;
         // calcul de la demi largeur pour les boutons
         this.demiLargeur = Math.floor(this.mobile.largeurEcran /2) - 5;
@@ -47,6 +49,7 @@ export class ChoixRencontreComponent {
         // version logicielle
         this.version = SessionAppli.version;
 
+        this.router = _routerExtensions;
 
         this.titre = "CHOIX DE LA RENCONTRE";
         this.sousTitre = "dans la liste ci-dessous";
@@ -72,13 +75,29 @@ export class ChoixRencontreComponent {
         SessionAppli.rencontreChoisie = this.listeRencontres[index].id;
         // Rechercher la rencontre en BDD
         if(SessionAppli.RechargeSession(SessionAppli.rencontreChoisie)) {
-            this.router.navigate(["preparation"]);
+            this.router.navigate(["preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             if(SessionAppli.rencontreChoisie == 0)  {
                 // aller sur la page de préparation de la feuille de match
                 const button: Button = <Button>args.object;
                 const page: Page = button.page;
-                this.router.navigate(["preparation"]);
+                this.router.navigate(["preparation"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationAller, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             } else {
                 // récupérer la description complète de la rencontre
                 Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(ren => {
@@ -106,7 +125,15 @@ export class ChoixRencontreComponent {
                                 // aller sur la page de préparation de la feuille de match
                                 const button: Button = <Button>args.object;
                                 const page: Page = button.page;
-                                this.router.navigate(["preparation"]);
+                                this.router.navigate(["preparation"],
+                                {
+                                    animated:true,
+                                    transition: {
+                                        name : SessionAppli.animationAller, 
+                                        duration : 380,
+                                        curve : "easeIn"
+                                    }
+                                });
                             }, error => {
                                 console.log("Impossible de lire le titre de la rencontre" + error.toString());
                             });
@@ -122,6 +149,19 @@ export class ChoixRencontreComponent {
 
             }
         }
+    }
+
+    // Fermer
+    onFermer(args: EventData) {
+        this.router.navigate(["/actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 }

@@ -32,7 +32,7 @@ export class JoueursComponent{
     listeJoueurs:Array<EltListeLicencie>;
     maListe:ListView;
     descClub:string = "";
-    routerExt: RouterExtensions;
+    router: RouterExtensions;
     clubChoisi:boolean=false;
     joueurSel:boolean=false;
     version: string;
@@ -44,7 +44,7 @@ export class JoueursComponent{
 
 
         // récupération du routeur pour naviguer
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // est-ce qu'un club a été choisi
         if(SessionAppli.clubChoisi > 0) {
@@ -133,7 +133,15 @@ export class JoueursComponent{
 
     onAjouter(args: EventData) {
         // appeler la page de saisie des joueurs
-        this.routerExt.navigate(["/ajouterJoueurs/" + this.descClub]);
+        this.router.navigate(["/ajouterJoueurs/" + this.descClub],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 
@@ -165,4 +173,29 @@ export class JoueursComponent{
         console.log("Joueur choisi : " + this.listeJoueurs[index].id);
     }
 
+    // Club
+    onClub(args: EventData) {
+        this.router.navigate(["/club/joueurs"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+    }    
+
+    // Fermer
+    onFermer(args: EventData) {
+        this.router.navigate(["/actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+    }    
 }

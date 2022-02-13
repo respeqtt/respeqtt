@@ -17,5 +17,5 @@
     </ListView>
     <Label text="" flexGrow="10" flexShrink="10"></Label>
     <Button text="Ajouter un club"  class="bouton" flexGrow="0" flexShrink="0"  (tap)="onAddClub($event)"></Button>
-    <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" [nsRouterLink]="['/joueurs']"></Button>
+    <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>
 </StackLayout>

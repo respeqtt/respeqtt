@@ -65,6 +65,11 @@ export class SessionAppli {
     public static date:string="";
     public static lieu:string="";
     public static versoFeuille:string="";
+    public static ptsParVictoire:number=2;
+
+    // divers
+    public static animationAller:string = "slide";          // "explode", "fade",  "flipLeft", "flip", "slideRight", "slideTop", "slideBottom"
+    public static animationRetour:string = "slideRight";
 
     // sleep
     public static delay(ms: number){

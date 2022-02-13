@@ -29,7 +29,7 @@ var dialogs = require("@nativescript/core/ui/dialogs");
     styleUrls: ["../global.css"]
 })
 export class ValiderComponent{
-    routeur: RouterExtensions;            // pour navigation
+    router: RouterExtensions;            // pour navigation
     nomJA:string="";
     prenomJA:string="";
     adresseJA:string="";
@@ -43,7 +43,7 @@ export class ValiderComponent{
     btnRecX:string;
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
-        this.routeur = routerExtensions;
+        this.router = routerExtensions;
 
         this.nomClubA = SessionAppli.clubA.nom;
         this.nomClubX = SessionAppli.clubX.nom;
@@ -66,20 +66,44 @@ export class ValiderComponent{
     onReclamA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)]);
+        this.router.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 
     onReclamX(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.routeur.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)]);
+        this.router.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onJA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie du rapport du JA
-        this.routeur.navigate(["jugearbitre"]);
+        this.router.navigate(["jugearbitre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onTapValidate(args: EventData) {
@@ -98,12 +122,28 @@ export class ValiderComponent{
             SessionAppli.Persiste();
 
 
-            this.routeur.navigate(["actions"]);
+            this.router.navigate(["actions"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         });
     }
 
     onTapClose(args: EventData) {
         // retour sur la page précédente
-        this.routeur.navigate(["actions"]);
+        this.router.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 }

@@ -40,7 +40,7 @@ export class PreparationComponent{
     modif:boolean=false;
     resValid:boolean=false;
     switchActif:boolean=false;
-    routeur:RouterExtensions;
+    router:RouterExtensions;
     btnResA:string;
     btnResX:string;
     clubA:string;
@@ -73,7 +73,7 @@ export class PreparationComponent{
         // version logicielle
         this.version = SessionAppli.version;
 
-        this.routeur = routerExtensions;
+        this.router = routerExtensions;
         this.recoitCoteX=false;
         this.titreRencontre = SessionAppli.titreRencontre;
         console.log("Rencontre : " + this.titreRencontre);
@@ -195,10 +195,26 @@ export class PreparationComponent{
         // Ouvrir la page de saisie des réserves
         if(this.resValid) {
             // ouverture en saisie
-            this.routeur.navigate(["saisiecommentaire/RESERVE/A/preparation"]);
+            this.router.navigate(["saisiecommentaire/RESERVE/A/preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             // ouverture en consultation
-            this.routeur.navigate(["saisiecommentaire/RESERVE-C/A/preparation"]);
+            this.router.navigate(["saisiecommentaire/RESERVE-C/A/preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
     }
 
@@ -208,10 +224,26 @@ export class PreparationComponent{
         SessionAppli.lieu = this.lieu;
         if(this.resValid) {
             // ouverture en saisie
-            this.routeur.navigate(["saisiecommentaire/RESERVE/X/preparation"]);
+            this.router.navigate(["saisiecommentaire/RESERVE/X/preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             // ouverture en consultation
-            this.routeur.navigate(["saisiecommentaire/RESERVE-C/X/preparation"]);
+            this.router.navigate(["saisiecommentaire/RESERVE-C/X/preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
     }
 
@@ -252,7 +284,15 @@ export class PreparationComponent{
             // sauvegarder la session en BDD
             SessionAppli.Persiste();
             // retourner à la page des actions
-            this.routeur.navigate(["actions"]);
+            this.router.navigate(["actions"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         });
     }
 
@@ -261,7 +301,15 @@ export class PreparationComponent{
         // mémoriser le lieu s'il a été saisi
         SessionAppli.lieu = this.lieu;
         // compo de l'équipe A
-        this.routeur.navigate(["compo/A"]);
+        this.router.navigate(["compo/A"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     // Compo équipe X
@@ -269,7 +317,15 @@ export class PreparationComponent{
         // mémoriser le lieu s'il a été saisi
         SessionAppli.lieu = this.lieu;
         // compo de l'équipe X
-        this.routeur.navigate(["compo/X"]);
+        this.router.navigate(["compo/X"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     private cartons(couleurCarton:couleur) {
@@ -391,7 +447,15 @@ export class PreparationComponent{
         console.log("Lieu =" + this.lieu);
         SessionAppli.lieu = this.lieu;
         // retourner à la page des actions
-        this.routeur.navigate(["actions"]);
+        this.router.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 }

@@ -33,9 +33,9 @@
     <StackLayout *tabItem="{title: 'Préparation', iconSource: 'res://prepa'}">    
         <!-- Sans SPID , iconSource: 'font://&#xf256;', class:'fas' -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-            <Button text="Télécharger les rencontres"  class="bouton" flexGrow="1" [nsRouterLink]="['../rencontre']"></Button>
+            <Button text="Télécharger les rencontres"  class="bouton" flexGrow="1" (tap)="onDownloadRencontre($event)"></Button>
             <Button text="Télécharger les joueurs"     class="bouton" flexGrow="1" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
-            <Button text="Saisir un club"              class="bouton" flexGrow="1" [nsRouterLink]="['../ajouterClub']"></Button>
+            <Button text="Saisir un club"              class="bouton" flexGrow="1" (tap)="onAjouterClub($event)"></Button>
 <!--
             <Button text="Télécharger RESPEQTT"        class="bouton" flexGrow="1" (tap)="onDownload($event)"></Button>
             <Button text="Installer RESPEQTT"          class="bouton" (tap)="onInstructions($event)"></Button>

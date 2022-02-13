@@ -33,6 +33,7 @@ export class ClubComponent{
     listeClubs:Array<EltListeClub>;
     retour:string;                      // page appelante
     version:string;
+    router:RouterExtensions;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
 
@@ -40,6 +41,7 @@ export class ClubComponent{
         // version logicielle
         this.version = SessionAppli.version;
 
+        this.router = _routerExtensions;
 
         Club.getListe().then(liste => {
             this.listeClubs = liste  as Array<EltListeClub>;
@@ -78,4 +80,16 @@ export class ClubComponent{
         this._routerExtensions.navigate(["ajouterClub"]);
     }
 
+    // Fermer
+    onFermer(args: EventData) {
+        this.router.navigate(["/joueurs"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+    }
 }

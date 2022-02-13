@@ -22,6 +22,8 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Page } from "@nativescript/core/ui/page";
 import { View } from "@nativescript/core/ui/core/view";
 
+import { SessionAppli } from "../session/session";
+
 let view: View;
 
 @Component({
@@ -58,7 +60,15 @@ export class AttenteComponent {
 */
         // aller sur la page suivante
         console.log("Destination=" + this.destination);
-        this.router.navigate(["qrmontrer/" + this.destination]);
+        this.router.navigate(["qrmontrer/" + this.destination],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
 
     }
 

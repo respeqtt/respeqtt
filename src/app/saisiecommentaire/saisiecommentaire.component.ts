@@ -207,7 +207,15 @@ export class SaisieCommentaireComponent {
         SessionAppli.Persiste();
 
         // retour à la page appelante
-        this.router.navigate([this.retour]);
+        this.router.navigate([this.retour],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
 
 
     }

@@ -7,6 +7,8 @@ export class Mobile {
     estIos:boolean;
     modele:string;
     langue: string;
+    api: string;
+    estTablette: boolean;
 
     public constructor() {
         // The absolute height of the screen in density independent pixels.
@@ -22,6 +24,14 @@ export class Mobile {
         this.modele = Device.model;
         // Quelle langue ?
         this.langue = Device.language;
+        // Quelle API/SDK ?
+        this.api = Device.sdkVersion;
+        // Tablette ou téléphone ? pas retrouvé l'enum correspondant : DeviceType.Tablet
+        this.estTablette = Device.deviceType == "Tablet";
+        /* pour changer le style, à placer dans les paramètres de @Component
+            styleUrls: ["./home.component.css",
+        (device.deviceType == DeviceType.Tablet ? "./home.tablet.css" : "./home.phone.css")]
+        */
     }
 
     public OS():string {

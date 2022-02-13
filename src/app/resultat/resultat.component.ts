@@ -39,7 +39,7 @@ export class ResultatComponent{
     titre:string;
     quoi:string;
     dim: number;
-    routeur:RouterExtensions;
+    router:RouterExtensions;
     numPartie:number;
     reclam:boolean;
     nbJaunesA:number=0;
@@ -67,7 +67,7 @@ export class ResultatComponent{
         this.version = SessionAppli.version;
 
         this.dim = SessionAppli.dimEcran;
-        this.routeur = routerExtensions;
+        this.router = routerExtensions;
         this.numPartie = Number(_route.snapshot.paramMap.get("partie"));
         console.log("Saisie résultats partie " + _route.snapshot.paramMap.get("partie"));
 
@@ -186,7 +186,15 @@ export class ResultatComponent{
             // Afficher le résultat
             console.log("Resultat = " + this.quoi);
             // Ouvrir la page de saisie des réclamations
-            this.routeur.navigate(["saisiecommentaire/RECLAMATION/A/resultat" + toURL("/" + this.numPartie.toString())]);
+            this.router.navigate(["saisiecommentaire/RECLAMATION/A/resultat" + toURL("/" + this.numPartie.toString())],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             alert("Score incorrect ou incomplet, merci de corriger avant de saisir la réclamation");
         }
@@ -205,7 +213,15 @@ export class ResultatComponent{
             // Afficher le résultat
             console.log("Resultat = " + this.quoi);
             // Ouvrir la page de saisie des réclamations
-            this.routeur.navigate(["saisiecommentaire/RECLAMATION/X/resultat" + toURL("/" + this.numPartie.toString())]);
+            this.router.navigate(["saisiecommentaire/RECLAMATION/X/resultat" + toURL("/" + this.numPartie.toString())],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             alert("Score incorrect ou incomplet, merci de corriger avant de saisir la réclamation");
         }
@@ -266,7 +282,15 @@ export class ResultatComponent{
                 }
             }
             // Navigation
-            this.routeur.navigate(["lancement"]);
+            this.router.navigate(["lancement"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
             alert("Score incorrect ou incomplet, merci de corriger");
         }
@@ -274,12 +298,28 @@ export class ResultatComponent{
 
     onTapClose(args: EventData) {
             // Navigation
-            this.routeur.navigate(["lancement"]);
+            this.router.navigate(["lancement"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
     }
 
     onTapScan(args: EventData) {
         // appeler la page de scan
-        this.routeur.navigate(["/qrscan/RESULTAT/" + this.numPartie]);
+        this.router.navigate(["/qrscan/RESULTAT/" + this.numPartie],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onTapQRCode(args: EventData) {
@@ -300,8 +340,16 @@ export class ResultatComponent{
             paramTitre = toURLQuote(this.titre);
 
             console.log("Montrer QRCode : quoi=" + this.quoi + "; dim=" + this.dim + "; titre=" + paramTitre);
-            this.routeur.navigate(["attente/" + this.quoi + "/" + this.dim + "/" + paramTitre
-                                + "/" + "resultat" + "/" + this.numPartie.toString()]);
+            this.router.navigate(["attente/" + this.quoi + "/" + this.dim + "/" + paramTitre
+                                + "/" + "resultat" + "/" + this.numPartie.toString()],
+                                {
+                                    animated:true,
+                                    transition: {
+                                        name : SessionAppli.animationAller, 
+                                        duration : 380,
+                                        curve : "easeIn"
+                                    }
+                                });
         } else {
             alert("Score incorrect ou incomplet, merci de corriger");
         }

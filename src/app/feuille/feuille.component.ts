@@ -27,9 +27,9 @@ const fs = require("@nativescript/core/file-system");
 
 
 import { File } from "@nativescript/core/file-system";
-import * as SocialShare from "nativescript-social-share";
-
-import { html2PdfFile } from 'nativescript-html2pdf';
+// NS8.1.5 ne marche plus
+//import * as SocialShare from "nativescript-social-share";
+//import { html2PdfFile } from 'nativescript-html2pdf';
 
 import { getText, getTextSync, setText, setTextSync } from "nativescript-clipboard";
 
@@ -88,7 +88,8 @@ export class FeuilleComponent {
 
         console.log("Envoi de la feuille ...");
         // Envoyer par mail
-        SocialShare.shareText(SessionAppli.feuilleDeMatch, "Comment voulez-vous partager la feuille de match?");
+// NS8.1.5 ne marche plus
+//        SocialShare.shareText(SessionAppli.feuilleDeMatch, "Comment voulez-vous partager la feuille de match?");
         console.log("Feuille envoyée !");
     }
 
@@ -100,8 +101,8 @@ export class FeuilleComponent {
         // Note: this permissions should also be in your AndroidManifest.xml file as:
         //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         // (Included by Nativescript)
-        const permissions = require('nativescript-permissions');
-        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        const permissions = require('@master.technology/permissions');
+        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "pour enregistrer la feuille de match")
         .then(() => {
             console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée pour le RECTO');
             // Get the publicly accessable Downloads directory path
@@ -116,19 +117,29 @@ export class FeuilleComponent {
             // Note: In this case we try to get a unique file every time this code is run
             // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
             let htmlFile:File = myAppFolder.getFile('feuille-de-match.html');
-                console.log('Fichier HTML : ' + htmlFile.path);
+            console.log('Fichier HTML : ' + htmlFile.path);
 
+        
+           const tempExists: boolean = fs.Folder.exists(sdDownloadPath);   
+           console.log('Le dossier existe : ' + tempExists.toString()); 
+
+           const filePath = fs.path.join(myAppFolder.path, 'feuille-de-match.html');
+           const exists = File.exists(filePath);
+           console.log('Le fichier existe : ' + exists.toString()); 
+           console.log("Feuille de match =\n" + SessionAppli.feuilleDeMatch);
+        
             // écrire le fichier HTML
-            htmlFile.writeText(SessionAppli.feuilleDeMatch).then(() => {
-                console.log("Fichier HTML écrit");
-                // Consulter
-                Utils.openFile(htmlFile.path);
-            })
-            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`));
+            htmlFile.writeTextSync(SessionAppli.feuilleDeMatch);
+            // console.log("Feuille de match =\n" + SessionAppli.feuilleDeMatch);
+            permissions.requestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, "pour ouvrir la feuille de match")
+            .then(() => {
+                console.log('La permission READ_EXTERNAL_STORAGE a été accordée pour le RECTO');
+                alert("La feuille a été enregistrée dans le dossier Téléchargements/RESPEQTT.");
+                Utils.openFile(htmlFile.path, "Feuille de match");
+            });
         })
         .catch(err => {
             console.error("Erreur lors de l'écriture de la feuille de match", err);
-
         });
     }
 
@@ -140,8 +151,8 @@ export class FeuilleComponent {
         // Note: this permissions should also be in your AndroidManifest.xml file as:
         //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         // (Included by Nativescript)
-        const permissions = require('nativescript-permissions')
-        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        const permissions = require('@master.technology/permissions')
+        permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, "pour enregistrer la feuille de match")
         .then(() => {
             console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
             // Get the publicly accessable Downloads directory path
@@ -159,12 +170,14 @@ export class FeuilleComponent {
                 console.log('Fichier HTML : ' + htmlFile.path)
 
             // écrire le fichier HTML
-            htmlFile.writeText(SessionAppli.versoFeuille).then(() => {
-                console.log("Fichier HTML écrit");
-                // Consulter
-                Utils.openFile(htmlFile.path);
-            })
-            .catch((err) => console.log(`Erreur lors de l'écriture du fichier HTML : ${err}`))
+            htmlFile.writeTextSync(SessionAppli.versoFeuille);
+            // console.log("Feuille de match =\n" + SessionAppli.feuilleDeMatch);
+            permissions.requestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, "pour ouvrir la feuille de match")
+            .then(() => {
+                console.log('La permission READ_EXTERNAL_STORAGE a été accordée pour le VERSO');
+                alert("La feuille a été enregistrée dans le dossier Téléchargements/RESPEQTT.");
+                Utils.openFile(htmlFile.path, "Feuille de match");
+            });
         })
         .catch(() => {
             console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');
@@ -181,7 +194,7 @@ export class FeuilleComponent {
         // Note: this permissions should also be in your AndroidManifest.xml file as:
         //   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         // (Included by Nativescript)
-        const permissions = require('nativescript-permissions')
+        const permissions = require('@master.technology/permissions')
         permissions.requestPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
         .then(() => {
             console.log('La permission WRITE_EXTERNAL_STORAGE a été accordée');
@@ -201,10 +214,11 @@ export class FeuilleComponent {
     //        let pdfPath: string = fs.knownFolders.documents().getFile('feuille-de-match.pdf').path;
 
             // convertit la feuille de match en PDF
-            html2PdfFile(SessionAppli.feuilleDeMatch, pdfPath);
+// NS8.1.5 ne marche plus
+//            html2PdfFile(SessionAppli.feuilleDeMatch, pdfPath);
 
             // Ouvrir le lecteur de PDF
-            Utils.openFile(pdfPath);
+//            Utils.openFile(pdfPath);
         })
         .catch(() => {
             console.error('La permission WRITE_EXTERNAL_STORAGE a été refusée!');

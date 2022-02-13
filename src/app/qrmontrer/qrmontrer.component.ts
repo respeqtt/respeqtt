@@ -126,7 +126,15 @@ export class QRMontrerComponent implements OnInit{
                 this.router.backToPreviousPage();
                 this.router.backToPreviousPage();
             } else {
-                this.router.navigate([this.retour]);
+                this.router.navigate([this.retour],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
             }
         }
 

@@ -31,7 +31,7 @@ var dialogs = require("@nativescript/core/ui/dialogs");
     styleUrls: ["../global.css"]
  })
 export class JugeArbitreComponent {
-    routeur: RouterExtensions;            // pour navigation
+    router: RouterExtensions;            // pour navigation
     nomJA:string="";
     prenomJA:string="";
     adresseJA:string="";
@@ -55,7 +55,7 @@ export class JugeArbitreComponent {
         // version logicielle
         this.version = SessionAppli.version;
 
-        this.routeur = _routerExtensions;
+        this.router = _routerExtensions;
 
         this.nomJA = SessionAppli.nomJA;
         this.prenomJA = SessionAppli.prenomJA;
@@ -101,7 +101,15 @@ export class JugeArbitreComponent {
         SessionAppli.licenceJA = this.licenceJA;
 
         // Ouvrir la page de saisie de saisie du rapport du JA
-        this.routeur.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA + "/jugearbitre"]);
+        this.router.navigate(["saisiecommentaire/RAPPORT/" + this.nomJA + " " + this.prenomJA + "/jugearbitre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onTapValider(args: EventData) {
@@ -121,7 +129,15 @@ export class JugeArbitreComponent {
 
         console.log("JA " + SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.licenceJA.toString() + " " + SessionAppli.adresseJA)
 
-        this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+        this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onTapFermer(args: EventData) {
@@ -141,13 +157,29 @@ export class JugeArbitreComponent {
                     SessionAppli.adresseJA = "";
                     SessionAppli.licenceJA = 0;
                     SessionAppli.rapportJA = "";
-                    this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+                    this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                 } else {
                 return;
                 }
         });
         } else {
-            this.routeur.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+            this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
 
     }

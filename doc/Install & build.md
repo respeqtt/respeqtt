@@ -16,14 +16,14 @@ Lorsque le script installe le JDK 8, arrêter, redémarrer le shell, vérifier J
 terminer l'installation
 
 ### Vérifier que tout s'est bien passé en exécutant :
-tns doctor 
+ns doctor 
 
 qui doit conclure : no issue
 
 ### Créer l'application
 
-tns create respeqtt
-> Angular
+ns create --ng respeqtt 
+(--ng => Angular)
 > application = respeqtt
 > template = hello world
 
@@ -36,11 +36,13 @@ npm install node sass
 ns plugin add nativescript-barcodescanner
 ns plugin add @nativescript-community/ui-canvas 
 ns plugin add nativescript-sqlite
-ns plugin add nativescript-social-share
-ns plugin add nativescript-html2pdf
-ns plugin add nativescript-permissions
+//ns plugin add nativescript-social-share
+ns plugin add nativescript-clipboard
+//ns plugin add nativescript-html2pdf
+ns plugin add @master.technology/permissions
 #corriger les vulnérabilités
 npm audit fix
+
 
 
 
@@ -68,3 +70,6 @@ Si le téléchargement se bloque ou si les traces de la console n'apparaissent p
 ### Pour publier sur le playstore, il faut compiler en release et signer la version :
 ns build android --release --key-store-path _fichier-keystore-avec-son-chemin_ --key-store-password ' _mot-de-passe_ ' --key-store-alias _alias_ --key-store-alias-password ' _mot-de-passe_ '
 
+### Mettre à jour Nativescript
+npm i -g nativescript
+ns migrate

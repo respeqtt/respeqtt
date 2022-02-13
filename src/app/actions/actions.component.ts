@@ -99,7 +99,7 @@ export class ActionsComponent{
         let mobile:Mobile= new Mobile;
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
         this.dim = SessionAppli.dimEcran;
-        console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele);
+        console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api);
 
     }
 
@@ -107,7 +107,15 @@ export class ActionsComponent{
         let button = args.object as Button;
 
         // consulter ou envoyer la feuille de match
-        this.router.navigate(["feuille"]);
+        this.router.navigate(["feuille"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onValiderScore(args: EventData) {
@@ -137,14 +145,30 @@ export class ActionsComponent{
                 cancelButtonText:"ANNULER"
                 }).then(r => {
                     if(r.result) {
-                        this.router.navigate(["valider/"+ SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+                        this.router.navigate(["valider/"+ SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationAller, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
                 } else {
                     console.log("VALIDATION ANNULEE");
                     return;
                 }
             });
         } else {
-            this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX]);
+            this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
         
     }
@@ -208,16 +232,41 @@ export class ActionsComponent{
         // vérifier si on peut passer sur la page de lancement des parties
         // inutile : le bouton est inactif si pas this.lancer
         if(this.lancer) {
-            this.router.navigate(["lancement"]);
+            this.router.navigate(["lancement"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
     }
 
     onPreparer(args: EventData) {
         
         if(SessionAppli.rencontreChoisie >= 0) {
-            this.router.navigate(["preparation"]);
+            this.router.navigate(["preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         } else {
-            this.router.navigate(["choixrencontre"]);
+            this.router.navigate(["choixrencontre"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+
         }
 
     }
@@ -249,7 +298,15 @@ export class ActionsComponent{
                     console.log("Partie à scanner :" + SessionAppli.listeParties[0].desc);
                 } else {
                     // appeler la page de scan des parties
-                    this.router.navigate(["/qrscan/PARTIE/0"]);
+                    this.router.navigate(["/qrscan/PARTIE/0"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                 }
             break;
 
@@ -257,7 +314,6 @@ export class ActionsComponent{
                 // config
                 console.log("Tab >> config");
                 SessionAppli.tab = 2;
-//                this.router.navigate(["/ajouterClub"]);
             break;
 
             default : 
@@ -273,7 +329,15 @@ export class ActionsComponent{
         
         SessionAppli.tab = 1;
         // appeler la page de choix des clubs
-        this.router.navigate(["clubs/actions"]);
+        this.router.navigate(["clubs/actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
         
     }
 
@@ -281,7 +345,15 @@ export class ActionsComponent{
          
         SessionAppli.tab = 1;
         // appeler la page de téléchargement des joueurs
-        this.router.navigate(["joueurs"]);
+        this.router.navigate(["joueurs"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
         
     }
 
@@ -289,7 +361,15 @@ export class ActionsComponent{
         
         SessionAppli.tab = 1;
         // appeler la page de choix de rencontre
-        this.router.navigate(["choixrencontre"]);
+        this.router.navigate(["choixrencontre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
         
     }
 
@@ -301,7 +381,15 @@ export class ActionsComponent{
             SessionAppli.rencontreChoisie = 0;
         }
         // appeler la page de compo des équipes
-        this.router.navigate(["preparation"]);
+        this.router.navigate(["preparation"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
         
     }
 
@@ -310,7 +398,15 @@ export class ActionsComponent{
         const dim:number = SessionAppli.dimEcran - 40;
         const json:string= "https://www.valencinpierre.fr/wp-content/uploads/2021/07/respeqtt.apk";
 
-         this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"]);
+         this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"],
+         {
+             animated:true,
+             transition: {
+                 name : SessionAppli.animationAller, 
+                 duration : 380,
+                 curve : "easeIn"
+             }
+         });
     }
 
     onInstructions(args: EventData) {
@@ -361,17 +457,58 @@ export class ActionsComponent{
                 if(r.result) {
                     console.log("!!! On garde l'équipe !!!");
                     // aller à la page de compo des doubles
-                    this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()]);
+                    this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                 } else {
                     // appeler la page de scan des doubles
                     console.log("-> qrscan/EQUIPE/0");
-                    this.router.navigate(["qrscan/EQUIPE/0"]);
+                    this.router.navigate(["qrscan/EQUIPE/0"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                 }
             });
         }
         
     }
 
+    onDownloadRencontre(args:Event) {
+        // appeler la page des rencontres
+        this.router.navigate(["/rencontre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }        
+        });
+    }
+
+    onAjouterClub(args:Event) {
+        // appeler la page des rencontres
+        this.router.navigate(["../ajouterClub"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }        
+        });
+    }
 
     onPartie(args: EventData) {
         
@@ -381,7 +518,15 @@ export class ActionsComponent{
             SessionAppli.rencontreChoisie = 0;
         }
         // appeler la page de scan des parties
-        this.router.navigate(["qrscan/PARTIE/0"]);
+        this.router.navigate(["qrscan/PARTIE/0"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
 
     }
 }

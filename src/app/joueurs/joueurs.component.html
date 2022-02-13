@@ -8,7 +8,7 @@
 
 <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
     <Label class="titre" text="CHARGER JOUEURS" flexGrow="0" flexShrink="0"></Label>
-    <Button text="Choisir un club" flexGrow="0" flexShrink="0" class="bouton" [nsRouterLink]="['../clubs/joueurs']"></Button>
+    <Button text="Choisir un club" flexGrow="0" flexShrink="0" class="bouton" (tap)="onClub($event)"></Button>
     <Label class = "club" [text] = "this.descClub" class = "centree" flexGrow="0" flexShrink="0" text-align="center"> </Label>
     <Button text="Charger les joueurs" flexGrow="0" flexShrink="0" class="bouton" [isenabled]="this.clubChoisi" (tap)="onLoadTap($event)"></Button>
     <Button text="Ajouter des joueurs" flexGrow="0" flexShrink="0" class="bouton" [isenabled]="this.clubChoisi" (tap)="onAjouter($event)"></Button>
@@ -26,5 +26,5 @@
     </ListView>
     <Label text="" flexGrow="10" flexShrink="10"></Label>
     <Button text="Supprimer les joueurs sélectionnés" flexGrow="0" flexShrink="0" class="bouton" [isenabled]="this.joueurSel" (tap)="onDelTap($event)"></Button>
-    <Button text="FERMER" class="bouton" flexGrow="0" flexShrink="0" [nsRouterLink]="['../actions']"></Button>
+    <Button text="FERMER" class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>
 </FlexboxLayout>

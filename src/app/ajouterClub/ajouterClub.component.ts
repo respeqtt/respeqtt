@@ -31,7 +31,7 @@ var dialogs = require("@nativescript/core/ui/dialogs");
     styleUrls: ["../global.css"]
  })
 export class AjouterClubComponent {
-    routeur: RouterExtensions;            // pour navigation
+    router: RouterExtensions;            // pour navigation
     nomClub:string="";
     numeroClub:number;
     version:string;
@@ -45,7 +45,7 @@ export class AjouterClubComponent {
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
 
-        this.routeur = _routerExtensions;
+        this.router = _routerExtensions;
 
         // version logicielle
         this.version = SessionAppli.version;
@@ -83,7 +83,15 @@ export class AjouterClubComponent {
                     } else {
                         // sinon on le refuse
                         dialogs.alert("Le club " + this.numeroClub + " existe déjà dans la liste");
-                        this.routeur.navigate(["actions"]);
+                        this.router.navigate(["actions"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationRetour, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
                         SessionAppli.tab = 0;
                                     }
                 } else {
@@ -120,7 +128,15 @@ export class AjouterClubComponent {
                                 if(r.result) {
                                     Club.supprimeClub(this.numeroClub);
                                     // retour à la page actions
-                                    this.routeur.navigate(["actions"]);
+                                    this.router.navigate(["actions"],
+                                    {
+                                        animated:true,
+                                        transition: {
+                                            name : SessionAppli.animationRetour, 
+                                            duration : 380,
+                                            curve : "easeIn"
+                                        }
+                                    });
                                     SessionAppli.tab = 0;            
                                 } else {
                                 return;
@@ -146,7 +162,15 @@ export class AjouterClubComponent {
     onFermer(args: EventData) {
         let button = args.object as Button;
 
-        this.routeur.navigate(["actions"]);
+        this.router.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
         SessionAppli.tab = 0;
     }
 

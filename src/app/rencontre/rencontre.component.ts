@@ -19,8 +19,9 @@ import { Button, EventData, ListView, ItemEventData } from "@nativescript/core";
 
 import { EltListeRencontre, Rencontre } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
-import {Router} from "@angular/router";
 import {RespeqttDb} from "../db/dbRespeqtt";
+import { RouterExtensions } from "@nativescript/angular";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
     templateUrl: "./rencontre.component.html",
@@ -31,11 +32,13 @@ export class RencontreComponent{
     listeRencontres:Array<EltListeRencontre>;
     maListe:ListView;
     version:string;
+    router:RouterExtensions;
 
-    constructor(private router: Router) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // version logicielle
         this.version = SessionAppli.version;
 
+        this.router = _routerExtensions;
         Rencontre.getListe().then(liste => {
             this.listeRencontres = liste as Array<EltListeRencontre>;
             SessionAppli.listeRencontres = this.listeRencontres;
@@ -113,7 +116,15 @@ export class RencontreComponent{
 
     onAjouterTap(args: EventData) {
         let button = args.object as Button;
-        this.router.navigate(["ajouterRencontre"]);
+        this.router.navigate(["ajouterRencontre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
     onListViewLoaded(args: EventData) {
         this.maListe = <ListView>args.object;
@@ -131,7 +142,15 @@ export class RencontreComponent{
 
     onFermerTap(args: ItemEventData) {
         SessionAppli.listeRencontres = this.listeRencontres;
-        this.router.navigate(["actions"]);
+        this.router.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 }

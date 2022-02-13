@@ -161,7 +161,15 @@ export class QRScanComponent implements OnInit{
                     console.log("Partie " + iPartie.toString());
                     // aller à la page de saisie des scores
                     if(iPartie >=0) {
-                        this.router.navigate(["resultat/" + iPartie]);
+                        this.router.navigate(["resultat/" + iPartie],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationAller, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
                         return;
                     } else {
                         alert("QRCode incorrect");
@@ -197,7 +205,15 @@ export class QRScanComponent implements OnInit{
                         const f:FormuledeRencontre=ListeFormules.getFormule(nFormule);
                         if(f) {
                             console.log("appel de : " + "compoDouble/" + cote + "/1/" + f.nbDoubles.toString())
-                            this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()]);
+                            this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()],
+                            {
+                                animated:true,
+                                transition: {
+                                    name : SessionAppli.animationAller, 
+                                    duration : 380,
+                                    curve : "easeIn"
+                                }
+                            });
                         }
                         else {
                             console.log("Pas trouvé la formule " + nFormule.toString());
@@ -215,7 +231,15 @@ export class QRScanComponent implements OnInit{
                     // lire le JSON et mettre à jour la liste des parties avec la compo des doubles
                     SessionAppli.JsonToDoubles(result.text, this.cote);
                     // retour à la page de lancement des parties
-                    this.router.navigate(["lancement"]);
+                    this.router.navigate(["lancement"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                     return;
                   }
                   // si c'est un résultat
@@ -230,7 +254,15 @@ export class QRScanComponent implements OnInit{
                         alert("QRCode incorrect");
                     }
                     // retour à la page de lancement des parties
-                    this.router.navigate(["lancement"]);
+                    this.router.navigate(["lancement"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                     return;
                   }
                   if(this.quoi == "COMPO") {
@@ -284,7 +316,15 @@ export class QRScanComponent implements OnInit{
                         }
                     }
                     // retour à la page de compo des équipes
-                    this.router.navigate(["preparation"]);
+                    this.router.navigate(["preparation"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                     return;
                 }, (errorMessage) => {
                   console.log("No scan : " + errorMessage);
@@ -299,16 +339,48 @@ export class QRScanComponent implements OnInit{
     onFermer(args: EventData) {
         switch(this.quoi) {
             case "PARTIE":
-                this.router.navigate(["resultat/" + this.iPartie]);
+                this.router.navigate(["resultat/" + this.iPartie],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             break;
             case "COMPO":
-                this.router.navigate(["preparation"]);
+                this.router.navigate(["preparation"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             break;
             case "EQUIPE":
-                this.router.navigate(["actions"]);
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             break;
             case "DOUBLES":
-                this.router.navigate(["actions"]);
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             break;
         }
     }

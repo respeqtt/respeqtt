@@ -31,7 +31,7 @@ import { ActivatedRoute } from "@angular/router";
 export class AjouterJoueursComponent{
     descClub:string = "";
     listeJoueurs:Array<Licencie>;
-    routerExt: RouterExtensions;
+    router: RouterExtensions;
     nom:string="";
     prenom:string="";
     licence:number;
@@ -47,7 +47,7 @@ export class AjouterJoueursComponent{
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
 
         // récupération du routeur pour naviguer
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // récupératon du club
         this.descClub = this._route.snapshot.paramMap.get("club");
@@ -130,7 +130,15 @@ export class AjouterJoueursComponent{
                 Licencie.ajouteLicencie(j, SessionAppli.clubChoisi);              
 
                 // retour à la liste des joueurs
-                this.routerExt.navigate(["/joueurs"]);
+                this.router.navigate(["/joueurs"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
         
             }
 
@@ -162,6 +170,17 @@ export class AjouterJoueursComponent{
         console.log("Etranger = " + this.etranger.toString());
     }
 
-
+    // Fermer
+    onFermer(args: EventData) {
+        this.router.navigate(["/joueurs"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+    }
 
 }
