@@ -249,8 +249,12 @@ export class ResultatComponent{
                                 this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
                                 console.log(this.quoi);
                                 // sauvegarder la session en BDD
-                                SessionAppli.Persiste();
-                                return true;
+                                SessionAppli.Persiste().then(cr => {
+                                    console.log("Session enregistrée");
+                                    return true;
+                                }, error => {
+                                    console.log("Impossible de persister la session");
+                                });
                             }
                         }
                     }

@@ -175,7 +175,7 @@ export class JoueursComponent{
 
     // Club
     onClub(args: EventData) {
-        this.router.navigate(["/club/joueurs"],
+        this.router.navigate(["/clubs/joueurs"],
         {
             animated:true,
             transition: {

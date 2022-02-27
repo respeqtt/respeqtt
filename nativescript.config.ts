@@ -1,7 +1,7 @@
 import { NativeScriptConfig } from '@nativescript/core';
 
 export default {
-  id: 'org.nativescript.respeqttns8',
+  id: 'org.nativescript.respeqtt',
   appPath: 'src',
   appResourcesPath: 'App_Resources',
   android: {

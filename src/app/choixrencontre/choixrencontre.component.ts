@@ -108,6 +108,15 @@ export class ChoixRencontreComponent {
                     SessionAppli.nbJoueurs = ListeFormules.getFormule(r.formule).getNbJoueurs();
                     // mémoriser le nb de sets gagnants
                     SessionAppli.nbSetsGagnants = r.nbSets;
+                    // calculer le nb de pts par victoire
+                    SessionAppli.ptsParVictoire = this.CalculePtsParVictoire(r);
+                    console.log(SessionAppli.ptsParVictoire + " pt/victoire");
+                    // domicile ou extérieur
+                    if(SessionAppli.tab == 0) {
+                        SessionAppli.domicile = 1;
+                    } else {
+                        SessionAppli.domicile = 0;
+                    }
                     console.log("NbJoueurs = " + SessionAppli.nbJoueurs);
                     // récupérer le club 1 placé en A en attendant de savoir
                     Club.getClub(r.club1).then(club => {
@@ -162,6 +171,13 @@ export class ChoixRencontreComponent {
                 curve : "easeIn"
             }
         });
+    }
+
+    CalculePtsParVictoire(r:Rencontre):number {
+
+        // en départemental = 2pts sauf coupe du Rhone, autre = 1pt
+        if(r.echelon == 3 && r.division.charAt(0) != 'C') return 2;
+        else return 1;
     }
 
 }

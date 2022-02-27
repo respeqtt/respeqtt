@@ -34,7 +34,7 @@ export class CompoDoubleComponent{
     listeJoueurs:Array<EltListeLicencie>;
     maListe:Observable;
     numDouble:number;
-    routerExt: RouterExtensions;
+    router: RouterExtensions;
     cote:string;
     sousTitre:string;
     nbDoubles:number;
@@ -57,7 +57,7 @@ export class CompoDoubleComponent{
         console.log("Compo double " + this.numDouble + " sur " + this.nbDoubles + " côté " + this.cote);
 
         // récupération du routeur pour naviguer
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // mémorisation des parties correspondant aux doubles
         for(var i = 0; i < SessionAppli.listeParties.length; i++) {
@@ -233,10 +233,22 @@ export class CompoDoubleComponent{
                         this.MajDoubleDansSession();
 
                         // sauvegarder la session en BDD
-                        SessionAppli.Persiste();
-
-                        // retour à la page des parties
-                        this.routerExt.navigate(["lancement"]);
+                        SessionAppli.Persiste().then(cr => {
+                            console.log("Session enregistrée");
+                            // retour à la page des parties
+                            this.router.navigate(["lancement"],
+                            {
+                                animated:true,
+                                transition: {
+                                    name : SessionAppli.animationRetour, 
+                                    duration : 380,
+                                    curve : "easeIn"
+                                }
+                            }
+                            );
+                        }, error => {
+                            console.log("Impossible de persister la session");
+                        });           
                     });
                 } else {
                     dialogs.prompt({title:"Confirmation",
@@ -250,10 +262,22 @@ export class CompoDoubleComponent{
                             this.MajDoubleDansSession();
 
                             // sauvegarder la session en BDD
-                            SessionAppli.Persiste();
-
+                            SessionAppli.Persiste().then(cr => {
+                                console.log("Session enregistrée");
+                            }, error => {
+                                console.log("Impossible de persister la session");
+                            });
+                
                             // retour à la page des parties
-                            this.routerExt.navigate(["lancement"]);
+                            this.router.navigate(["lancement"],
+                            {
+                                animated:true,
+                                transition: {
+                                    name : SessionAppli.animationRetour, 
+                                    duration : 380,
+                                    curve : "easeIn"
+                                }
+                            });
                         } else {
                             console.log("!!! Compo des doubles annulée !!!");
                             this.numDouble = 1;
@@ -297,11 +321,19 @@ export class CompoDoubleComponent{
             if(forfaitX) {
                 SessionAppli.listeParties[iPartie].scoreAX = "0-0";
             } else {
-                SessionAppli.listeParties[iPartie].scoreAX = "0-2";
+                if(SessionAppli.ptsParVictoire == 2) {
+                    SessionAppli.listeParties[iPartie].scoreAX = "0-2";
+                } else {
+                    SessionAppli.listeParties[iPartie].scoreAX = "0-1";
+                }
             }
         } else {
             if(forfaitX) {
-                SessionAppli.listeParties[iPartie].scoreAX = "2-0";
+                if(SessionAppli.ptsParVictoire == 2) {
+                    SessionAppli.listeParties[iPartie].scoreAX = "2-0";
+                } else {
+                    SessionAppli.listeParties[iPartie].scoreAX = "1-0";
+                }
             }
         }
     }
@@ -321,7 +353,15 @@ export class CompoDoubleComponent{
 
         // appeler la page de scan
         console.log("/qrscan/DOUBLES/" + this.cote);
-        this.routerExt.navigate(["/qrscan/DOUBLES/" + this.cote]);
+        this.router.navigate(["/qrscan/DOUBLES/" + this.cote],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onQRCodeTap(args: EventData) {
@@ -343,7 +383,8 @@ export class CompoDoubleComponent{
         const titre:string="Compo doubles " + club;
         const dim:number = SessionAppli.dimEcran - 40;
 
-         this.routerExt.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"]);
+         this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/<<back/0"],
+         );
 
     }
 

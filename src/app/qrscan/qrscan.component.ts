@@ -21,7 +21,11 @@ import { RouterExtensions } from "@nativescript/angular";
 import { EventData } from "@nativescript/core";
 import { BarcodeScanner } from "nativescript-barcodescanner";
 import { SessionAppli } from "../session/session";
+import { Signature } from "../db/RespeqttDAO";
 import { ListeFormules, Partie, Licencie, EltListeLicencie, FormuledeRencontre, Club } from "../db/RespeqttDAO";
+import { Respeqtt } from "../db/RespeqttDAO";
+
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
     templateUrl: "./qrscan.component.html",
@@ -115,14 +119,20 @@ export class QRScanComponent implements OnInit{
             }
         }
 
-        registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").BarcodeScannerView);
+        // si on scanne une signature, on la mémorise pour l'équipe qui se déplace
+        if(this.quoi == "SIGNATURE") {
+            let capitaine:string = this._route.snapshot.paramMap.get("param");
 
+            console.log("SCAN signature de " + capitaine);
+
+            this.titre = "Scan de la signature de ";
+            this.sousTitre = capitaine;
+        }
+        registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").BarcodeScannerView);
         this.monScanner = new BarcodeScanner();
     }
 
     ngOnInit(): void {
-
-
     }
 
     scanCode(args: EventData) {
@@ -314,21 +324,47 @@ export class QRScanComponent implements OnInit{
                             }, error => {alert("La licence " + licCapitaine.toString() + " ne fait pas partie du club " + SessionAppli.clubA.nom);
                             });                        }
                         }
+                        // retour à la page de compo des équipes
+                        this.router.navigate(["preparation"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationAller, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
+                        return;
                     }
-                    // retour à la page de compo des équipes
-                    this.router.navigate(["preparation"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationAller, 
-                            duration : 380,
-                            curve : "easeIn"
+                    // si c'est une signature
+                    if(this.quoi == "SIGNATURE") {
+                        console.log("-- Scan SIGNATURE --");
+                        // lire le JSON et mettre à jour la signature du capitaine visiteur
+                        let sig = new Signature();
+                        if(sig.JsonToSignature(result.text)) {
+                            if(SessionAppli.recoitCoteX) {
+                                this.EnregistreSignatures(sig.GetSignature(), Respeqtt.GetSignature(), sig.GetLicence());
+                            } else {
+                                this.EnregistreSignatures(Respeqtt.GetSignature(), sig.GetSignature(), sig.GetLicence());
+                            }
+                        } else {
+                            alert("Signature invalide !");
+                            // retour à la page de validation
+                            this.router.navigate(["valider"],
+                            {
+                                animated:true,
+                                transition: {
+                                    name : SessionAppli.animationRetour, 
+                                    duration : 380,
+                                    curve : "easeIn"
+                                }
+                            });
+                            return;
                         }
-                    });
-                    return;
+                    }
                 }, (errorMessage) => {
                   console.log("No scan : " + errorMessage);
-                }
+            }
         );
       }
 
@@ -337,19 +373,37 @@ export class QRScanComponent implements OnInit{
     }
 
     onFermer(args: EventData) {
+
         switch(this.quoi) {
             case "PARTIE":
-                this.router.navigate(["resultat/" + this.iPartie],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
+            case "RESULTAT":
+                    if(this.iPartie == 0) {
+                    console.log("Retour vers les actions");
+                    this.router.navigate(["actions"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });            
+                } else {
+                    console.log("Retour vers la saisie du score");
+                    this.router.navigate(["resultat/" + this.iPartie.toString()],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                }
             break;
             case "COMPO":
+                console.log("Retour vers la compo des équipes");
+
                 this.router.navigate(["preparation"],
                 {
                     animated:true,
@@ -361,6 +415,7 @@ export class QRScanComponent implements OnInit{
                 });
             break;
             case "EQUIPE":
+                console.log("Retour vers les actions");
                 this.router.navigate(["actions"],
                 {
                     animated:true,
@@ -372,6 +427,7 @@ export class QRScanComponent implements OnInit{
                 });
             break;
             case "DOUBLES":
+                console.log("Retour vers les actions");
                 this.router.navigate(["actions"],
                 {
                     animated:true,
@@ -382,6 +438,61 @@ export class QRScanComponent implements OnInit{
                     }
                 });
             break;
+            default: console.log("sortie de :" + this.quoi);
+            console.log("Retour vers les actions");
+            this.router.navigate(["actions"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+        }
+    }
+    EnregistreSignatures(sigA:string, sigX:string, lic:number) {
+        
+        // vérifier le numéro de licence
+        if(SessionAppli.recoitCoteX) {
+            console.log("Capitaine A=" + SessionAppli.capitaineA.id + " / " + lic.toString());
+        } else {
+            console.log("Capitaine X=" + SessionAppli.capitaineX.id + " / " + lic.toString());
+        }
+        if((lic == SessionAppli.capitaineA.id && SessionAppli.recoitCoteX)
+        || (lic == SessionAppli.capitaineX.id && !SessionAppli.recoitCoteX)
+        ) {
+            SessionAppli.signatureX = sigX;
+            SessionAppli.signatureA = sigA;
+            SessionAppli.scoreValide = true;
+            // mémoriser les signatures
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée - Feuille de match signée");
+                // retour à la page des actions
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            }, error => {
+            console.log("Impossible de persister la session");
+            });
+        } else {
+            // Rejeter la signature
+            alert("La signature ne correspond pas au capitaine déclaré en début de rencontre (" + lic.toString() + ").") 
+            this.router.navigate(["valider"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
     }
 }

@@ -14,6 +14,8 @@
 /*                                                                             */
 /*******************************************************************************/
 
+import { SessionAppli } from "../session/session";
+
 var Sqlite = require ("nativescript-sqlite");
 
 
@@ -29,6 +31,9 @@ export class RespeqttDb {
     // Les tables Club et Licencie utilisent resp. le numéro FFTT du club et le numéro de licence du joueur comme clé
 
     private static creeTableClub:string = `create table if not exists Club (clu_kn integer PRIMARY KEY, clu_va_nom text)`;
+
+    private static creeTableSignature:string = `create table if not exists Signature (sig_kn PRIMARY KEY, 
+        sig_va_signature text, sig_vn_licence integer)`;
 
     private static creeTableLicencie:string = `create table if not exists Licencie (lic_kn integer PRIMARY KEY, lic_va_nom text, lic_va_prenom text,
                 lic_vn_points integer, lic_clu_kn integer, lic_vn_mute integer, lic_vn_etranger integer, lic_vn_feminin integer,
@@ -96,6 +101,10 @@ export class RespeqttDb {
                 ses_va_date text,
                 ses_va_lieu text,
                 ses_va_verso text,
+                ses_vn_points_victoire number,
+                ses_vn_domicile number,
+                ses_va_signatureA text,
+                ses_va_signatureX text,
                 FOREIGN KEY (ses_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;
 
@@ -112,6 +121,7 @@ export class RespeqttDb {
         RespeqttDb.db.execSQL("drop table Licencie").then(error => {console.log("impossible de supprimer la table Licencie");});
         RespeqttDb.db.execSQL("drop table Rencontre").then(error => {console.log("impossible de supprimer la table Rencontre");});
         RespeqttDb.db.execSQL("drop table Session").then(error => {console.log("impossible de supprimer la table Session");});
+        RespeqttDb.db.execSQL("drop table Signature").then(error => {console.log("impossible de supprimer la table Signature");});
         RespeqttDb.db.deleteDatabase(RespeqttDb.dbName);
     }
 
@@ -133,12 +143,17 @@ export class RespeqttDb {
                                     db.execSQL(RespeqttDb.creeTablePartie).then(id => {
                                         db.execSQL(RespeqttDb.creeTableSet).then(id => {
                                             db.execSQL(RespeqttDb.creeTableSession).then(id => {
+                                                db.execSQL(RespeqttDb.creeTableSignature).then(id => {
                                                     console.log("Toutes tables OK / BDD PRETE");
                                                     resolve(true);
                                                 }, error => {
-                                                    console.log("Impossible de créer la table Session", error);
+                                                    console.log("Impossible de créer la table Signature", error);
                                                     reject(error);
                                                 });
+                                            }, error => {
+                                                console.log("Impossible de créer la table Session", error);
+                                                reject(error);
+                                            });
                                         }, error => {
                                             console.log("Impossible de créer la table Set", error);
                                             reject(error);
@@ -159,14 +174,14 @@ export class RespeqttDb {
                             console.log("Impossible de créer la table Club", error);
                             reject(error);
                         });
-                        }, error => {
+                    }, error => {
                         console.log("Impossible de créer la table Rencontre", error);
                         reject(error);
                     });
-                }, error => {
-                    console.log("Impossible de créer/ouvrir la BDD", error);
-                    reject(error);
-                });
+            }, error => {
+                console.log("Impossible de créer/ouvrir la BDD", error);
+                reject(error);
+            });
             }
         });
         return promise;
@@ -181,6 +196,8 @@ export class RespeqttDb {
             nbSessions = Number(row[0]);
             if(nbSessions > 0) {
                 console.log("Session trouvée en BDD");
+                // Si la session existe on ne propose plus la présentation
+                SessionAppli.presentation = false;
             } else {
                 RespeqttDb.db.execSQL("insert into Session (ses_ren_kn").then(id => {
                     console.log("Table Session créée");
@@ -197,5 +214,4 @@ export class RespeqttDb {
             });
         });
     }
-
 }

@@ -30,26 +30,33 @@ var dialogs = require("@nativescript/core/ui/dialogs");
 })
 export class ValiderComponent{
     router: RouterExtensions;            // pour navigation
+    version:string;
     nomJA:string="";
     prenomJA:string="";
     adresseJA:string="";
     licenceJA:number;
-    scoreA:string;
-    scoreX:string;
     nomClubA:string;
     nomClubX:string;
     sousTitre:string;
     btnRecA:string;
     btnRecX:string;
+    scoreA:string;
+    scoreX:string;
+
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
         this.router = routerExtensions;
+        // version logicielle
+        this.version = SessionAppli.version;
+
 
         this.nomClubA = SessionAppli.clubA.nom;
         this.nomClubX = SessionAppli.clubX.nom;
-        this.scoreA = _route.snapshot.paramMap.get("scoreA");
-        this.scoreX = _route.snapshot.paramMap.get("scoreX");
+        
         this.sousTitre = SessionAppli.titreRencontre;
+
+        this.scoreA = SessionAppli.scoreA.toString();
+        this.scoreX = SessionAppli.scoreX.toString();
 
         if(SessionAppli.reclamationClubA == "") {
             this.btnRecA = "0 réclamation club A";
@@ -66,7 +73,7 @@ export class ValiderComponent{
     onReclamA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.router.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)],
+        this.router.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX)],
         {
             animated:true,
             transition: {
@@ -81,7 +88,7 @@ export class ValiderComponent{
     onReclamX(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.router.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + this.scoreA + "/" + this.scoreX)],
+        this.router.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX)],
         {
             animated:true,
             transition: {
@@ -106,7 +113,7 @@ export class ValiderComponent{
         });
     }
 
-    onTapValidate(args: EventData) {
+    onValider(args: EventData) {
         let button = args.object as Button;
 
         // Demander confirmation
@@ -115,18 +122,12 @@ export class ValiderComponent{
         okButtonText:"VALIDER",
         cancelButtonText:"ANNULER"
         }).then(r => {
-            console.log("SCORE VALIDE");
-            SessionAppli.scoreValide = true;
-
-            // mémoriser la validation du score
-            SessionAppli.Persiste();
-
-
-            this.router.navigate(["actions"],
+            // Demander la signature du capitaine adverse
+            this.router.navigate(["signer"],
             {
                 animated:true,
                 transition: {
-                    name : SessionAppli.animationRetour, 
+                    name : SessionAppli.animationAller, 
                     duration : 380,
                     curve : "easeIn"
                 }
@@ -134,7 +135,7 @@ export class ValiderComponent{
         });
     }
 
-    onTapClose(args: EventData) {
+    onFermer(args: EventData) {
         // retour sur la page précédente
         this.router.navigate(["actions"],
         {

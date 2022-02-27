@@ -136,7 +136,7 @@ export class RencontreComponent{
         // chercher si l'item est sélectionné
         console.log("listeRencontres:" + this.listeRencontres[index].id.toString());
         this.listeRencontres[index].sel = !this.listeRencontres[index].sel;
-        console.log("Rencontre choisie : " + index);
+        console.log("Rencontre sélectionnée : " + index);
 
     }
 

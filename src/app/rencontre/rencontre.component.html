@@ -1,9 +1,9 @@
-<ActionBar title="RespeqTT" >
-    <StackLayout orientation="horizontal">
-        <Image src="res://icon" class="action-image" horizontalAlignment="left"></Image>
-        <Label class="principal" text="RESPEQTT" horizontalAlignment="center" width= "250" min-width="100"></Label>
-        <Label class="version" [text]="this.version" horizontalAlignment="right"></Label>
-    </StackLayout>
+<ActionBar title="" class="action">
+    <GridLayout columns="auto,*,auto" background-color="#6D81FF">
+        <Image src="res://icon" class="action-image" row="0" col="0"></Image>
+        <Label class="principal" text="RESPEQTT" row="0" col="1"></Label>
+        <Label class="version" [text]="this.version" row="0" col="2"></Label>
+    </GridLayout>
 </ActionBar>
 
 <StackLayout alignment="vertical" backgroundColor="lightblue">

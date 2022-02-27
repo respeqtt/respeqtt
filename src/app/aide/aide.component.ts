@@ -14,67 +14,49 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, OnInit } from "@angular/core";
-import { EventData } from "@nativescript/core";
+import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-
-import { Page } from "@nativescript/core/ui/page";
-import { View } from "@nativescript/core/ui/core/view";
-
+import { Button, EventData, TextField } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
 
-let view: View;
+
+var dialogs = require("@nativescript/core/ui/dialogs");
 
 @Component({
-    templateUrl: "./attente.component.html",
+    templateUrl: "./aide.component.html",
     moduleId:module.id,
     styleUrls: ["../global.css"]
  })
-export class AttenteComponent {
-    destination:string;
-    router:RouterExtensions;    // pour navigation
+export class AideComponent {
+    router: RouterExtensions;            // pour navigation
     version:string;
-
+    contexte:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
-        // récupération du routeur pour naviguer
+
         this.router = _routerExtensions;
+        this.contexte = this._route.snapshot.paramMap.get("contexte");
+        
         // version logicielle
         this.version = SessionAppli.version;
 
-        console.log("Attente/quoi=" + this._route.snapshot.paramMap.get("quoi"));
-        // page suivante
-        this.destination = this._route.snapshot.paramMap.get("quoi") + "/"
-                         + this._route.snapshot.paramMap.get("dim") + "/"
-                         + this._route.snapshot.paramMap.get("titre") + "/"
-                         + this._route.snapshot.paramMap.get("retour") + "/"
-                         + this._route.snapshot.paramMap.get("param");
     }
 
-    onPageLoaded(args: EventData) {
-        console.log("$$$$$$$$$$$ Page Loaded $$$$$$$$$$$$$$");
-        const page = args.object as Page;
-        console.log("Page reference from loaded event: ", page);
-        view = page.getViewById("wait");
-/*
-        view.animate({
-            rotate: 360,
-            duration: 10000
-        });
-*/
-        // aller sur la page suivante
-        console.log("Destination=" + this.destination);
-        this.router.navigate(["qrmontrer/" + this.destination],
+
+    onFermer(args: EventData) {
+        let button = args.object as Button;
+
+        this.router.navigate(["actions"],
         {
             animated:true,
             transition: {
-                name : SessionAppli.animationAller, 
+                name : SessionAppli.animationRetour, 
                 duration : 380,
                 curve : "easeIn"
             }
         });
-
-    }
+        SessionAppli.tab = 0;
+    }    
 
 }

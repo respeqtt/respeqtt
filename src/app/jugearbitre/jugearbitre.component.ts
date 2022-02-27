@@ -129,7 +129,7 @@ export class JugeArbitreComponent {
 
         console.log("JA " + SessionAppli.nomJA + " " + SessionAppli.prenomJA + " " + SessionAppli.licenceJA.toString() + " " + SessionAppli.adresseJA)
 
-        this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+        this.router.navigate(["valider"],
         {
             animated:true,
             transition: {
@@ -157,7 +157,7 @@ export class JugeArbitreComponent {
                     SessionAppli.adresseJA = "";
                     SessionAppli.licenceJA = 0;
                     SessionAppli.rapportJA = "";
-                    this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+                    this.router.navigate(["valider"],
                     {
                         animated:true,
                         transition: {
@@ -171,7 +171,7 @@ export class JugeArbitreComponent {
                 }
         });
         } else {
-            this.router.navigate(["valider/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX],
+            this.router.navigate(["valider"],
             {
                 animated:true,
                 transition: {

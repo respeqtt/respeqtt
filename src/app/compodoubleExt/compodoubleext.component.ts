@@ -201,10 +201,13 @@ export class CompoDoubleExtComponent{
                         this.MajDoubleDansSession();
 
                         // sauvegarder la session en BDD
-                        SessionAppli.Persiste();
-
-                        // retour à la page des parties
-                        this.routerExt.navigate(["lancement"]);
+                        SessionAppli.Persiste().then(cr => {
+                            console.log("Session enregistrée");
+                            // retour à la page des parties
+                            this.routerExt.navigate(["lancement"]);
+                        }, error => {
+                            console.log("Impossible de persister la session");
+                        });            
                     } else {
                         console.log("!!! Compo des doubles annulée !!!");
                         this.numDouble = 1;
@@ -247,11 +250,19 @@ export class CompoDoubleExtComponent{
             if(forfaitX) {
                 SessionAppli.listeParties[iPartie].scoreAX = "0-0";
             } else {
-                SessionAppli.listeParties[iPartie].scoreAX = "0-2";
+                if(SessionAppli.ptsParVictoire == 2) {
+                    SessionAppli.listeParties[iPartie].scoreAX = "0-2";
+                } else {
+                    SessionAppli.listeParties[iPartie].scoreAX = "0-1";
+                }
             }
         } else {
             if(forfaitX) {
-                SessionAppli.listeParties[iPartie].scoreAX = "2-0";
+                if(SessionAppli.ptsParVictoire == 2) {
+                    SessionAppli.listeParties[iPartie].scoreAX = "2-0";
+                } else {
+                    SessionAppli.listeParties[iPartie].scoreAX = "1-0";
+                }
             }
         }
     }

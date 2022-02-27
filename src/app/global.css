@@ -10,30 +10,59 @@
     background-color: ivory;
   }
 
+.action {
+    background-color:#6D81FF;
+    margin:0px;
+    padding:0px;
+}
 
 .action-image {
+    background-color: #6D81FF;
     width: 40;
     height: 40;
     vertical-align: center;
 }
 .action-label {
     color: whitesmoke;
-    font-size: 24px;
+    font-size: 20em;
     font-weight: bold;
     vertical-align: center;
 }
 
+TextField {
+    font-size: 20em;
+}
+
+TextView {
+    font-size: 20em;
+}
 
 TextField.sets {
-    font-size: 12px;
+    font-size: 25em;
     color: darkblue;
     background-color: whitesmoke;
     margin: 0px;
     padding: 0px;
 }
 
+TextField.init {
+    font-size: 20em;
+    color: darkblue;
+    background-color: whitesmoke;
+    margin: 0px;
+    padding: 0px;
+}
+
+TextView.init {
+    font-size: 20em;
+    color: darkblue;
+    background-color: rgb(120, 185, 247);
+    margin: 10px;
+    padding: 10px;
+}
+
 .lieu {
-    font-size: 12px;
+    font-size: 20em;
     color: darkblue;
     background-color: lightblue;
     margin: 0px;
@@ -46,6 +75,33 @@ label.switch-label {
     padding: 50px;
     margin: 0px;    
 }
+
+label.sets {
+    font-size: 25em;
+    color: darkblue;
+    background-color: whitesmoke;
+    margin-left: 5em;
+    margin-top: 5em;
+}
+
+label.score {
+    font-size: 15em;
+    font-weight: bold;
+    background-color: lightcyan;
+}
+
+label.rencontre {
+    font-size: 20em;
+}
+
+label.scoreRencontre {
+    font-size: 20em;
+}
+
+label.attente {
+    font-size: 25em;
+}
+
 
 .switch[checked=true] {
     color: #ffffff;
@@ -68,6 +124,7 @@ button.cartonRouge {
 
 
 .bouton {
+    font-size: 20em;
     color: #35478c;
     background-color: #35478c;
     border-color: #35478c;
@@ -78,14 +135,25 @@ button.cartonRouge {
     
   
 .bouton[isEnabled=false] {
+        font-size: 20em;
         color: #ffffff;
         background-color: #9fc5e8;
         border-color: #9fc5e8;
     }  
-  
 
+.boutonAide {
+        font-size: 20em;
+        background-color: #35478c;
+        border-color: #35478c;
+        color: #ffffff;
+        border-width: 1;
+        border-radius: 5;
+        font-family: "Font Awesome 5 Free", "fa-solid-900";
+        font-weight: 900;
+        }
+        
 .even {
-    font-size: 12px;
+    font-size: 15em;
     color: #131313;
     background-color: white;
     margin: 5px;
@@ -95,7 +163,7 @@ button.cartonRouge {
 }
 
 .odd {
-    font-size: 12px;
+    font-size: 15em;
     color: #131313;
     background-color: rgb(195, 222, 248);
     margin: 5px;
@@ -106,7 +174,8 @@ button.cartonRouge {
 
 label.principal {
     background-color: #6D81FF;
-    color:black;
+    color:white;
+    font-size: 25em;
     font-weight: bold;
     vertical-align: middle;
     text-align: center;
@@ -115,6 +184,7 @@ label.principal {
 label.version {
     background-color: #6D81FF;
     color:lightcyan;
+    font-size: 15em;
     font-weight: normal;
     font-style: italic;
     vertical-align: middle;
@@ -125,6 +195,7 @@ label.version {
 label.titre {
     background-color: blue;
     color:white;
+    font-size: 25em;
     font-weight: bold;
     vertical-align: middle;
     text-align: center;
@@ -133,6 +204,7 @@ label.titre {
 label.sous-titre {
     background-color: rgb(44, 89, 141);
     color:white;
+    font-size: 15em;
     font-weight: bold;
     vertical-align: middle;
     text-align: center;
@@ -140,6 +212,7 @@ label.sous-titre {
 
 label.centree {
     color:darkblue;
+    font-size: 20em;
     font-weight: bold;
     font-style: italic;
     vertical-align: middle;
@@ -148,7 +221,7 @@ label.centree {
 
 
 label.normal {
-    font-size: 12px;
+    font-size: 20em;
     color:darkblue;
     font-weight: bold;
     font-style: normal;
@@ -159,7 +232,7 @@ label.normal {
 }
 
 .form {
-    font-size: 12px;
+    font-size: 15em;
     color: darkblue;
     background-color: lightcyan;
     margin: 5px;
@@ -175,7 +248,7 @@ label.normal {
     padding: 0px;
     color: navy;
     vertical-align: middle;
-    font-size: 12px;
+    font-size: 20em;
     height:400px;
 }
 
@@ -188,6 +261,6 @@ label.normal {
     padding: 0px;
     color: navy;
     vertical-align: middle;
-    font-size: 12px;
+    font-size: 20em;
     height:400px;
 }

@@ -282,16 +282,20 @@ export class PreparationComponent{
             }
 
             // sauvegarder la session en BDD
-            SessionAppli.Persiste();
-            // retourner à la page des actions
-            this.router.navigate(["actions"],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationRetour, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+                // retourner à la page des actions
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            }, error => {
+                console.log("Impossible de persister la session");
             });
         });
     }

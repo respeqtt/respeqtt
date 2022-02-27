@@ -5,35 +5,38 @@ import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 
 import { ActionsComponent } from "./actions/actions.component";
-import { RencontreComponent } from "./rencontre/rencontre.component";
-import { ChoixRencontreComponent } from "./choixrencontre/choixrencontre.component";
-import { JoueursComponent } from "./joueurs/joueurs.component";
-import { AjouterJoueursComponent } from "./ajouterJoueurs/ajouterJoueurs.component";
-import { ClubComponent } from "./club/club.component";
+import { AideComponent } from "./aide/aide.component";
 import { AjouterClubComponent } from "./ajouterClub/ajouterClub.component";
-import { PreparationComponent } from "./preparation/preparation.component";
+import { AjouterJoueursComponent } from "./ajouterJoueurs/ajouterJoueurs.component";
+import { AjouterRencontreComponent } from "./ajouterRencontre/ajouterRencontre.component";
+import { AttenteComponent } from "./attente/attente.component";
+import { ChoixRencontreComponent } from "./choixrencontre/choixrencontre.component";
+import { ClubComponent } from "./club/club.component";
 import { CompoComponent } from "./compo/compo.component";
 import { CompoDoubleComponent } from "./compodouble/compodouble.component";
 import { CompoDoubleExtComponent } from "./compodoubleext/compodoubleext.component";
-import { PlacerComponent } from "./placer/placer.component";
+import { DetailsRencontreComponent } from "./detailsRencontre/detailsRencontre.component";
+import { EnvoiComponent } from "./envoi/envoi.component";
+import { FeuilleComponent } from "./feuille/feuille.component";
+import { InitComponent } from "./init/init.component";
+import { JoueursComponent } from "./joueurs/joueurs.component";
+import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 import { LancementComponent } from "./lancement/lancement.component";
+import { PlacerComponent } from "./placer/placer.component";
+import { PreparationComponent } from "./preparation/preparation.component";
+import { RencontreComponent } from "./rencontre/rencontre.component";
 import { ResultatComponent } from "./resultat/resultat.component";
 import { QRMontrerComponent } from "./qrmontrer/qrmontrer.component";
 import { QRScanComponent } from "./qrscan/qrscan.component";
 import { SaisieCommentaireComponent } from "./saisiecommentaire/saisiecommentaire.component";
+import { SignerComponent } from "./signer/signer.component";
 import { ValiderComponent } from "./valider/valider.component";
-import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
-import { FeuilleComponent } from "./feuille/feuille.component";
-import { AttenteComponent } from "./attente/attente.component";
-import { DownloadComponent } from "./download/download.component";
-import { AjouterRencontreComponent } from "./ajouterRencontre/ajouterRencontre.component";
-import { DetailsRencontreComponent } from "./detailsRencontre/detailsRencontre.component";
-
 
 @NgModule({
   bootstrap: [AppComponent],
   imports: [NativeScriptModule, AppRoutingModule],
   declarations: [AppComponent, 
+                AideComponent,
                 ActionsComponent,
                 AjouterClubComponent,
                 AjouterJoueursComponent,
@@ -45,10 +48,11 @@ import { DetailsRencontreComponent } from "./detailsRencontre/detailsRencontre.c
                 CompoDoubleComponent,
                 CompoDoubleExtComponent,
                 DetailsRencontreComponent,
-                DownloadComponent,
+                EnvoiComponent,
                 FeuilleComponent,
                 JoueursComponent,
                 JugeArbitreComponent,
+                InitComponent,
                 LancementComponent,
                 PlacerComponent,
                 PreparationComponent,
@@ -56,6 +60,7 @@ import { DetailsRencontreComponent } from "./detailsRencontre/detailsRencontre.c
                 QRScanComponent,
                 RencontreComponent,
                 ResultatComponent,
+                SignerComponent,
                 SaisieCommentaireComponent,
                 ValiderComponent, 
               ],

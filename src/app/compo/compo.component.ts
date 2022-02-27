@@ -160,10 +160,14 @@ export class CompoComponent{
                 console.log("Joueurs équipe A choisis");
             }
             // sauvegarder la session en BDD
-            SessionAppli.Persiste();
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+                // passer à la page de placement des joueurs sur la feuille de match
+                this.routerExt.navigate(["placer/" + this._route.snapshot.paramMap.get("cote")]);
+            }, error => {
+                console.log("Impossible de persister la session");
+            });
 
-            // passer à la page de placement des joueurs sur la feuille de match
-            this.routerExt.navigate(["placer/" + this._route.snapshot.paramMap.get("cote")]);
         }
     }
 

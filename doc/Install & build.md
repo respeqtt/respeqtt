@@ -40,8 +40,9 @@ ns plugin add nativescript-sqlite
 ns plugin add nativescript-clipboard
 //ns plugin add nativescript-html2pdf
 ns plugin add @master.technology/permissions
+npm install nativescript-exit
 #corriger les vulnérabilités
-npm audit fix
+
 
 
 
@@ -68,7 +69,7 @@ ns debug android
 Si le téléchargement se bloque ou si les traces de la console n'apparaissent pas, débrancher et rebrancher immédiatement le téléphone. 
 
 ### Pour publier sur le playstore, il faut compiler en release et signer la version :
-ns build android --release --key-store-path _fichier-keystore-avec-son-chemin_ --key-store-password ' _mot-de-passe_ ' --key-store-alias _alias_ --key-store-alias-password ' _mot-de-passe_ '
+ns build android --release --key-store-path _fichier-keystore-avec-son-chemin_ --key-store-password  _mot-de-passe_  --key-store-alias _alias_ --key-store-alias-password  _mot-de-passe_  --log trace > log.txt
 
 ### Mettre à jour Nativescript
 npm i -g nativescript

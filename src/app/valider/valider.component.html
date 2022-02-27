@@ -2,31 +2,31 @@
     xmlns="http://schemas.nativescript.org/tns.xsd"
     xmlns:CheckBox="@nstudio/nativescript-checkbox" loaded="pageLoaded">
 
-    <ActionBar title="RespeqTT">
-        <StackLayout orientation="horizontal"
-        ios:horizontalAlignment="center"
-        android:horizontalAlignment="left">
-            <Image src="res://icon" class="action-image" ></Image>
-        </StackLayout>
+    <ActionBar title="" class="action">
+        <GridLayout columns="auto,*,auto" background-color="#6D81FF">
+            <Image src="res://icon" class="action-image" row="0" col="0"></Image>
+            <Label class="principal" text="RESPEQTT" row="0" col="1"></Label>
+            <Label class="version" [text]="this.version" row="0" col="2"></Label>
+        </GridLayout>
     </ActionBar>
-
+    
     <FlexboxLayout flexDirection="column">
         <Label class="titre" text="VALIDATION DE LA RENCONTRE" textWrap="true" flexGrow="1" flexShrink="1"></Label>
         <Label class="sous-titre" [text]="this.sousTitre" textWrap="true" flexGrow="1" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="1" flexShrink="1">
-            <Label [text]="this.nomClubA" textWrap="true" flexGrow="1" flexShrink="1"></Label>
-            <Label [text]="this.scoreA" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
+            <Label class="rencontre" [text]="this.nomClubA" textWrap="true" flexGrow="1" flexShrink="1"></Label>
+            <Label class="scoreRencontre" [text]="this.scoreA" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="1" flexShrink="1">
-            <Label [text]="this.nomClubX" textWrap="true" flexGrow="1" flexShrink="1"></Label>
-            <Label [text]="this.scoreX" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
+            <Label class="rencontre" [text]="this.nomClubX" textWrap="true" flexGrow="1" flexShrink="1"></Label>
+            <Label class="scoreRencontre" [text]="this.scoreX" textAlign="left" width="50" flexGrow="0" flexShrink="0"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="flex-start" flexGrow="1" flexShrink="1">
             <Button class="bouton" [text]="this.btnRecA" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReclamA($event)"></Button>
             <Button class="bouton" [text]="this.btnRecX" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReclamX($event)"></Button>
         </FlexboxLayout>
         <Button class="bouton" text="Juge Arbitre" horizontalAlignment="stretch" (tap)="onJA($event)" flexGrow="1" flexShrink="1"></Button>
-        <Button class="bouton" text="Valider la rencontre" horizontalAlignment="stretch" (tap)="onTapValidate($event)" flexGrow="1"></Button>
-        <Button class="bouton" text="Fermer" horizontalAlignment="stretch" (tap)="onTapClose($event)" flexGrow="1" flexShrink="1"></Button>
+        <Button class="bouton" text="Valider la rencontre" horizontalAlignment="stretch" (tap)="onValider($event)" flexGrow="1"></Button>
+        <Button class="bouton" text="Fermer" horizontalAlignment="stretch" (tap)="onFermer($event)" flexGrow="1" flexShrink="1"></Button>
     </FlexboxLayout>
 </Page>

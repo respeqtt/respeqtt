@@ -204,20 +204,21 @@ export class SaisieCommentaireComponent {
             }
         }
         // sauvegarder la session en BDD
-        SessionAppli.Persiste();
-
-        // retour à la page appelante
-        this.router.navigate([this.retour],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationRetour, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
-            });
-
-
+        SessionAppli.Persiste().then(cr => {
+            console.log("Session enregistrée");
+            // retour à la page appelante
+            this.router.navigate([this.retour],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+        }, error => {
+            console.log("Impossible de persister la session");
+        });
     }
 
     onTapClose(args: EventData) {

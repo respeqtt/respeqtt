@@ -134,5 +134,3 @@ export function Maintenant():string {
     return Aujourdhui(maintenant) + " " + HeureMinCourante(maintenant);
 
 }
-
-
