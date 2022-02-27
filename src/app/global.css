@@ -175,10 +175,12 @@ button.cartonRouge {
 label.principal {
     background-color: #6D81FF;
     color:white;
-    font-size: 25em;
+    font-size: 20em;
     font-weight: bold;
     vertical-align: middle;
     text-align: center;
+    margin: 5px;
+    padding: 5px;
 }
 
 label.version {

@@ -158,9 +158,9 @@ export class Verso {
                 </table>
                 <table id="tabMilieu" style="min-width:1500px">
                     <tr>
-                        <td style="width:17%;text-align:center;vertical-align:top"><b>Capitaine Equipe A</b><p>#CapitaineA</p></td>
+                        <td style="width:17%;text-align:center;vertical-align:top"><b>Capitaine Equipe A</b><p>#CapitaineA</p><p>#SignatureA</p></td>
                         <td style="width:16%;text-align:center;vertical-align:top"><b>Juge-Arbitre</b><p>#NomJA</p></td>
-                        <td style="width:17%;text-align:center;vertical-align:top"><b>Capitaine Equipe X</b><p>#CapitaineX</p></td>
+                        <td style="width:17%;text-align:center;vertical-align:top"><b>Capitaine Equipe X</b><p>#CapitaineX</p><p>#SignatureX</p></td>
                         <td class="fusionCol" style="width:2%"></td>
                         <td colSpan="2" style="width:48%;text-align:center"><b>RESERVES OU RECLAMATIONS</b>
 						<p>Pour chaque réserve ou réclamation, veuillez noter l'heure et la marque au moment de l'infraction</p>
@@ -268,9 +268,9 @@ export class Verso {
                         <td style="width:16%;text-align:center"></td>
                         <td style="width:17%;text-align:center"></td>
                         <td class="fusionCol" style="width:2%"></td>
+                        <td class="signature" style="width:16%;text-align:center">#SignatureA</td>
                         <td class="signature" style="width:16%;text-align:center"></td>
-                        <td class="signature" style="width:16%;text-align:center"></td>
-                        <td class="signature" style="width:16%;text-align:center"></td>
+                        <td class="signature" style="width:16%;text-align:center">#SignatureX</td>
                     </tr>
                     <tr>
                         <td style="width:17%;text-align:center">

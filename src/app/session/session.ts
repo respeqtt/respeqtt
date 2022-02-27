@@ -489,6 +489,12 @@ export class SessionAppli {
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom, "#CapitaineA");
             // LicCapitaineA
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
+            // Signature Capitaine A
+            if(SessionAppli.signatureA == "NON SIGNE") {
+                feuille = this.CompleteFeuille(feuille, "NON SIGNEE", "#SignatureA");
+            } else {
+                feuille = this.CompleteFeuille(feuille, "*** SIGNEE ***", "#SignatureA");
+            }
         } else {
             feuille = this.CompleteFeuille(feuille, "", "#CapitaineA");
             // LicCapitaineA
@@ -500,10 +506,22 @@ export class SessionAppli {
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom, "#CapitaineX");
             // LicCapitaineX
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
+            // Signature Capitaine X
+            if(SessionAppli.signatureX == "NON SIGNE") {
+                feuille = this.CompleteFeuille(feuille, "NON SIGNEE", "#SignatureX");
+            } else {
+                feuille = this.CompleteFeuille(feuille, "*** SIGNEE ***", "#SignatureX");
+            }
         } else {
             feuille = this.CompleteFeuille(feuille, "", "#CapitaineX");
             // LicCapitaineX
             feuille = this.CompleteFeuille(feuille, "", "#LicCapitaineX");
+            // Signature Capitaine X
+            if(SessionAppli.signatureX == "NON SIGNE") {
+                feuille = this.CompleteFeuille(feuille, "NON SIGNEE", "#SignatureX");
+            } else {
+                feuille = this.CompleteFeuille(feuille, "*** SIGNEE ***", "#SignatureX");
+            }
         }
 
         // Phase
@@ -549,6 +567,23 @@ export class SessionAppli {
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom, "#CapitaineX");
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
+
+        // Signature Capitaine A
+        console.log("Signatures au verso");
+        if(SessionAppli.signatureA == "NON SIGNE") {
+            verso = this.CompleteFeuille(verso, "NON SIGNEE", "#SignatureA");
+        } else {
+            verso = this.CompleteFeuille(verso, "*** SIGNEE ***", "#SignatureA");
+            console.log("Signature A");
+        }
+
+        // Signature Capitaine X
+        if(SessionAppli.signatureX == "NON SIGNE") {
+            verso = this.CompleteFeuille(verso, "NON SIGNEE", "#SignatureX");
+        } else {
+            verso = this.CompleteFeuille(verso, "*** SIGNEE ***", "#SignatureX");
+            console.log("Signature X");
+        }
 
         // Réserves et Réclamation
         let nRetR:number = 0;
@@ -693,14 +728,14 @@ export class SessionAppli {
                     console.log("Session trouvée en BDD");
                     // update
                     SessionAppli.MajSessionAppli().then(cr => {
-                        resolve(true);
+                        resolve(SessionAppli);
                     }, error => {
                         console.log("Impossible de persister la session :" + error);
                     });
                 } else {
                     // insert
                     SessionAppli.CreeSessionAppli().then(cr => {
-                        resolve(true);
+                        resolve(SessionAppli);
                     }, error => {
                         console.log("Impossible de persister la session :" + error);
                     });
@@ -711,7 +746,7 @@ export class SessionAppli {
                     console.log("Table Session créée");
                     // insert
                     SessionAppli.CreeSessionAppli().then(cr => {
-                        resolve(true);
+                        resolve(SessionAppli);
                     }, error => {
                         console.log("Impossible de persister la session :" + error);
                     });
@@ -812,15 +847,20 @@ export class SessionAppli {
                 // insertion des équipes
                 if(SessionAppli.equipeA) {
                     Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false).then(cr => {
+                        console.log("Equipe A persistée");
                         if(SessionAppli.equipeX) {
                             Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
+                                console.log("Equipe X persistée");
                                 // insertion des parties
                                 if(SessionAppli.listeParties) {
                                     Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
+                                        console.log("Liste parties persistée");
                                         resolve(true);
                                     }, error => {
                                         reject(error);
                                     });
+                                } else {
+                                    resolve(SessionAppli); 
                                 }
                             }, error => {
                                 reject(error);
@@ -829,40 +869,50 @@ export class SessionAppli {
                             // insertion des parties
                             if(SessionAppli.listeParties) {
                                 Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
+                                    console.log("Liste parties persistée");
                                     resolve(true);
                                 }, error => {
                                     reject(error);
                                 });
+                            } else {
+                                resolve(SessionAppli); 
                             }
-                        }     
+                    }     
                     }, error => {
                         reject(error);
                     });
                 } else {
                     if(SessionAppli.equipeX) {
                         Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
+                            console.log("Equipe X persistée");
                             // insertion des parties
                             if(SessionAppli.listeParties) {
                                 Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
+                                    console.log("Liste parties persistée");
                                     resolve(true);
                                 }, error => {
                                     reject(error);
                                 });
+                            } else {
+                                resolve(SessionAppli); 
                             }
-                        }, error => {
+                    }, error => {
                             reject(error);
                         });
                     } else {
                         // insertion des parties
                         if(SessionAppli.listeParties) {
                             Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
+                                console.log("Liste parties persistée");
                                 resolve(true);
                             }, error => {
                                 reject(error);
                             });
+                        } else {
+                            resolve(SessionAppli); 
                         }
                     }     
-            }
+                }
             }, error => {
                 console.log("Impossible d'insérer la session en BDD", error);
                 reject(error);
@@ -873,45 +923,45 @@ export class SessionAppli {
 
     // Met à jour la session en BDD
     private static MajSessionAppli() {
-        let promise = new Promise(function(resolve, reject) {
-            let update:string = "update Session set "
-                                + "ses_vn_recoitCoteX = " + bool2SQL(SessionAppli.recoitCoteX) + ", "
-                                + "ses_vn_clubChoisi = " + SessionAppli.clubChoisi + ", "
-                                + "ses_va_titreRencontre = " + toSQL(SessionAppli.titreRencontre) + ", "
-                                + "ses_clubA_kn = " + SessionAppli.clubA.id + ", "
-                                + "ses_clubX_kn = "+ SessionAppli.clubX.id + ", "
-                                + "ses_capitaineA_kn = "+ (SessionAppli.capitaineA ? SessionAppli.capitaineA.id : 0) + ", "
-                                + "ses_capitaineX_kn = "+ (SessionAppli.capitaineX ? SessionAppli.capitaineX.id : 0) + ", "
-                                + "ses_vn_forfaitA = " + bool2SQL(SessionAppli.forfaitA) + ", "
-                                + "ses_vn_forfaitX = " + bool2SQL(SessionAppli.forfaitX) + ", "
-                                + "ses_vn_compoFigee = " + bool2SQL(SessionAppli.compoFigee) + ", "
-                                + "ses_vn_scoreValide = " + bool2SQL(SessionAppli.scoreValide) + ", "
-                                + "ses_va_reserveClubA = " + toSQL(SessionAppli.reserveClubA )+ ", "
-                                + "ses_va_reserveClubX = " + toSQL(SessionAppli.reserveClubX) + ", "
-                                + "ses_va_reclamationClubA = " + toSQL(SessionAppli.reclamationClubA) + ", "
-                                + "ses_va_reclamationClubX = " + toSQL(SessionAppli.reclamationClubX) + ", "
-                                + "ses_va_rapportJA = " + toSQL(SessionAppli.rapportJA) + ", "
-                                + "ses_va_nomJA = " + toSQL(SessionAppli.nomJA) + ", "
-                                + "ses_va_prenomJA = " + toSQL(SessionAppli.prenomJA) + ", "
-                                + "ses_va_adresseJA = " + toSQL(SessionAppli.adresseJA) + ", "
-                                + "ses_vn_licenceJA = " + SessionAppli.licenceJA + ", "
-                                + "ses_va_score = " + toSQL(SessionAppli.score) + ", "
-                                + "ses_vn_scoreA = " + SessionAppli.scoreA + ", "
-                                + "ses_vn_scoreX = " + SessionAppli.scoreX + ", "
-                                + "ses_va_feuilleDeMatch = " + toSQL(SessionAppli.feuilleDeMatch) + ", "
-                                + "ses_vn_modeRencontre = " + bool2SQL(SessionAppli.modeRencontre) + ", "
-                                + "ses_vn_nbJoueurs = " + SessionAppli.nbJoueurs + ", "
-                                + "ses_vn_nbSetsGagnants = " + SessionAppli.nbSetsGagnants + ", "
-                                + "ses_vn_formule = " + SessionAppli.formule + ", "
-                                + "ses_va_date = " + toSQL(SessionAppli.date) + ", "
-                                + "ses_va_lieu = " + toSQL(SessionAppli.lieu) + ", "
-                                + "ses_va_verso = " + toSQL(SessionAppli.versoFeuille) + ", "
-                                + "ses_vn_points_victoire = " + SessionAppli.ptsParVictoire + ", "
-                                + "ses_vn_domicile = " + SessionAppli.domicile + ", "
-                                + "ses_va_signatureA = " + toSQL(SessionAppli.signatureA) + ", "
-                                + "ses_va_signatureX = " + toSQL(SessionAppli.signatureX) + " "
-                                + "where ses_ren_kn = " + SessionAppli.rencontreChoisie;
+        let update:string = "update Session set "
+                            + "ses_vn_recoitCoteX = " + bool2SQL(SessionAppli.recoitCoteX) + ", "
+                            + "ses_vn_clubChoisi = " + SessionAppli.clubChoisi + ", "
+                            + "ses_va_titreRencontre = " + toSQL(SessionAppli.titreRencontre) + ", "
+                            + "ses_clubA_kn = " + SessionAppli.clubA.id + ", "
+                            + "ses_clubX_kn = "+ SessionAppli.clubX.id + ", "
+                            + "ses_capitaineA_kn = "+ (SessionAppli.capitaineA ? SessionAppli.capitaineA.id : 0) + ", "
+                            + "ses_capitaineX_kn = "+ (SessionAppli.capitaineX ? SessionAppli.capitaineX.id : 0) + ", "
+                            + "ses_vn_forfaitA = " + bool2SQL(SessionAppli.forfaitA) + ", "
+                            + "ses_vn_forfaitX = " + bool2SQL(SessionAppli.forfaitX) + ", "
+                            + "ses_vn_compoFigee = " + bool2SQL(SessionAppli.compoFigee) + ", "
+                            + "ses_vn_scoreValide = " + bool2SQL(SessionAppli.scoreValide) + ", "
+                            + "ses_va_reserveClubA = " + toSQL(SessionAppli.reserveClubA )+ ", "
+                            + "ses_va_reserveClubX = " + toSQL(SessionAppli.reserveClubX) + ", "
+                            + "ses_va_reclamationClubA = " + toSQL(SessionAppli.reclamationClubA) + ", "
+                            + "ses_va_reclamationClubX = " + toSQL(SessionAppli.reclamationClubX) + ", "
+                            + "ses_va_rapportJA = " + toSQL(SessionAppli.rapportJA) + ", "
+                            + "ses_va_nomJA = " + toSQL(SessionAppli.nomJA) + ", "
+                            + "ses_va_prenomJA = " + toSQL(SessionAppli.prenomJA) + ", "
+                            + "ses_va_adresseJA = " + toSQL(SessionAppli.adresseJA) + ", "
+                            + "ses_vn_licenceJA = " + SessionAppli.licenceJA + ", "
+                            + "ses_va_score = " + toSQL(SessionAppli.score) + ", "
+                            + "ses_vn_scoreA = " + SessionAppli.scoreA + ", "
+                            + "ses_vn_scoreX = " + SessionAppli.scoreX + ", "
+                            + "ses_va_feuilleDeMatch = " + toSQL(SessionAppli.feuilleDeMatch) + ", "
+                            + "ses_vn_modeRencontre = " + bool2SQL(SessionAppli.modeRencontre) + ", "
+                            + "ses_vn_nbJoueurs = " + SessionAppli.nbJoueurs + ", "
+                            + "ses_vn_nbSetsGagnants = " + SessionAppli.nbSetsGagnants + ", "
+                            + "ses_vn_formule = " + SessionAppli.formule + ", "
+                            + "ses_va_date = " + toSQL(SessionAppli.date) + ", "
+                            + "ses_va_lieu = " + toSQL(SessionAppli.lieu) + ", "
+                            + "ses_va_verso = " + toSQL(SessionAppli.versoFeuille) + ", "
+                            + "ses_vn_points_victoire = " + SessionAppli.ptsParVictoire + ", "
+                            + "ses_vn_domicile = " + SessionAppli.domicile + ", "
+                            + "ses_va_signatureA = " + toSQL(SessionAppli.signatureA) + ", "
+                            + "ses_va_signatureX = " + toSQL(SessionAppli.signatureX) + " "
+                            + "where ses_ren_kn = " + SessionAppli.rencontreChoisie;
 
+        let promise = new Promise(function(resolve, reject) {
             // màj en BDD
             console.log(update);
             RespeqttDb.db.execSQL(update).then(id => {
@@ -924,10 +974,12 @@ export class SessionAppli {
                                 // màj des parties
                                 if(SessionAppli.listeParties.length > 0) {
                                     Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                        resolve(true);
+                                        resolve(SessionAppli);
                                     }, error => {
                                         reject(error);
                                     });
+                                } else {
+                                   resolve(SessionAppli); 
                                 }
                             }, error => {
                                 console.log("Impossible de persister l'équipe X");
@@ -945,10 +997,12 @@ export class SessionAppli {
                             // màj des parties
                             if(SessionAppli.listeParties.length > 0) {
                                 Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                    resolve(true);
+                                    resolve(SessionAppli);
                                 }, error => {
                                     reject(error);
                                 });
+                            } else {
+                                resolve(SessionAppli); 
                             }
                         }, error => {
                             console.log("Impossible de persister l'équipe X");
@@ -958,12 +1012,14 @@ export class SessionAppli {
                         // màj des parties
                         if(SessionAppli.listeParties.length > 0) {
                             Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                resolve(true);
+                                resolve(SessionAppli);
                             }, error => {
                                 reject(error);
                             });
+                        } else {
+                            resolve(SessionAppli); 
                         }
-                    }
+            }
                 }
             }, error => {
                 reject(error);
@@ -976,26 +1032,33 @@ export class SessionAppli {
     public static Efface(rencontre:number) {
         let del:string;
 
-        // insertion en BDD
-        console.log(del);
-        del = "delete from Set_ren where set_ren_kn = " + rencontre;
-        RespeqttDb.db.execSQL(del).then(id => {
-            console.log("Sets de la rencontre " + rencontre + " effacés de la BDD");
-            del = "delete from Partie where par_ren_kn = " + rencontre;
+        let promise = new Promise(function(resolve, reject) {        
+            // insertion en BDD
+            console.log(del);
+            del = "delete from Set_ren where set_ren_kn = " + rencontre;
             RespeqttDb.db.execSQL(del).then(id => {
-                console.log("Parties de la rencontre " + rencontre + " effacées de la BDD");
-                del = "delete from Session where ses_ren_kn = " + rencontre;
+                console.log("Sets de la rencontre " + rencontre + " effacés de la BDD");
+                del = "delete from Partie where par_ren_kn = " + rencontre;
                 RespeqttDb.db.execSQL(del).then(id => {
-                    console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
+                    console.log("Parties de la rencontre " + rencontre + " effacées de la BDD");
+                    del = "delete from Session where ses_ren_kn = " + rencontre;
+                    RespeqttDb.db.execSQL(del).then(id => {
+                        console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
+                        resolve(true);
+                    }, error => {
+                        console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                        reject(error);
+                    });
                 }, error => {
                     console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                    reject(error);
                 });
             }, error => {
                 console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                reject(error);
             });
-        }, error => {
-            console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
         });
+        return promise;
     }
 
     // Recharger depuis le disque

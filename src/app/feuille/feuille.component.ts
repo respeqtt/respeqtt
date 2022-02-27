@@ -95,7 +95,9 @@ export class FeuilleComponent {
 
     // Fichier HTML + ouverture navigateur
     onRecto(args: EventData) {
-        let button = args.object as Button;
+        let maintenant = new Date();
+        let date:string = maintenant.getFullYear().toString()+(maintenant.getMonth()+1).toString()+maintenant.getDate().toString();
+        let nomFichier:string = "feuille-de-match_" + date + ".html";
 
         // First get the required permissions
         // Note: this permissions should also be in your AndroidManifest.xml file as:
@@ -116,14 +118,14 @@ export class FeuilleComponent {
             // Get a file in that path (will be created if it does not exist)
             // Note: In this case we try to get a unique file every time this code is run
             // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
-            let htmlFile:File = myAppFolder.getFile('feuille-de-match.html');
+            let htmlFile:File = myAppFolder.getFile(nomFichier);
             console.log('Fichier HTML : ' + htmlFile.path);
 
         
            const tempExists: boolean = fs.Folder.exists(sdDownloadPath);   
            console.log('Le dossier existe : ' + tempExists.toString()); 
 
-           const filePath = fs.path.join(myAppFolder.path, 'feuille-de-match.html');
+           const filePath = fs.path.join(myAppFolder.path, nomFichier);
            const exists = File.exists(filePath);
            console.log('Le fichier existe : ' + exists.toString()); 
            console.log("Feuille de match =\n" + SessionAppli.feuilleDeMatch);
@@ -145,7 +147,9 @@ export class FeuilleComponent {
 
     // Fichier HTML + ouverture navigateur
     onVerso(args: EventData) {
-        let button = args.object as Button;
+        let maintenant = new Date();
+        let date:string = maintenant.getFullYear().toString()+(maintenant.getMonth()+1).toString()+maintenant.getDate().toString();
+        let nomFichier:string = "verso_" + date + ".html";
 
         // First get the required permissions
         // Note: this permissions should also be in your AndroidManifest.xml file as:
@@ -166,7 +170,7 @@ export class FeuilleComponent {
             // Get a file in that path (will be created if it does not exist)
             // Note: In this case we try to get a unique file every time this code is run
             // const myFile = myAppFolder.getFile(`myfile_${date}.txt`)
-            let htmlFile:File = myAppFolder.getFile('verso.html');
+            let htmlFile:File = myAppFolder.getFile(nomFichier);
                 console.log('Fichier HTML : ' + htmlFile.path)
 
             // écrire le fichier HTML

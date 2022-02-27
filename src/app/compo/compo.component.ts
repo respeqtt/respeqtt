@@ -46,19 +46,20 @@ export class CompoComponent{
         this.version = SessionAppli.version;
         
         // récupération du coté en paramètre
-        console.log("COTE=" + this._route.snapshot.paramMap.get("cote"));
+        console.log("compo COTE=" + this._route.snapshot.paramMap.get("cote"));
         if(this._route.snapshot.paramMap.get("cote") =="A") {
             this.cote = false;
         } else {
             this.cote = true;
         }
+        console.log("Choix joueurs coté " + this._route.snapshot.paramMap.get("cote"));
+
         // récupération du routeur pour naviguer
         this.routerExt = _routerExtensions;
 
         // recherche du club correspondant
         if(this.cote) {
             this.clubChoisi = SessionAppli.clubX;
-
         }
         else {
             this.clubChoisi = SessionAppli.clubA;
@@ -102,8 +103,6 @@ export class CompoComponent{
     }
 
     ngOnInit(): void {
-        this.cote = Boolean(this._route.snapshot.paramMap.get("cote") == "X");
-        console.log("Choix joueurs coté " + this._route.snapshot.paramMap.get("cote"));
 
     }
 

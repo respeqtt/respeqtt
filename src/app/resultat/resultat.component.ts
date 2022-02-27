@@ -185,6 +185,12 @@ export class ResultatComponent{
         if(this.ConstruitScore()) {
             // Afficher le résultat
             console.log("Resultat = " + this.quoi);
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+            }, error => {
+                console.log("Impossible de persister la session");
+            });
             // Ouvrir la page de saisie des réclamations
             this.router.navigate(["saisiecommentaire/RECLAMATION/A/resultat" + toURL("/" + this.numPartie.toString())],
             {
@@ -212,6 +218,12 @@ export class ResultatComponent{
         if(this.ConstruitScore()) {
             // Afficher le résultat
             console.log("Resultat = " + this.quoi);
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+            }, error => {
+                console.log("Impossible de persister la session");
+            });
             // Ouvrir la page de saisie des réclamations
             this.router.navigate(["saisiecommentaire/RECLAMATION/X/resultat" + toURL("/" + this.numPartie.toString())],
             {
@@ -248,20 +260,31 @@ export class ResultatComponent{
                             if(SessionAppli.listeParties[this.numPartie].setScore(resPartie, SessionAppli.nbSetsGagnants)) {
                                 this.quoi = SessionAppli.listeParties[this.numPartie].ScoreToJSon(this.numPartie, SessionAppli.rencontreChoisie);
                                 console.log(this.quoi);
-                                // sauvegarder la session en BDD
-                                SessionAppli.Persiste().then(cr => {
-                                    console.log("Session enregistrée");
-                                    return true;
-                                }, error => {
-                                    console.log("Impossible de persister la session");
-                                });
+                                return true;
+                            } else {
+                                console.log("Echec de setScore");
+                                return false;
                             }
-                        }
+                        } else {
+                            console.log("set5 NOK");
+                            return false;
+                        } 
+                    } else {
+                        console.log("set4 NOK");
+                        return false;
                     }
+                } else {
+                    console.log("set3 NOK");
+                    return false;
                 }
+            } else {
+                console.log("set2 NOK");
+                return false;
             }
+        } else {
+            console.log("set1 NOK");
+            return false;
         }
-        return false;
     }
 
     onTapValidate(args: EventData) {
@@ -285,6 +308,13 @@ export class ResultatComponent{
                     SessionAppli.equipeA[i].cartons = SessionAppli.equipeA[i].cartons + this.nbJaunesA + 10*this.nbRougesA;
                 }
             }
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+            }, error => {
+                console.log("Impossible de persister la session");
+            });
+            
             // Navigation
             this.router.navigate(["lancement"],
             {
@@ -355,7 +385,7 @@ export class ResultatComponent{
                                     }
                                 });
         } else {
-            alert("Score incorrect ou incomplet, merci de corriger");
+            alert(" incomplet, merci de corriger");
         }
     }
 

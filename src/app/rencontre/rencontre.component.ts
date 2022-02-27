@@ -146,7 +146,7 @@ export class RencontreComponent{
         {
             animated:true,
             transition: {
-                name : SessionAppli.animationAller, 
+                name : SessionAppli.animationRetour, 
                 duration : 380,
                 curve : "easeIn"
             }

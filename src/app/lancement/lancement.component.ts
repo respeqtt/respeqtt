@@ -132,7 +132,15 @@ export class LancementComponent{
     onFermer(args: EventData) {
         let button = args.object as Button;
 
-        this.routerExt.navigate(["actions"]);
+        this.routerExt.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 }
 

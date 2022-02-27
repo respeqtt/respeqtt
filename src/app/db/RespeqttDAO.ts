@@ -614,6 +614,7 @@ export class Licencie{
                 lic.prenom = row[1];
                 lic.points = Number(row[2]);
                 lic.cartons = 0;
+                lic.place="";
                 resolve(lic);
             }
             else {
@@ -673,6 +674,7 @@ export class Licencie{
                     elt.etranger = Boolean(rows[row][5]);
                     elt.feminin = Boolean(rows[row][6]);
                     elt.cartons = 0;
+                    elt.place="";
                     elt.sel = false;
                     liste.push(elt);
                     n = n + 1;
@@ -881,15 +883,12 @@ export class Partie{
             }
             // mettre à jour la description
             console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substr(0, this.desc.search("=")));
-            // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "2-1";
         } else {
             if(SessionAppli.ptsParVictoire == 2) {
                 this.scoreAX = "1-2";
             } else {
                 this.scoreAX = "0-1";
             }
-            // mettre à jour la description
-            // this.desc = this.desc.substr(0, this.desc.search("=") + 1) + "1-2";
         }
         console.log("Partie=" + this.desc);
         return true;
@@ -912,7 +911,7 @@ export class Partie{
             if(i>0) json = json + ","
             json = json + '{"set": "' + i + '", "score": "' + this.sets[i].score  + '"}';
         }
-        json = json + ']}';
+        json = json + '], "remplissage":"Remplissage pour éviter les artefacts"}';
 
         return json;
     }
@@ -1299,13 +1298,14 @@ export class Compo{
 
             console.log("Equipe de " + equipe.length + " joueurs");
             for(let i = 0; i < equipe.length; i++) {
+                console.log("joueur[" + i + "]=" + (equipe[i]==null ? "null" : equipe[i].nom));
                 Compo.PersisteJoueur(equipe[i], rencontre).then(cr=> {}, 
                 error => {
                     console.log("Echec insertion d'un joueur: ", error);
                     reject(error);
                 }); 
             }
-            resolve(true);
+            resolve(equipe);
         });
         return promise;
     }
@@ -1325,16 +1325,17 @@ export class Compo{
             + "cpo_vn_feminin = " + bool2SQL(joueur.feminin) + ", "
             + "cpo_vn_cartons = " + joueur.cartons.toString()
             + " where cpo_ren_kn = " + rencontre.toString()
-            + " and cpo_va_place = " + toSQL(joueur.place);
+            + " and cpo_va_place = " + toSQL(joueur.place == "" ? joueur.id.toString(): joueur.place);
 
             console.log(update);
             RespeqttDb.db.execSQL(update).then(n => {
                 if(n > 0) {
                     console.log("Joueur " + joueur.place + " mis à jour en BDD");
+                    resolve(joueur);
                 } else {
                     // le joueur n'existe pas => insert
                     values = rencontre + ", "
-                        + toSQL(joueur.place) + ", "
+                        + toSQL(joueur.place == "" ? joueur.id.toString(): joueur.place) + ", "
                         + joueur.id.toString() + ", "
                         + toSQL(joueur.nom) + ", "
                         + toSQL(joueur.prenom) + ", "
@@ -1346,11 +1347,12 @@ export class Compo{
 
                     RespeqttDb.db.execSQL(insert + values).then(id => {
                         console.log("Joueur " + joueur.place + " inséré en BDD");
+                        resolve(joueur);
                     }, error2 => {
                         console.log("Echec insertion dans la table Compo", error2);
+                        reject(error2);
                     });
                 }
-                resolve(true);
             }, error => {
                 console.log("Echec update dans la table Compo", error);
                 reject (error);

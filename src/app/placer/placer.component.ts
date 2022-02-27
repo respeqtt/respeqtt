@@ -52,7 +52,7 @@ export class PlacerComponent{
         this.version = SessionAppli.version;
 
         // récupération du coté en paramètre
-        console.log("COTE=" + this._route.snapshot.paramMap.get("cote"));
+        console.log("placer COTE=" + this._route.snapshot.paramMap.get("cote"));
         if(this._route.snapshot.paramMap.get("cote") =="A") {
             this.cote = false;
         } else {
@@ -104,9 +104,9 @@ export class PlacerComponent{
     }
 
     
-ngAfterViewInit() {
-    this.tf = this.tfLic.nativeElement;     // mémoriser le textField dans le composant (cf onCapitaine)
-} 
+    ngAfterViewInit() {
+        this.tf = this.tfLic.nativeElement;     // mémoriser le textField dans le composant (cf onCapitaine)
+    } 
 
     ngOnInit(args: EventData): void {
     }

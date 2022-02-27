@@ -230,12 +230,12 @@ export class Feuille5 {
                         <td rowspan="4" style="width:15%;text-align:center;vertical-align:top"><b>Capitaine équipe A</b>
                             <p style="text-align:left;vertical-align:middle"> Nom <b>#CapitaineA</b></p>
                             <p style="text-align:left"> N° licence <b>#LicCapitaineA</b></p>
-                            <p style="text-align:center"> Signature à la fin de la rencontre </p>
+                            <p style="text-align:center">#SignatureA</p>
                         </td>
                         <td rowspan="4" style="width:15%;text-align:center;vertical-align:top"><b>Capitaine équipe X</b>
                             <p style="text-align:left"> Nom <b>#CapitaineX</b></p>
                             <p style="text-align:left"> N° licence <b>#LicCapitaineX</b></p>
-                            <p style="text-align:center;vertical-align:bottom"> Signature à la fin de la rencontre </p>
+                            <p style="text-align:center;vertical-align:bottom">#SignatureX</p>
                         </td>
                         <td rowspan="2" style="width:22%;font-size:16"><b>Association</b> <b>#NomClubA</b></td>
                         <td rowspan="2" style="width:4%;text-align:center;font-size:16"><b>#ScoreA</b></td>

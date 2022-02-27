@@ -7,7 +7,7 @@
 </ActionBar>
 
 <TabView [selectedIndex]="this.tab" (selectedIndexChanged)="onTabChanged($event)">
-    <StackLayout *tabItem="{title: 'Domicile', iconSource: 'res://domicile'}" [isenabled]="this.modeRencontre">    
+    <StackLayout *tabItem="{title: 'Domicile', iconSource: 'res://domicile'}">    
         <!-- A domicile , iconSource: 'font://&#xf015;', class:'fas' -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
             <Button [text]="(this.lancer ? 'Consulter les équipes' : 'Choisir une rencontre')" class="bouton" flexGrow="1" (tap)="onPreparer($event)" [isenabled]="actChoisirRencontre"></Button>
@@ -19,7 +19,7 @@
         </FlexboxLayout>
     </StackLayout>
 
-    <StackLayout *tabItem="{title: 'Extérieur', iconSource: 'res://exterieur'}" [isenabled]="!this.modeRencontre">    
+    <StackLayout *tabItem="{title: 'Extérieur', iconSource: 'res://exterieur'}">    
         <!-- A l'extérieur , iconSource: 'font://&#xf6bb;', class:'fas' -->
         <FlexboxLayout flexDirection="column" justifyContent="flex-start">
             <Button text="Choisir une rencontre"   class="bouton" flexGrow="1" (tap)="onRencontre($event)" [isenabled]="actChoisirRencontreExt"></Button>

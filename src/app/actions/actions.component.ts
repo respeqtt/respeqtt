@@ -127,11 +127,7 @@ export class ActionsComponent implements OnInit {
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
         this.dim = SessionAppli.dimEcran;
         console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api);
-
-
-
-    }
-    
+    }  
 
     ActiveBoutons() {
         // boutons onglet domicile
@@ -141,7 +137,7 @@ export class ActionsComponent implements OnInit {
                                 && SessionAppli.domicile != 0
                                 && !SessionAppli.scoreValide;
         // on ne peut abandonner que si on a une rencontre en cours
-        this.actAbandonner = SessionAppli.rencontreChoisie != -1;
+        this.actAbandonner = SessionAppli.rencontreChoisie != -1 && SessionAppli.domicile == 1;
         // on ne lance les parties que si la compo est figée
         this.actGererParties = SessionAppli.compoFigee && (SessionAppli.domicile == 1) && !SessionAppli.scoreValide;
         // on ne valide le score que si les parties ont été lancées et si le score n'a pas déjà été validé
@@ -248,11 +244,13 @@ export class ActionsComponent implements OnInit {
         if(this.actEnvoyerSpid) {
             // to do : envoi à SPID
             // on RAZ (temporaire)
-            SessionAppli.Efface(SessionAppli.rencontreChoisie);
-            SessionAppli.Raz();
-            alert("La rencontre a bien été envoyée, vous pouvez la consulter sur http://www.fftt.com");
-
-            this.actEnvoyerSpid = false;
+            SessionAppli.Efface(SessionAppli.rencontreChoisie).then(cr => {
+                SessionAppli.Raz();
+                alert("La rencontre a bien été envoyée, vous pouvez la consulter sur http://www.fftt.com");
+                this.actEnvoyerSpid = false;
+            }, error => {
+                console.log("Impossible d'effacer la rencontre :" + error);
+            });
         }
 
     }
@@ -269,22 +267,25 @@ export class ActionsComponent implements OnInit {
                 if(r.result) {
                     
                     // effacement en BDD
-                    SessionAppli.Efface(SessionAppli.rencontreChoisie);
-                    SessionAppli.Raz();
+                    SessionAppli.Efface(SessionAppli.rencontreChoisie).then(cr=> {
+                        SessionAppli.Raz();
 
-                    this.actChoisirRencontre = true;
-                    this.actGererParties = false;
-                    this.actVoirFeuille = false;
-                    this.actValider = false;
-                    this.actEnvoyerSpid = false;
-                    this.actAbandonner = false;
-                    this.actChoisirRencontreExt = true;
-                    this.actComposerEquipe = false;
-                    this.actComposerDoubles = false;
-                    this.actAbandonnerExt = false;
-        
-                    alert("Rencontre abandonnée");
-                    
+                        this.actChoisirRencontre = true;
+                        this.actGererParties = false;
+                        this.actVoirFeuille = false;
+                        this.actValider = false;
+                        this.actEnvoyerSpid = false;
+                        this.actAbandonner = false;
+                        this.actChoisirRencontreExt = true;
+                        this.actComposerEquipe = false;
+                        this.actComposerDoubles = false;
+                        this.actAbandonnerExt = false;
+                        this.actSigner = false;
+            
+                        alert("Rencontre abandonnée");
+                    }, error => {
+                        console.log("Impossible d'effacer la rencontre : " + error);
+                    });                    
                 } else {
                     console.log("Abandon ANNULE");
                 }
@@ -304,22 +305,25 @@ export class ActionsComponent implements OnInit {
                 if(r.result) {
                     
                     // effacement en BDD
-                    SessionAppli.Efface(SessionAppli.rencontreChoisie);
-                    SessionAppli.Raz();
+                    SessionAppli.Efface(SessionAppli.rencontreChoisie).then(cr => {
+                        SessionAppli.Raz();
 
-                    this.actChoisirRencontre = true;
-                    this.actGererParties = false;
-                    this.actVoirFeuille = false;
-                    this.actValider = false;
-                    this.actEnvoyerSpid = false;
-                    this.actAbandonner = false;
-                    this.actChoisirRencontreExt = true;
-                    this.actComposerEquipe = false;
-                    this.actComposerDoubles = false;
-                    this.actAbandonnerExt = false;
-        
-                    alert("Rencontre abandonnée");
-                    
+                        this.actChoisirRencontre = true;
+                        this.actGererParties = false;
+                        this.actVoirFeuille = false;
+                        this.actValider = false;
+                        this.actEnvoyerSpid = false;
+                        this.actAbandonner = false;
+                        this.actChoisirRencontreExt = true;
+                        this.actComposerEquipe = false;
+                        this.actComposerDoubles = false;
+                        this.actAbandonnerExt = false;
+                        this.actSigner = false;
+
+                        alert("Rencontre abandonnée");
+                    }, error => {
+
+                    });                         
                 } else {
                     console.log("Abandon ANNULE");
                 }
