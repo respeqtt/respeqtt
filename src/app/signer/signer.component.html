@@ -9,5 +9,8 @@
     <FlexboxLayout flexDirection="column" justifyContent="flex-start">
         <Label class="titre" [text]="this.titre" flexGrow="0" ></Label>
         <Label class = "sous-titre" [text] = "this.sousTitre" flexGrow="0" > </Label>
+        <TextView editable="false" class = "messsage" flexGrow="10" [text] = "this.message" flexGrow="0" > </TextView>
+        <Button text="VALIDER AVEC UNE SEULE SIGNATURE" class="bouton" (tap)="onValider($event)" flexGrow="1" [isenabled]="actValider"></Button>
+        <Button text="SIGNER" class="bouton" (tap)="onSigner($event)" flexGrow="1" [isenabled]="actSigner"></Button>
         <Button text="FERMER" class="bouton" (tap)="onFermer($event)" flexGrow="1" ></Button>
     </FlexboxLayout>

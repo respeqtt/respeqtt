@@ -180,13 +180,16 @@ export class SessionAppli {
 
         for(let i=0; i < equipe.length; i++){
             if(i>0) json = json + ",";
-            // ajouter chaque joueur : lettre + n° de licence seulement
+            // ajouter chaque joueur
             json = json + '{"place":"'  + equipe[i].place + '",';
             json = json + '"licence":"' + equipe[i].id + '",';
             json = json + '"nom":"'     + equipe[i].nom + '",';
             json = json + '"prenom":"'  + equipe[i].prenom + '",';
-            json = json + '"cartons":"'  + equipe[i].cartons + '",';
-            json = json + '"points":"'  + equipe[i].points + '"}';
+            json = json + '"cartons":"' + equipe[i].cartons + '",';
+            json = json + '"points":"'  + equipe[i].points + '",';
+            json = json + '"mute":"'    + (equipe[i].mute     ? "1" : "0") + '",';
+            json = json + '"etranger":"'+ (equipe[i].etranger ? "1" : "0") + '",';
+            json = json + '"feminin":"' + (equipe[i].feminin  ? "1" : "0") + '"}';
         }
         json = json + '], "capitaine":"' + licCapitaine + '",';
         json = json + '"formule":"' + formule.toString() + '"}';
@@ -262,6 +265,9 @@ export class SessionAppli {
                             elt.prenom = data.equipe[i].prenom;
                             elt.cartons = Number(data.equipe[i].cartons);
                             elt.points = Number(data.equipe[i].points);
+                            elt.mute = Number(data.equipe[i].mute) > 0;
+                            elt.feminin = Number(data.equipe[i].feminin) > 0;
+                            elt.etranger = Number(data.equipe[i].etranger) > 0;
                             equipe.push(elt);
                         break;
                         default :
@@ -490,7 +496,7 @@ export class SessionAppli {
             // LicCapitaineA
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
             // Signature Capitaine A
-            if(SessionAppli.signatureA == "NON SIGNE") {
+            if(SessionAppli.signatureA.length < 40) {
                 feuille = this.CompleteFeuille(feuille, "NON SIGNEE", "#SignatureA");
             } else {
                 feuille = this.CompleteFeuille(feuille, "*** SIGNEE ***", "#SignatureA");
@@ -507,7 +513,7 @@ export class SessionAppli {
             // LicCapitaineX
             feuille = this.CompleteFeuille(feuille, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
             // Signature Capitaine X
-            if(SessionAppli.signatureX == "NON SIGNE") {
+            if(SessionAppli.signatureX.length < 40) {
                 feuille = this.CompleteFeuille(feuille, "NON SIGNEE", "#SignatureX");
             } else {
                 feuille = this.CompleteFeuille(feuille, "*** SIGNEE ***", "#SignatureX");
@@ -563,14 +569,19 @@ export class SessionAppli {
             verso = this.CompleteFeuille(verso, "", "#LicJA");
         }
 
+        console.log("Capitaines ...");
+        if(!SessionAppli.capitaineA) console.log(" pas de capitaine A");
+        if(!SessionAppli.capitaineX) console.log(" pas de capitaine X");
+
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom, "#CapitaineA");
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineA.id.toString(), "#LicCapitaineA");
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom, "#CapitaineX");
         verso = this.CompleteFeuille(verso, SessionAppli.capitaineX.id.toString(), "#LicCapitaineX");
 
+        console.log("Signatures ...");
         // Signature Capitaine A
         console.log("Signatures au verso");
-        if(SessionAppli.signatureA == "NON SIGNE") {
+        if(SessionAppli.signatureA.length < 40) {
             verso = this.CompleteFeuille(verso, "NON SIGNEE", "#SignatureA");
         } else {
             verso = this.CompleteFeuille(verso, "*** SIGNEE ***", "#SignatureA");
@@ -578,7 +589,7 @@ export class SessionAppli {
         }
 
         // Signature Capitaine X
-        if(SessionAppli.signatureX == "NON SIGNE") {
+        if(SessionAppli.signatureX.length < 40) {
             verso = this.CompleteFeuille(verso, "NON SIGNEE", "#SignatureX");
         } else {
             verso = this.CompleteFeuille(verso, "*** SIGNEE ***", "#SignatureX");
@@ -841,78 +852,55 @@ export class SessionAppli {
                     + ") ";
 
             // insertion en BDD
-            console.log(insert + values);
+            console.log(insert);
+            console.log(values);
             RespeqttDb.db.execSQL(insert + values).then(id => {
                 console.log("Session insérée en BDD");
                 // insertion des équipes
-                if(SessionAppli.equipeA) {
-                    Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false).then(cr => {
-                        console.log("Equipe A persistée");
-                        if(SessionAppli.equipeX) {
-                            Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
-                                console.log("Equipe X persistée");
-                                // insertion des parties
-                                if(SessionAppli.listeParties) {
-                                    Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                        console.log("Liste parties persistée");
-                                        resolve(true);
-                                    }, error => {
-                                        reject(error);
-                                    });
-                                } else {
-                                    resolve(SessionAppli); 
-                                }
-                            }, error => {
-                                reject(error);
-                            });
-                        } else {
-                            // insertion des parties
-                            if(SessionAppli.listeParties) {
-                                Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                    console.log("Liste parties persistée");
-                                    resolve(true);
-                                }, error => {
-                                    reject(error);
-                                });
-                            } else {
-                                resolve(SessionAppli); 
-                            }
-                    }     
-                    }, error => {
-                        reject(error);
-                    });
-                } else {
-                    if(SessionAppli.equipeX) {
-                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
-                            console.log("Equipe X persistée");
-                            // insertion des parties
-                            if(SessionAppli.listeParties) {
-                                Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                    console.log("Liste parties persistée");
-                                    resolve(true);
-                                }, error => {
-                                    reject(error);
-                                });
-                            } else {
-                                resolve(SessionAppli); 
-                            }
-                    }, error => {
-                            reject(error);
-                        });
+                if(SessionAppli.equipeA.length > 0) {
+                    Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false);
+                    console.log("Equipe A persistée");
+                    if(SessionAppli.equipeX.length > 0) {
+                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true);
+                        console.log("Equipe X persistée");
+                        // insertion des parties
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                                console.log("Liste parties persistée");
+                        }
                     } else {
                         // insertion des parties
-                        if(SessionAppli.listeParties) {
-                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                console.log("Liste parties persistée");
-                                resolve(true);
-                            }, error => {
-                                reject(error);
-                            });
-                        } else {
-                            resolve(SessionAppli); 
-                        }
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            console.log("Liste parties persistée");
+                        } 
                     }     
+                } else {
+                    if(SessionAppli.equipeX.length > 0) {
+                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true);
+                        console.log("Equipe X persistée");
+                        // insertion des parties
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties)
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            console.log("Liste parties persistée");
+                        }
+                    } else {
+                        // insertion des parties
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            console.log("Liste parties persistée");
+                        }     
+                    }
                 }
+                resolve(SessionAppli); 
             }, error => {
                 console.log("Impossible d'insérer la session en BDD", error);
                 reject(error);
@@ -968,54 +956,38 @@ export class SessionAppli {
                 console.log("Session mise à jour en BDD");
                 // màj des équipes
                 if(SessionAppli.equipeA.length > 0) {
-                    Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false).then(cr => {
-                        if(SessionAppli.equipeX.length > 0) {
-                            Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
-                                // màj des parties
-                                if(SessionAppli.listeParties.length > 0) {
-                                    Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                        resolve(SessionAppli);
-                                    }, error => {
-                                        reject(error);
-                                    });
-                                } else {
-                                   resolve(SessionAppli); 
-                                }
-                            }, error => {
-                                console.log("Impossible de persister l'équipe X");
-                                reject(error);
-                            });
+                    Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false);
+                    if(SessionAppli.equipeX.length > 0) {
+                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true);
+                        // màj des parties
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            resolve(SessionAppli);
+                        } else {
+                            resolve(SessionAppli); 
                         }
-                    }, 
-                        error => {
-                            console.log("Impossible de persister l'équipe A")
-                            reject(error);
-                        });
+                    }
                 } else {
                     if(SessionAppli.equipeX.length > 0) {
-                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true).then(cr => {
-                            // màj des parties
-                            if(SessionAppli.listeParties.length > 0) {
-                                Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                    resolve(SessionAppli);
-                                }, error => {
-                                    reject(error);
-                                });
-                            } else {
-                                resolve(SessionAppli); 
-                            }
-                        }, error => {
-                            console.log("Impossible de persister l'équipe X");
-                            reject(error);
-                        });
+                        Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true);
+                        // màj des parties
+                        if(SessionAppli.listeParties.length > 0) {
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            resolve(SessionAppli);
+                        } else {
+                            resolve(SessionAppli); 
+                        }
                 } else {
                         // màj des parties
                         if(SessionAppli.listeParties.length > 0) {
-                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties).then(cr => {
-                                resolve(SessionAppli);
-                            }, error => {
-                                reject(error);
-                            });
+                            Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            // écriture des sets en BDD
+                            Set.PersisteSets(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
+                            resolve(SessionAppli);
                         } else {
                             resolve(SessionAppli); 
                         }

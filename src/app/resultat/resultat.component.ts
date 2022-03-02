@@ -287,7 +287,7 @@ export class ResultatComponent{
         }
     }
 
-    onTapValidate(args: EventData) {
+    onTapValider(args: EventData) {
         let button = args.object as Button;
 
         if(this.tf1.text) this.set1 = this.tf1.text;
@@ -311,11 +311,38 @@ export class ResultatComponent{
             // sauvegarder la session en BDD
             SessionAppli.Persiste().then(cr => {
                 console.log("Session enregistrée");
+                // Navigation
+                if(SessionAppli.domicile == 1) {
+                    this.router.navigate(["lancement"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                } else {
+                    this.router.navigate(["actions"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                }
             }, error => {
                 console.log("Impossible de persister la session");
-            });
-            
-            // Navigation
+            });           
+        } else {
+            alert("Score incorrect ou incomplet, merci de corriger");
+        }
+    }
+
+    onTapFermer(args: EventData) {  
+        if(SessionAppli.domicile == 1) {
             this.router.navigate(["lancement"],
             {
                 animated:true,
@@ -326,13 +353,7 @@ export class ResultatComponent{
                 }
             });
         } else {
-            alert("Score incorrect ou incomplet, merci de corriger");
-        }
-}
-
-    onTapClose(args: EventData) {
-            // Navigation
-            this.router.navigate(["lancement"],
+            this.router.navigate(["actions"],
             {
                 animated:true,
                 transition: {
@@ -341,6 +362,7 @@ export class ResultatComponent{
                     curve : "easeIn"
                 }
             });
+        }
     }
 
     onTapScan(args: EventData) {

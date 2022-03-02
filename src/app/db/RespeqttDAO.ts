@@ -1045,24 +1045,17 @@ export class Partie{
     }
 
     // écrit la liste des parties d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
-    public static PersisteListeParties(rencontre:number, parties:Array<Partie>) {
-        let promise = new Promise(function(resolve, reject) {
+    public static PersisteListeParties(rencontre:number, parties:Array<Partie>, debutPartie=0) {
 
-            // écriture de la liste des parties en BDD
-            for(let i = 0; i < parties.length; i++) {
-                Partie.PersistePartie(rencontre, parties[i], i).then(cr => {
-                    // écriture des sets en BDD
-                    Set.PersisteSets(rencontre, parties).then(cr => {
-                    }, error => {
-                        reject(error);
-                    });
-                }, error => {
-                    reject(error);
-                });
+        Partie.PersistePartie(rencontre, parties[debutPartie], debutPartie).then(cr => {
+            if(debutPartie+1 < parties.length) {
+                Partie.PersisteListeParties(rencontre, parties, debutPartie+1);
+            } else {
+                return;
             }
-            resolve(true);
+        }, error => {
+            console.log("Impossible de persister la partie " + (debutPartie+1).toString() + " : " + error);
         });
-        return promise;
     }
 
     // recharge les parties de la rencontre dans la session en cours
@@ -1174,19 +1167,24 @@ export class Set{
 
 
     // écrit la liste des sets d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
-    public static PersisteSets(rencontre:number, parties:Array<Partie>) {
-        let promise = new Promise(function(resolve, reject) {
-            for(let i=0; i < parties.length; i++) {
-                for(let j=0; j < parties[i].sets.length; j++) {
-                    Set.PersisteSet(rencontre, i, parties[i].sets[j], j).then(cr => {
-                    }, error => {
-                        reject(error);
-                    });
-                }
+    public static PersisteSets(rencontre:number, parties:Array<Partie>, debutPartie:number=0, debutSet:number=0) {
+            if(parties.length==0 || parties[debutPartie].sets.length==0) {
+                return;
             }
-            resolve(true);
-        });
-        return promise;
+            Set.PersisteSet(rencontre, debutPartie, parties[debutPartie].sets[debutSet], debutSet).then(cr => {
+                if(debutSet+1 < parties[debutPartie].sets.length) {
+                    Set.PersisteSets(rencontre, parties, debutPartie, debutSet+1);
+                } else {
+                    if(debutPartie+1 < parties.length) {
+                        Set.PersisteSets(rencontre, parties, debutPartie+1);
+                    } else {
+                        return;
+                    }
+                }
+            }, error => {
+                console.log("Impossible de persister le set " 
+                        + (debutSet+1).toString() + " de la partie " + (debutPartie+1).toString() + ": " + error);
+            });
     }
 
     // recharge les sets de la rencontre dans la session en cours
@@ -1293,21 +1291,18 @@ export class ListeFormules {
 export class Compo{
 
     // écrit une équipe en BDD ; essaie update, si ne marche pas essaie insert
-    public static PersisteEquipe(rencontre:number, equipe:Array<EltListeLicencie>, coteX:boolean) {
-        let promise = new Promise(function(resolve, reject) {
+    public static PersisteEquipe(rencontre:number, equipe:Array<EltListeLicencie>, coteX:boolean, debutJoueurs:number=0) {
 
-            console.log("Equipe de " + equipe.length + " joueurs");
-            for(let i = 0; i < equipe.length; i++) {
-                console.log("joueur[" + i + "]=" + (equipe[i]==null ? "null" : equipe[i].nom));
-                Compo.PersisteJoueur(equipe[i], rencontre).then(cr=> {}, 
-                error => {
-                    console.log("Echec insertion d'un joueur: ", error);
-                    reject(error);
-                }); 
+        Compo.PersisteJoueur(equipe[debutJoueurs], rencontre).then(cr=> {
+            if(debutJoueurs+1 < equipe.length) {
+                Compo.PersisteEquipe(rencontre, equipe, coteX, debutJoueurs+1);
+            } else {
+                return;
             }
-            resolve(equipe);
-        });
-        return promise;
+        }, 
+        error => {
+            console.log("Echec insertion d'un joueur: ", error);
+        }); 
     }
 
     public static PersisteJoueur(joueur:EltListeLicencie, rencontre:number) {
@@ -1316,7 +1311,8 @@ export class Compo{
             let insert: string  = `insert into compo (cpo_ren_kn, cpo_va_place, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points,
                 cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons) values (`;
             let values:string;
-            let update:string  = "update Compo set cpo_lic_kn = " + joueur.id.toString() + ", "
+            let update:string  = "update Compo set cpo_va_place = " 
+            + toSQL(joueur.place == "" ? joueur.id.toString(): joueur.place) + ", "
             + "cpo_va_nom = " + toSQL(joueur.nom) + ", "
             + "cpo_va_prenom = " + toSQL(joueur.prenom) + ", "
             + "cpo_vn_points = " + joueur.points.toString() + ", "
@@ -1325,7 +1321,8 @@ export class Compo{
             + "cpo_vn_feminin = " + bool2SQL(joueur.feminin) + ", "
             + "cpo_vn_cartons = " + joueur.cartons.toString()
             + " where cpo_ren_kn = " + rencontre.toString()
-            + " and cpo_va_place = " + toSQL(joueur.place == "" ? joueur.id.toString(): joueur.place);
+            + " and cpo_lic_kn = " + joueur.id.toString()
+            ;
 
             console.log(update);
             RespeqttDb.db.execSQL(update).then(n => {
@@ -1361,7 +1358,6 @@ export class Compo{
         return promise;
 
     }
-
 
     // recharge les équipes de la rencontre dans la session en cours
     public static RechargeEquipes(rencontre:number) {

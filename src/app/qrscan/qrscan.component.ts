@@ -25,8 +25,6 @@ import { Signature } from "../db/RespeqttDAO";
 import { ListeFormules, Partie, Licencie, EltListeLicencie, FormuledeRencontre, Club } from "../db/RespeqttDAO";
 import { Respeqtt } from "../db/RespeqttDAO";
 
-var dialogs = require("@nativescript/core/ui/dialogs");
-
 @Component({
     templateUrl: "./qrscan.component.html",
     moduleId:module.id,
@@ -45,6 +43,7 @@ export class QRScanComponent implements OnInit{
     sousTitre:string;
     cote:boolean;
     version:string;
+    destination:string;
 
 
 
@@ -57,77 +56,71 @@ export class QRScanComponent implements OnInit{
         this.pause = false;
         this.router = _routerExtensions;
 
+        // par défaut
+        this.destination = "actions";
+
         this.quoi = this._route.snapshot.paramMap.get("quoi");
-        // si on scanne une partie, on est en mode hors rencontre dans l'onglet partie
-        if(this.quoi == "PARTIE") {
-            this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
+        switch(this.quoi) {
+            case "PARTIE" :        // si on scanne une partie, on est en mode hors rencontre dans l'onglet partie
+                this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
 
-            console.log("SCAN de la partie " + this.iPartie);
+                console.log("SCAN de la partie " + this.iPartie);
 
-            this.titre = "Scan de la partie";
-            this.sousTitre = "au choix";
+                this.titre = "Scan de la partie";
+                this.sousTitre = "au choix";
+            break;
+            case "EQUIPE" :        // si on scanne une compo de double, on est en mode rencontre
+                this.titre = "Scan d'une équipe";
+                this.sousTitre = "pour composer les doubles";
+                if(this._route.snapshot.paramMap.get("param") == "X") {
+                    this.cote = true;
+                } else {
+                    this.cote = false;
+                }
+            break;
+            case "DOUBLE" :             // si on scanne une compo de double, on est en mode rencontre
+                this.titre = "Scan de la composition des doubles";
+                this.sousTitre = "de l'équipe " + this._route.snapshot.paramMap.get("param");
+                if(this._route.snapshot.paramMap.get("param") == "X") {
+                    this.cote = true;
+                } else {
+                    this.cote = false;
+                }
+            break;
+            case "RESULTAT" : // si on scanne le résultat d'une partie, mémoriser son indice dans la liste des parties en cours
+                this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
 
+                console.log("SCAN résultat de la partie " + this.iPartie);
+
+                this.titre = "Scan du résultat de la partie";
+                this.sousTitre = SessionAppli.listeParties[this.iPartie].desc;
+            break;
+            case "COMPO" : 
+                if(this._route.snapshot.paramMap.get("param") == "X") {
+                    this.cote = true;
+                } else {
+                    this.cote = false;
+                }
+                console.log("SCAN compo côté " + this._route.snapshot.paramMap.get("param")+"=" + this.cote);
+                this.titre = "Scan de la composition de l'équipe";
+                if(this.cote) {
+                    // X
+                    this.sousTitre = "X - " + SessionAppli.clubX.nom;
+                } else {
+                    // A
+                    this.sousTitre = "A - " + SessionAppli.clubA.nom;
+                }
+            break;
+            case "SIGNATURE" :         // si on scanne une signature, on la mémorise pour l'équipe qui se déplace
+                let capitaine:string = this._route.snapshot.paramMap.get("param");
+
+                console.log("SCAN signature de " + capitaine);
+
+                this.titre = "Scan de la signature de ";
+                this.sousTitre = capitaine;
+            break;
         }
 
-        // si on scanne une compo de double, on est en mode rencontre
-        if(this.quoi == "EQUIPE") {
-            this.titre = "Scan d'une équipe";
-            this.sousTitre = "pour composer les doubles";
-            if(this._route.snapshot.paramMap.get("param") == "X") {
-                this.cote = true;
-            } else {
-                this.cote = false;
-            }
-        }
-
-        // si on scanne une compo de double, on est en mode rencontre
-        if(this.quoi == "DOUBLES") {
-            this.titre = "Scan de la composition des doubles";
-            this.sousTitre = "de l'équipe " + this._route.snapshot.paramMap.get("param");
-            if(this._route.snapshot.paramMap.get("param") == "X") {
-                this.cote = true;
-            } else {
-                this.cote = false;
-            }
-        }
-
-        // si on scanne le résultat d'une partie, mémoriser son indice dans la liste des parties en cours
-        if(this.quoi == "RESULTAT") {
-            this.iPartie = Number(this._route.snapshot.paramMap.get("param"));
-
-            console.log("SCAN résultat de la partie " + this.iPartie);
-
-            this.titre = "Scan du résultat de la partie";
-            this.sousTitre = SessionAppli.listeParties[this.iPartie].desc;
-
-        }
-
-        if(this.quoi == "COMPO") {
-            if(this._route.snapshot.paramMap.get("param") == "X") {
-                this.cote = true;
-            } else {
-                this.cote = false;
-            }
-            console.log("SCAN compo côté " + this._route.snapshot.paramMap.get("param")+"=" + this.cote);
-            this.titre = "Scan de la composition de l'équipe";
-            if(this.cote) {
-                // X
-                this.sousTitre = "X - " + SessionAppli.clubX.nom;
-            } else {
-                // A
-                this.sousTitre = "A - " + SessionAppli.clubA.nom;
-            }
-        }
-
-        // si on scanne une signature, on la mémorise pour l'équipe qui se déplace
-        if(this.quoi == "SIGNATURE") {
-            let capitaine:string = this._route.snapshot.paramMap.get("param");
-
-            console.log("SCAN signature de " + capitaine);
-
-            this.titre = "Scan de la signature de ";
-            this.sousTitre = capitaine;
-        }
         registerElement("BarcodeScanner", () => require("nativescript-barcodescanner").BarcodeScannerView);
         this.monScanner = new BarcodeScanner();
     }
@@ -136,31 +129,30 @@ export class QRScanComponent implements OnInit{
     }
 
     scanCode(args: EventData) {
-        this.monScanner.scan(
-            {
-                formats: "QR_CODE", // peut aussi faire EAN_13
-                cancelLabel: "EXIT. Essayer aussi le bouton de volume !", // iOS only, default 'Close'
-                cancelLabelBackgroundColor: "#333333", // iOS only, default '#000000' (black)
-                message: "Placer le QRCode dans le rectangle", // Android only, default is 'Place a barcode inside the viewfinder rectangle to scan it.'
-                showFlipCameraButton: false,   // default false
-                preferFrontCamera: false,     // default false
-                showTorchButton: false,        // default false
-                beepOnScan: true,             // Play or Suppress beep on scan (default true)
-                fullScreen: true,             // Currently only used on iOS; with iOS 13 modals are no longer shown fullScreen by default, which may be actually preferred. But to use the old fullScreen appearance, set this to 'true'. Default 'false'.
-                torchOn: false,               // launch with the flashlight on (default false)
-                closeCallback: () => { console.log("Scanner fermé")}, // invoked when the scanner was closed (success or abort)
-                resultDisplayDuration: 500,   // Android only, default 1500 (ms), set to 0 to disable echoing the scanned text
-                orientation: "portrait",     // Android only, default undefined (sensor-driven orientation), other options: portrait|landscape
-                openSettingsIfPermissionWasPreviouslyDenied: true, // On iOS you can send the user to the settings app if access was previously denied
-                presentInRootViewController: true // iOS-only; If you're sure you're not presenting the (non embedded) scanner in a modal, or are experiencing issues with fi. the navigationbar, set this to 'true' and see if it works better for your app (default false).
-              }).then((result) => {
+        this.monScanner.scan({
+            formats: "QR_CODE", // peut aussi faire EAN_13
+            cancelLabel: "EXIT. Essayer aussi le bouton de volume !", // iOS only, default 'Close'
+            cancelLabelBackgroundColor: "#333333", // iOS only, default '#000000' (black)
+            message: "Placer le QRCode dans le rectangle", // Android only, default is 'Place a barcode inside the viewfinder rectangle to scan it.'
+            showFlipCameraButton: false,   // default false
+            preferFrontCamera: false,     // default false
+            showTorchButton: false,        // default false
+            beepOnScan: true,             // Play or Suppress beep on scan (default true)
+            fullScreen: true,             // Currently only used on iOS; with iOS 13 modals are no longer shown fullScreen by default, which may be actually preferred. But to use the old fullScreen appearance, set this to 'true'. Default 'false'.
+            torchOn: false,               // launch with the flashlight on (default false)
+            closeCallback: () => { console.log("Scanner fermé")}, // invoked when the scanner was closed (success or abort)
+            resultDisplayDuration: 500,   // Android only, default 1500 (ms), set to 0 to disable echoing the scanned text
+            orientation: "portrait",     // Android only, default undefined (sensor-driven orientation), other options: portrait|landscape
+            openSettingsIfPermissionWasPreviouslyDenied: true, // On iOS you can send the user to the settings app if access was previously denied
+            presentInRootViewController: true // iOS-only; If you're sure you're not presenting the (non embedded) scanner in a modal, or are experiencing issues with fi. the navigationbar, set this to 'true' and see if it works better for your app (default false).
+            }).then((result) => {
 
-                  this.trace = result.text;
-                  console.log("*** Scan=" + result.text);
-                  // si c'est une partie
-                  if(this.quoi == "PARTIE") {
-                      console.log("-- Scan PARTIE --");
-                      var iPartie:number;
+            this.trace = result.text;
+            console.log("*** Scan=" + result.text);
+            switch(this.quoi) {
+                case "PARTIE" : // si c'est une partie
+                    console.log("-- Scan PARTIE --");
+                    var iPartie:number;
                     // créer la partie si on n'en a pas
                     if(SessionAppli.listeParties.length ==0) {
                         var p:Partie = new Partie(ListeFormules.getFormule(SessionAppli.formule), "", null, null, false, false);
@@ -171,22 +163,12 @@ export class QRScanComponent implements OnInit{
                     console.log("Partie " + iPartie.toString());
                     // aller à la page de saisie des scores
                     if(iPartie >=0) {
-                        this.router.navigate(["resultat/" + iPartie],
-                        {
-                            animated:true,
-                            transition: {
-                                name : SessionAppli.animationAller, 
-                                duration : 380,
-                                curve : "easeIn"
-                            }
-                        });
-                        return;
+                        this.destination = "resultat/" + iPartie;
                     } else {
                         alert("QRCode incorrect");
                     }
-                  }
-                  // si c'est une équipe pour la compo des doubles
-                  if(this.quoi == "EQUIPE") {
+                break;
+                case "EQUIPE" : // si c'est une équipe
                     console.log("-- Scan EQUIPE --");
                     // lire le JSON pour permettre la compo des doubles
                     let equipe:EltListeLicencie[] = SessionAppli.JsonToEquipe(result.text, null, null);
@@ -201,7 +183,6 @@ export class QRScanComponent implements OnInit{
                             cote ="A";
                             SessionAppli.equipeA = equipe;
                             SessionAppli.clubA = club;
-
                         }
                         else {
                             cote = "X";
@@ -215,15 +196,7 @@ export class QRScanComponent implements OnInit{
                         const f:FormuledeRencontre=ListeFormules.getFormule(nFormule);
                         if(f) {
                             console.log("appel de : " + "compoDouble/" + cote + "/1/" + f.nbDoubles.toString())
-                            this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()],
-                            {
-                                animated:true,
-                                transition: {
-                                    name : SessionAppli.animationAller, 
-                                    duration : 380,
-                                    curve : "easeIn"
-                                }
-                            });
+                            this.destination = "compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString();
                         }
                         else {
                             console.log("Pas trouvé la formule " + nFormule.toString());
@@ -231,29 +204,16 @@ export class QRScanComponent implements OnInit{
                     } else {
                         alert("QRCode incorrect");
                     }
-
-                    return;
-                  }
-                  // si c'est un double
-                  if(this.quoi == "DOUBLES") {
+                break;
+                case "DOUBLES" :    // si c'est un double
                     console.log("-- Scan DOUBLES --");
                     var iPartie:number;
                     // lire le JSON et mettre à jour la liste des parties avec la compo des doubles
                     SessionAppli.JsonToDoubles(result.text, this.cote);
                     // retour à la page de lancement des parties
-                    this.router.navigate(["lancement"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationAller, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });
-                    return;
-                  }
-                  // si c'est un résultat
-                  if(this.quoi == "RESULTAT") {
+                    this.destination = "lancement";
+                break;
+                case "RESULTAT" :   // si c'est un résultat de partie
                     console.log("-- Scan RESULTAT --");
                     var iPartie:number;
                     // lire le JSON et mettre à jour la liste des parties avec les scores et les sets
@@ -264,18 +224,10 @@ export class QRScanComponent implements OnInit{
                         alert("QRCode incorrect");
                     }
                     // retour à la page de lancement des parties
-                    this.router.navigate(["lancement"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationAller, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });
-                    return;
-                  }
-                  if(this.quoi == "COMPO") {
+                    this.destination = "lancement";
+                break;
+                case "COMPO" :  // si c'est une compo d'équipe
+
                     console.log("-- Scan COMPO --");
                     // lire le JSON et mettre à jour la compo de l'équipe selon le coté
                     if(this.cote) {
@@ -283,96 +235,110 @@ export class QRScanComponent implements OnInit{
                         if(SessionAppli.equipeX.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
+                            let licCapitaineX:number;
                             console.log("Equipe X :" + SessionAppli.equipeX.length + " joueurs");
+                            licCapitaineX = SessionAppli.JsonToCapitaine(result.text);
+                            console.log("*** Capitaine = " + licCapitaineX.toString());
                             for(var i = 0; i < SessionAppli.equipeX.length; i++) {
+                                // recherche du capitaine
                                 console.log(SessionAppli.equipeX[i].place + "/ "
                                         + SessionAppli.equipeX[i].id + " "
                                         + SessionAppli.equipeX[i].nom + " "
                                         + SessionAppli.equipeX[i].prenom + " "
                                         + SessionAppli.equipeX[i].points + "pts");
-                            }
-                            const licCapitaine:number = SessionAppli.JsonToCapitaine(result.text);
-                            Licencie.get(licCapitaine, SessionAppli.clubX.id).then(j =>{
-                                if(j) {
-                                    SessionAppli.capitaineX = j as EltListeLicencie;
-                                } else {
-                                    alert("Licence " + licCapitaine + " inconnue");
+                                if(SessionAppli.equipeX[i].id == licCapitaineX) {
+                                    SessionAppli.capitaineX = SessionAppli.equipeX[i];
+                                    console.log("+++ Capitaine = " + SessionAppli.capitaineX.nom);
                                 }
-                            }, error => {alert("La licence " + licCapitaine.toString() + " ne fait pas partie du club " + SessionAppli.clubX.nom);
-                            });
+                            }
+                            // si le capitaine n'est pas un joueur de l'équipe on n'a que son numéro de licence
+                            if(SessionAppli.capitaineX == null) {
+                                let cap:EltListeLicencie = new EltListeLicencie();
+                                cap.nom = "";
+                                cap.id = licCapitaineX;
+                                cap.prenom = "";
+                                SessionAppli.capitaineX = cap;
+                                console.log("--- Capitaine = " + SessionAppli.capitaineX.id.toString());
+                            }
                         }
                     } else {
                         SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubA.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeA.length == 0) {
                             alert("Ce n'est pas l'équipe attendue");
                         } else {
+                            let licCapitaineA:number;
                             console.log("Equipe A :" + SessionAppli.equipeA.length + " joueurs");
+                            licCapitaineA = SessionAppli.JsonToCapitaine(result.text);
                             for(var i = 0; i < SessionAppli.equipeA.length; i++) {
                                 console.log(SessionAppli.equipeA[i].place + "/ "
                                         + SessionAppli.equipeA[i].id + " "
                                         + SessionAppli.equipeA[i].nom + " "
                                         + SessionAppli.equipeA[i].prenom + " "
                                         + SessionAppli.equipeA[i].points + "pts");
-                            }
-                            const licCapitaine:number = SessionAppli.JsonToCapitaine(result.text);
-                            Licencie.get(licCapitaine, SessionAppli.clubA.id).then(j =>{
-                                if(j) {
-                                    SessionAppli.capitaineA = j as EltListeLicencie;
-                                } else {
-                                    alert("Licence " + licCapitaine + " inconnue");
+                                if(SessionAppli.equipeA[i].id == licCapitaineA) {
+                                    SessionAppli.capitaineA = SessionAppli.equipeA[i];
                                 }
-                            }, error => {alert("La licence " + licCapitaine.toString() + " ne fait pas partie du club " + SessionAppli.clubA.nom);
-                            });                        }
+                            }
+                            // si le capitaine n'est pas un joueur de l'équipe on n'a que son numéro de licence
+                            if(SessionAppli.capitaineA == null) {
+                                let cap:EltListeLicencie = new EltListeLicencie();
+                                cap.nom = "";
+                                cap.id = licCapitaineA;
+                                cap.prenom = "";
+                                SessionAppli.capitaineA = cap;
+                            }
                         }
-                        // retour à la page de compo des équipes
-                        this.router.navigate(["preparation"],
-                        {
-                            animated:true,
-                            transition: {
-                                name : SessionAppli.animationAller, 
-                                duration : 380,
-                                curve : "easeIn"
-                            }
-                        });
-                        return;
                     }
-                    // si c'est une signature
-                    if(this.quoi == "SIGNATURE") {
-                        console.log("-- Scan SIGNATURE --");
-                        // lire le JSON et mettre à jour la signature du capitaine visiteur
-                        let sig = new Signature();
-                        if(sig.JsonToSignature(result.text)) {
-                            if(SessionAppli.recoitCoteX) {
-                                this.EnregistreSignatures(sig.GetSignature(), Respeqtt.GetSignature(), sig.GetLicence());
-                            } else {
-                                this.EnregistreSignatures(Respeqtt.GetSignature(), sig.GetSignature(), sig.GetLicence());
-                            }
+                    // retour à la page de compo des équipes
+                    this.destination = "preparation";
+                break;
+                case "SIGNATURE" : // si c'est une signature
+                    console.log("-- Scan SIGNATURE --");
+                    // lire le JSON et mettre à jour la signature du capitaine visiteur
+                    let sig = new Signature();
+                    if(sig.JsonToSignature(result.text)) {
+                        if(SessionAppli.recoitCoteX) {
+                            this.EnregistreSignatures(sig.GetSignature(), Respeqtt.GetSignature(), sig.GetLicence());
                         } else {
-                            alert("Signature invalide !");
-                            // retour à la page de validation
-                            this.router.navigate(["valider"],
-                            {
-                                animated:true,
-                                transition: {
-                                    name : SessionAppli.animationRetour, 
-                                    duration : 380,
-                                    curve : "easeIn"
-                                }
-                            });
-                            return;
+                            this.EnregistreSignatures(Respeqtt.GetSignature(), sig.GetSignature(), sig.GetLicence());
                         }
                     }
-                }, (errorMessage) => {
-                  console.log("No scan : " + errorMessage);
+                    this.destination = "signer/" + sig.GetLicence().toString();
+                break;
             }
-        );
-      }
+            // retour à la page appelante
+            this.router.navigate([this.destination],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+        
+        }, (errorMessage) => {
+            console.log("No scan : " + errorMessage);
+        });    
+    }
 
     onScanResult(args: EventData) {
             console.log("scan terminé");
     }
 
     onFermer(args: EventData) {
+
+            // retour à la page appelante
+            this.router.navigate([this.destination],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+/*
 
         switch(this.quoi) {
             case "PARTIE":
@@ -450,49 +416,12 @@ export class QRScanComponent implements OnInit{
                 }
             });
         }
+    */        
     }
     EnregistreSignatures(sigA:string, sigX:string, lic:number) {
         
-        // vérifier le numéro de licence
-        if(SessionAppli.recoitCoteX) {
-            console.log("Capitaine A=" + SessionAppli.capitaineA.id + " / " + lic.toString());
-        } else {
-            console.log("Capitaine X=" + SessionAppli.capitaineX.id + " / " + lic.toString());
-        }
-        if((lic == SessionAppli.capitaineA.id && SessionAppli.recoitCoteX)
-        || (lic == SessionAppli.capitaineX.id && !SessionAppli.recoitCoteX)
-        ) {
-            SessionAppli.signatureX = sigX;
-            SessionAppli.signatureA = sigA;
-            SessionAppli.scoreValide = true;
-            // mémoriser les signatures
-            SessionAppli.Persiste().then(cr => {
-                console.log("Session enregistrée - Feuille de match signée");
-                // retour à la page des actions
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
-            }, error => {
-            console.log("Impossible de persister la session");
-            });
-        } else {
-            // Rejeter la signature
-            alert("La signature ne correspond pas au capitaine déclaré en début de rencontre (" + lic.toString() + ").") 
-            this.router.navigate(["valider"],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationRetour, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
-            });
-        }
+        SessionAppli.signatureA = sigA;
+        SessionAppli.signatureX = sigX;
+ 
     }
 }

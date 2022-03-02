@@ -123,7 +123,7 @@ export class ValiderComponent{
         cancelButtonText:"ANNULER"
         }).then(r => {
             // Demander la signature du capitaine adverse
-            this.router.navigate(["signer"],
+            this.router.navigate(["signer/FAIRE_SIGNER"],
             {
                 animated:true,
                 transition: {

@@ -52,7 +52,7 @@ export class RespeqttDb {
     private static creeTableCompo:string = `create table if not exists Compo (cpo_lic_kn integer, cpo_ren_kn integer, cpo_va_place text,
                 cpo_va_nom text, cpo_va_prenom text, cpo_vn_points integer, cpo_vn_mute integer, cpo_vn_etranger integer,
                 cpo_vn_feminin integer, cpo_vn_cartons integer,
-                PRIMARY KEY(cpo_ren_kn, cpo_va_place),
+                PRIMARY KEY(cpo_ren_kn, cpo_lic_kn),
                 FOREIGN KEY (cpo_lic_kn) REFERENCES Licencie (lic_kn) ON DELETE CASCADE ON UPDATE NO ACTION,
                 FOREIGN KEY (cpo_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;

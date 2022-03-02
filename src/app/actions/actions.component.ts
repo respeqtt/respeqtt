@@ -591,7 +591,7 @@ export class ActionsComponent implements OnInit {
 
     onSigner(args:Event) {
         // appeler la page des rencontres
-        this.router.navigate(["../signer"],
+        this.router.navigate(["../signer/MONTRER"],
         {
             animated:true,
             transition: {

@@ -22,6 +22,8 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Respeqtt } from "../db/RespeqttDAO";
 import { toURL, toURLQuote } from "../outils/outils";
 
+var dialogs = require("@nativescript/core/ui/dialogs");
+
 @Component({
     templateUrl: "./signer.component.html",
     moduleId:module.id,
@@ -32,6 +34,11 @@ export class SignerComponent{
     version:string;
     titre:string = "Signer la feuille de match";
     sousTitre:string;
+    quoi:string;
+
+    message:string="";
+    actValider:boolean=false;
+    actSigner:boolean=false;
 
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
@@ -40,10 +47,22 @@ export class SignerComponent{
         this.version = SessionAppli.version;
         this.sousTitre = SessionAppli.titreRencontre;
 
-        // si à domicile alors appeler le scan de la signature
-        console.log("Domicile de la signature=" + SessionAppli.domicile);
-        switch(SessionAppli.domicile) {
-            case 1:
+        // récupérer ce qu'il faut faire
+        this.quoi = this._route.snapshot.paramMap.get("quoi");
+
+        if(SessionAppli.capitaineA) {
+            console.log ("Cap A=" + SessionAppli.capitaineA.nom + " lic=" + SessionAppli.capitaineA.id.toString());
+        } else {
+            console.log ("Cap A= null");
+        }
+        if(SessionAppli.capitaineX) {
+            console.log ("Cap X=" + SessionAppli.capitaineX.nom + " lic=" + SessionAppli.capitaineX.id.toString());
+        } else {
+            console.log ("Cap X= null");
+        }
+
+        switch(this.quoi) {
+            case "FAIRE_SIGNER" :         // appeler le scan de la signature
                 let capitaine:string;
                 capitaine = SessionAppli.recoitCoteX ? 
                             SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom  : 
@@ -58,36 +77,137 @@ export class SignerComponent{
                         curve : "easeIn"
                     }
                 });
-            break;    
-            case 0 : 
-            // sinon montrer le QRCode de la signature
-            let json:string;
-            let dim:string=SessionAppli.dimEcran.toString();
-            let titre:string=toURL("Signature de " 
-                            + (SessionAppli.recoitCoteX ? 
-                               SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom
-                               :  SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom));
+            break;
+            case "MONTRER" :            // montrer le QRCode de la signature
+                let json:string;
+                let dim:string=SessionAppli.dimEcran.toString();
+                let titre:string=toURL("Signature de " 
+                                + (SessionAppli.recoitCoteX ? 
+                                SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom
+                                :  SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom));
 
-            json = '{"licence":"' + Respeqtt.GetLicence().toString() + '", "signature":"' + Respeqtt.GetSignature() + '"}';
+                json = '{"licence":"' + Respeqtt.GetLicence().toString() + '", "signature":"' + Respeqtt.GetSignature() + '"}';
 
 
-            this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/actions/0"],
+                this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/actions/0"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationAller, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            break;
+            default :           // vérifier la signature passée en paramètre
+                // vérifier le numéro de licence
+                let lic:number = Number(this.quoi);
+                console.log("Licence signature=" + this.quoi);
+                if((lic == SessionAppli.capitaineA.id && SessionAppli.recoitCoteX)
+                || (lic == SessionAppli.capitaineX.id && !SessionAppli.recoitCoteX)
+                ) {
+                    SessionAppli.scoreValide = true;
+                    console.log("*** SCORE VALIDE ***");
+                    // mémoriser les signatures
+                    SessionAppli.Persiste().then(cr => {
+                        // retour à la page des actions
+                        this.router.navigate(["actions"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationRetour, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
+                    }, error => {
+                        console.log("Impossible de persister la session : " + error);
+                    });
+
+                } else {
+                    console.log("--- SIGNATURE INVALIDE ---");
+                    // Rejeter la signature
+                    if(SessionAppli.recoitCoteX) {
+                        SessionAppli.signatureA = "PAS SIGNE";
+                    } else {
+                        SessionAppli.signatureX = "PAS SIGNE";
+                    }
+                    this.message="La signature ne correspond pas au capitaine déclaré en début de rencontre (licence " 
+                    + (SessionAppli.recoitCoteX ? SessionAppli.capitaineA.id.toString() : SessionAppli.capitaineX.id.toString())
+                    + "). Voulez-vous essayer une autre signature ?";
+                    this.actSigner = true;
+                    this.actValider = true;
+                }
+
+            break;
+            case "ANNULE" : 
+                // on retourne sur la page de validation
+                this.router.navigate(["valider"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            break;
+        }
+    }
+
+    onValider(args: EventData) {
+        console.log("Session enregistrée - Feuille de match uniquement signée par capitaine qui reçoit");
+        SessionAppli.scoreValide = true;
+        // mémoriser les signatures
+        SessionAppli.Persiste().then(cr => {
+            // retour à la page des actions
+            this.router.navigate(["actions"],
             {
                 animated:true,
                 transition: {
-                    name : SessionAppli.animationAller, 
+                    name : SessionAppli.animationRetour, 
                     duration : 380,
                     curve : "easeIn"
                 }
             });
-            break;    
-        }
+        }, error => {
+            console.log("Impossible de persister la session : " + error);
+        });
 
     }
 
+    onSigner(args: EventData) {
+        let capitaine:string;
+        // on retire la signature du capitaine qui recoit
+        if(SessionAppli.recoitCoteX) {
+            SessionAppli.signatureX = "PAS SIGNE";
+        } else {
+            SessionAppli.signatureA = "PAS SIGNE";
+        }
+        // on recommence : nouveau scan
+        capitaine = SessionAppli.recoitCoteX ? 
+        SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom  : 
+        SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom;
+        console.log("capitaine=" + toURL(capitaine));
+        // mémoriser les signatures
+        SessionAppli.Persiste().then(cr => {
+            // retour à la page des actions
+            this.router.navigate(["qrscan/SIGNATURE/" + toURL(capitaine)],
+            {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+                }
+            });
+        }, error => {
+            console.log("Impossible de persister la session : " + error);
+        });
+    }
     onFermer(args: EventData) {
         // retour sur la page précédente
-        this.router.navigate(["actions"],
+        this.router.navigate(["valider"],
         {
             animated:true,
             transition: {

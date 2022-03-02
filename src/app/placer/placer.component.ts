@@ -145,28 +145,30 @@ export class PlacerComponent{
     }
 
     onValiderTap(args: EventData) {
-        let button = args.object as Button;
 
         // vérifier que le capitaine a été saisi
-        if((this.cote && !SessionAppli.capitaineX) || (!this.cote && !SessionAppli.capitaineA)) {
+        if(this.tf.text == "") {
             alert("Merci de saisir le numéro de licence du capitaine");
             return;
-        }
-
-        // trier les joueurs dans l'ordre des places
-        var equipeFinale:Array<EltListeLicencie> = [];
-        for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
-            equipeFinale.push(this.equipe[i]);
-        }
-        // tracer le json
-        console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
-
-        if(this.cote) {
-            SessionAppli.equipeX = equipeFinale;
         } else {
-            SessionAppli.equipeA = equipeFinale;
+            this.licenceCapitaine = Number(this.tf.text);
+
+            // trier les joueurs dans l'ordre des places
+            var equipeFinale:Array<EltListeLicencie> = [];
+            for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
+                equipeFinale.push(this.equipe[i]);
+            }
+            // tracer le json
+            console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
+
+            if(this.cote) {
+                SessionAppli.equipeX = equipeFinale;
+            } else {
+                SessionAppli.equipeA = equipeFinale;
+            }
+            this.routerExt.navigate(["preparation"]);
         }
-        this.routerExt.navigate(["preparation"]);
+
     }
 
     onQRCodeTap(args: EventData) {
