@@ -10,7 +10,7 @@
         <Label class="titre" text="COMPOSITION DES DOUBLES"></Label>
         <Label class = "sous-titre" [text] = "this.sousTitre"> </Label>
         <Button text="VALIDER" class="bouton" (tap)="onValiderTap($event)"></Button>
-        <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView [items]="listeJoueurs"   rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                     <StackLayout orientation="horizontal">

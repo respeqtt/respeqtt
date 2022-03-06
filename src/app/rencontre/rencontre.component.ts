@@ -51,7 +51,7 @@ export class RencontreComponent{
     ngOnInit(): void {
     }
 
-    onDelTap(args: EventData) {
+    onSupprimer(args: EventData) {
         let button = args.object as Button;
         let sql = "delete from Rencontre where ren_kn in (";
         let del = "";
@@ -92,7 +92,7 @@ export class RencontreComponent{
         }
     }
 
-    onLoadTap(args: EventData) {
+    onCharger(args: EventData) {
         let button = args.object as Button;
         // charger la BDD avec la simulation
         Rencontre.SIM_LoadListe();

@@ -14,7 +14,7 @@
             <Button text="SCANNER" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onScanTap($event)" [isenabled]="this.modeRencontre"></Button>
             <Button text="FORFAIT" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onForfaitTap($event)" [isenabled]="this.modeRencontre"></Button>
         </FlexboxLayout>
-        <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView [items]="listeJoueurs"  rowheight = "50em"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <FlexboxLayout flexDirection="column" justifyContent="flex-start" [class.odd]="odd" [class.even]="even">
                     <FlexboxLayout flexDirection="row" justifyContent="flex-start">

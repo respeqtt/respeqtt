@@ -8,20 +8,21 @@
 
 <StackLayout alignment="vertical" backgroundColor="lightblue">
     <Label class="titre" text="PREPARATION RENCONTRE"></Label>
-    <Button text="Charger les rencontres" class="bouton" (tap)="onLoadTap($event)"></Button>
-    <ListView [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+    <Button text="Charger les rencontres" class="bouton" (tap)="onCharger($event)"></Button>
+    <ListView [items]="listeRencontres"  rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
         <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
             <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                 <StackLayout orientation="horizontal">
                     <Label text="&#xf45d;" class="fas" [color]="(item.sel) ? '#0000FF' : '#000000'" stretch="none"></Label>
-                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.journee + ' ' + item.date">
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.poule + ' Ph ' + item.phase + 'J '+ item.journee + ' ' + item.date">
                            [color]="(item.sel) ? '#0000FF' : '#000000'" >
                     </Label>
                 </StackLayout>
             </StackLayout>
         </ng-template>
     </ListView>
-    <Button text="Supprimer les rencontres sélectionnées" class="bouton" (tap)="onDelTap($event)"></Button>
+    <Button text="Supprimer les rencontres sélectionnées" class="bouton" (tap)="onSupprimer($event)"></Button>
     <Button text="AJOUTER" class="bouton" (tap)="onAjouterTap($event)"></Button>
-    <Button text="FERMER" class="bouton" (tap)="onFermerTap($event)"></Button>
+    <Button text="FERMER" 
+    class="bouton" (tap)="onFermerTap($event)"></Button>
 </StackLayout>

@@ -10,13 +10,13 @@
     <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
         <Label class="titre" [text]="this.titre"></Label>
         <Label class="sous-titre" [text]="this.sousTitre"></Label>
-        <ListView class ="liste" [items]="listeRencontres"        (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView class ="liste" [items]="listeRencontres"   rowheight = "50em"      (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
-                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.journee + ' ' + item.date">
-                           [color]="(item.sel) ? '#0000FF' : '#000000'"
-                    </Label>
-                </StackLayout>
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item.division + ' ' + item.poule + ' Ph ' + item.phase + 'J '+ item.journee + ' ' + item.date">
+                        [color]="(item.sel) ? '#0000FF' : '#000000'" >
+                 </Label>
+             </StackLayout>
             </ng-template>
         </ListView>
         <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>

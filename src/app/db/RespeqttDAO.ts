@@ -216,8 +216,10 @@ export class FormuledeRencontre {
 
 export class EltListeRencontre {
     id:number;
+    phase:number;
     journee:number;
     division:string;
+    poule:string;
     date:string;
     sel:boolean;
 };
@@ -249,7 +251,7 @@ export class Rencontre{
         let liste:Array<any>;
         let n:number;
         // requêtes SQL
-        let selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date from Rencontre";
+        let selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date, ren_va_poule, ren_vn_phase from Rencontre";
         let order:string=" order by  ren_va_division, ren_va_poule, ren_vn_phase, ren_vn_journee asc";
 
         let promise = new Promise(function(resolve, reject) {
@@ -263,10 +265,14 @@ export class Rencontre{
                     console.log("li" + n, "id=" + elt.id + "/" + rows[row][0]);
                     elt.division = rows[row][1];
                     console.log("li" + n, "division=" + elt.division + "/" + rows[row][1]);
+                    elt.poule = rows[row][4];
+                    console.log("li" + n, "poule=" + elt.poule + "/" + rows[row][4]);
                     elt.journee = Number(rows[row][2]);
                     console.log("li" + n, "journee=" + elt.journee + "/" + rows[row][2]);
                     elt.date = rows[row][3];
                     console.log("li" + n, "date=" + elt.date + "/" + rows[row][3]);
+                    elt.phase = rows[row][5];
+                    console.log("li" + n, "phase=" + elt.phase.toString() + "/" + rows[row][5]);
                     elt.sel= false;
                     liste.push(elt);
                     n = n + 1;
@@ -301,10 +307,10 @@ export class Rencontre{
             ren_for_kn, ren_vn_nb_sets, ren_vn_echelon, ren_vn_feminin,
             ren_va_division, ren_va_ligue, ren_va_poule) values (`;
        let rencontres = [
-           `1, 1990001, 1990002, '2022/11/08 09H00', 1, 4, 18, 3, 3, 0, 'PR', 'AURA', '4')`,
-           `2, 1990002, 1990001, '2022/11/08 09H00', 1, 4, 18, 3, 3, 0, 'D1', 'AURA', '1')`,
-           `3, 1990001, 1990002, '2022/03/04 09H00', 1, 3,  5, 3, 3, 0, 'C2', 'AURA', '3')`,
-           `4, 1990001, 1990002, '2022/04/05 09H00', 2, 5, 14, 3, 2, 0, 'R3', 'AURA', '2')`
+           `1, 1990001, 1990002, '2022/11/08', 1, 4, 18, 3, 3, 0, 'PR', 'AURA', '4')`,
+           `2, 1990002, 1990001, '2022/11/08', 1, 4, 18, 3, 3, 0, 'D1', 'AURA', '1')`,
+           `3, 1990001, 1990002, '2022/03/04', 1, 3,  5, 3, 3, 0, 'C2', 'AURA', '3')`,
+           `4, 1990001, 1990002, '2022/04/05', 2, 5, 14, 3, 2, 0, 'R3', 'AURA', '2')`
        ];
 
         for(let j in clubs) {

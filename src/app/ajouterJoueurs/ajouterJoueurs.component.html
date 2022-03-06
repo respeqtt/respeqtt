@@ -17,9 +17,11 @@
         <Label class = "normal" text="Prénom" flexGrow="1" flexShrink="1"></Label>
         <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="20" (blur)="onBlurPrenom($event)"></TextField>
     </FlexboxLayout>
-    <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+    <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
         <Label class = "normal" text="Licence" flexGrow="1" flexShrink="1"></Label>
         <TextField class="form"  flexGrow="1" flexShrink="1" secure="false" maxLength="10" keyboardType="number" (blur)="onBlurLicence($event)" ></TextField>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
         <Label class = "normal" text="Points" flexGrow="1" flexShrink="1"></Label>
         <TextField class="form"  flexGrow="1" flexShrink="1" secure="false" maxLength="4" keyboardType="number" (focus)="onFocusPoints($event)" (blur)="onBlurPoints($event)" ></TextField>
     </FlexboxLayout>

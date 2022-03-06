@@ -42,6 +42,7 @@ export class PlacerComponent{
     capitaine:string="";
     licenceCapitaine:number=null;
     version:string;
+    actValider:boolean=true;
 
     tf:TextField=null;              // pour récupérer le textfield de la licence
 
@@ -50,6 +51,8 @@ export class PlacerComponent{
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // version logicielle
         this.version = SessionAppli.version;
+
+        this.actValider = SessionAppli.domicile == 1;
 
         // récupération du coté en paramètre
         console.log("placer COTE=" + this._route.snapshot.paramMap.get("cote"));

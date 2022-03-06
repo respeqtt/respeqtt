@@ -10,14 +10,10 @@
         <Label class="titre" text="Ajouter une rencontre"></Label>
         <Label class="sous-titre" [text]=this.titreRencontre></Label>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Label class = "normal" text="Division" flexGrow="1" flexShrink="1"></Label>
-            <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="3" (blur)="onBlurDivision($event)"></TextField>
-            <Label class = "normal" text="Poule" flexGrow="1" flexShrink="1"></Label>
-            <TextField class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" [(ngModel)]='this.poule' (blur)="onBlurPoule($event)"></TextField>
-            <Label class = "normal" text="Phase" flexGrow="1" flexShrink="1"></Label>
-            <TextField  class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.phase' (blur)="onBlurPhase($event)">"</TextField>
-            <Label class = "normal" text="Journée" flexGrow="1" flexShrink="1"></Label>
-            <TextField  class="form" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.journee' (blur)="onBlurJournee($event)"></TextField>
+            <TextField class="form" hint="Division" flexGrow="1" flexShrink="1" secure="false" maxLength="3" (blur)="onBlurDivision($event)"></TextField>
+            <TextField class="form" hint="Poule"    flexGrow="1" flexShrink="1" secure="false" maxLength="1" [(ngModel)]='this.poule' (blur)="onBlurPoule($event)"></TextField>
+            <TextField  class="form" hint="Phase"   flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.phase' (blur)="onBlurPhase($event)">"</TextField>
+            <TextField  class="form" hint="Journée" flexGrow="1" flexShrink="1" secure="false" maxLength="1" keyboardType="number" [(ngModel)]='this.journee' (blur)="onBlurJournee($event)"></TextField>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="space-between">
             <ListPicker class="list-picker" [items]="this.listeEchelons" [(ngModel)]="this.echelon" (selectedIndexChange)= "onEchelon($event)" flexGrow="1" flexShrink="1"></ListPicker>

@@ -12,7 +12,7 @@
         <Button text="SCANNER" class="bouton" (tap)="onScanTap($event)" [isenabled]="this.scan"></Button>
         <Button text="QRCODE" class="bouton" (tap)="onQRCodeTap($event)" [isenabled]="this.scan"></Button>
         <Button text="VALIDER" class="bouton" (tap)="onValiderTap($event)"></Button>
-        <ListView [items]="listeJoueurs"   (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView [items]="listeJoueurs"  rowheight = "50em"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                     <StackLayout orientation="horizontal">

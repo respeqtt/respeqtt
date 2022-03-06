@@ -12,9 +12,9 @@
     <Label class = "club" [text] = "this.descClub" class = "centree" flexGrow="0" flexShrink="0" text-align="center"> </Label>
     <Button text="Charger les joueurs" flexGrow="0" flexShrink="0" class="bouton" [isenabled]="this.clubChoisi" (tap)="onLoadTap($event)"></Button>
     <Button text="Ajouter des joueurs" flexGrow="0" flexShrink="0" class="bouton" [isenabled]="this.clubChoisi" (tap)="onAjouter($event)"></Button>
-    <ListView [items]="listeJoueurs" flexGrow="1" flexShrink="1" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+    <ListView [items]="listeJoueurs" flexGrow="1" flexShrink="1" rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
         <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
-            <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
+            <StackLayout orientation="vertical" [class.odd]="odd" [class.even]="even">
                 <StackLayout orientation="horizontal">
                     <Label text="&#xf45d;" class="fas" [color]="(item.sel) ? '#0000FF' : '#000000'" stretch="none"></Label>
                     <Label [class.odd]="odd" [class.even]="even"  [text]="item.nom + ' ' + item.prenom + ' ' + item.points">

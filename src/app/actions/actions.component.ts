@@ -246,7 +246,7 @@ export class ActionsComponent implements OnInit {
             // on RAZ (temporaire)
             SessionAppli.Efface(SessionAppli.rencontreChoisie).then(cr => {
                 SessionAppli.Raz();
-                alert("La rencontre a bien été envoyée, vous pouvez la consulter sur http://www.fftt.com");
+                alert("Fonction non encore implémentée, en attente de l'agrément FFTT");
                 this.actEnvoyerSpid = false;
             }, error => {
                 console.log("Impossible d'effacer la rencontre :" + error);
