@@ -59,7 +59,7 @@ export class SignerComponent{
             console.log ("Cap X=" + SessionAppli.capitaineX.nom + " lic=" + SessionAppli.capitaineX.id.toString());
         } else {
             console.log ("Cap X= null");
-        }
+        }        
 
         switch(this.quoi) {
             case "FAIRE_SIGNER" :         // appeler le scan de la signature
@@ -79,25 +79,40 @@ export class SignerComponent{
                 });
             break;
             case "MONTRER" :            // montrer le QRCode de la signature
-                let json:string;
-                let dim:string=SessionAppli.dimEcran.toString();
-                let titre:string=toURL("Signature de " 
-                                + (SessionAppli.recoitCoteX ? 
-                                SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom
-                                :  SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom));
-
-                json = '{"licence":"' + Respeqtt.GetLicence().toString() + '", "signature":"' + Respeqtt.GetSignature() + '"}';
-
-
-                this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/actions/0"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationAller, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
+                // vérifier qu'on est bien le capitaine qui se déplace
+                let cap:number = SessionAppli.recoitCoteX ? SessionAppli.capitaineA.id : SessionAppli.capitaineX.id;
+                if(cap != Respeqtt.GetLicence()) {
+                    alert("La licence du téléphone (" + Respeqtt.GetLicence().toString() + ") ne correspond pas à celle du capitaine : " + cap);
+                    this.router.navigate(["actions"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                } else {
+                    let json:string;
+                    let dim:string=SessionAppli.dimEcran.toString();
+                    let titre:string=toURL("Signature de " 
+                                    + (SessionAppli.recoitCoteX ? 
+                                    SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom
+                                    :  SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom));
+    
+                    json = '{"licence":"' + Respeqtt.GetLicence().toString() + '", "signature":"' + Respeqtt.GetSignature() + '"}';
+    
+    
+                    this.router.navigate(["attente/" + json + "/" + dim + "/" + titre + "/actions/aucun"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationAller, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                }
             break;
             default :           // vérifier la signature passée en paramètre
                 // vérifier le numéro de licence

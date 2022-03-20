@@ -19,7 +19,7 @@ import { Button, EventData, TextField } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { SessionAppli } from "../session/session";
-import { Set } from "../db/RespeqttDAO";
+import { Set, ListeFormules, getJoueur, EltListeLicencie } from "../db/RespeqttDAO";
 import { toURLQuote, toURL } from "../outils/outils";
 import { ElementRef, ViewChild } from "@angular/core";
 
@@ -47,6 +47,7 @@ export class ResultatComponent{
     nbRougesA:number=0;
     nbRougesX:number=0;
     version:string;
+    arbitre:string;
 
     txfSet1:TextField;
     tf1:TextField=null;              // pour récupérer le textfield du set1
@@ -73,6 +74,16 @@ export class ResultatComponent{
 
         // on ne peut saisir les réclamations qu'en mode rencontre
         this.reclam = SessionAppli.modeRencontre;
+
+        // arbitre
+        this.arbitre = "Arbitre : ";      
+        let a:EltListeLicencie = getJoueur(ListeFormules.getFormule(SessionAppli.formule).arbitres.charAt(this.numPartie*2));
+        if(a) {
+            this.arbitre = this.arbitre + a.nom + " " + a.prenom;
+        } else {
+            this.arbitre = this.arbitre + "au choix";
+        }
+         
 
         // supprimer le 1er caractère des doubles et le dernier pour tous
         if(SessionAppli.listeParties[this.numPartie].desc.charAt(0) == "#") {

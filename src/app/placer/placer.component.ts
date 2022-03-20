@@ -34,8 +34,9 @@ export class PlacerComponent{
     listeJoueurs:Observable;        // liste des joueurs montrée sur l'IHM
     cote:boolean;                   // côté A ou X
     clubChoisi:Club;                // club
-    routerExt: RouterExtensions;    // pour navigation
+    router: RouterExtensions;    // pour navigation
     equipe:Array<EltListeLicencie>; // equipe présentée dans la liste de joueurs
+    parties:Array<string>;          // ordre des parties
     joueurSel:number=-1;             // rang du joueur sélectionné dans l'équipe
     alphabet:string="?ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     listePlaces:Array<string> = [];
@@ -52,7 +53,7 @@ export class PlacerComponent{
         // version logicielle
         this.version = SessionAppli.version;
 
-        this.actValider = SessionAppli.domicile == 1;
+        this.actValider = (SessionAppli.domicile == 1) || (SessionAppli.domicile == 0);
 
         // récupération du coté en paramètre
         console.log("placer COTE=" + this._route.snapshot.paramMap.get("cote"));
@@ -64,7 +65,7 @@ export class PlacerComponent{
 
 
         // récupération du routeur pour naviguer
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // recherche du club correspondant
         // liste des places
@@ -73,7 +74,7 @@ export class PlacerComponent{
             this.clubChoisi = SessionAppli.clubX;
             this.equipe = SessionAppli.equipeX;
             // init de la liste des places
-            for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
+            for(let i= 0; i < SessionAppli.nbJoueurs; i++ ) {
                 this.listePlaces.push(f.joueursX);
                 this.equipe[i].place = f.joueursX.charAt(i*2);
             }
@@ -81,7 +82,7 @@ export class PlacerComponent{
             this.clubChoisi = SessionAppli.clubA;
             this.equipe = SessionAppli.equipeA;
             // init de la liste des places
-            for(var i= 0; i < SessionAppli.nbJoueurs; i++ ) {
+            for(let i= 0; i < SessionAppli.nbJoueurs; i++ ) {
                 this.listePlaces.push(f.joueursA);
             this.equipe[i].place = f.joueursA.charAt(i*2);
             }
@@ -104,7 +105,21 @@ export class PlacerComponent{
             console.log("Joueur[" + (i+1) + "]= " + this.equipe[i].place + "/" + this.equipe[i].id);
             this.equipe[i].sel = false;
         }
+
+        // init de l'ordre des parties
+        this.parties = new Array<string>();
+        for(let i=0; i< f.desc.length/3; i++) {
+            let s = (i+1).toString() + " ";
+            if(Number(f.desc.substring(i*3, i*3+2)) > 0) {
+                s = s + "(double)";
+            } else {
+                s = s + " " + f.desc.substring(i*3, i*3+2);
+            }
+            console.log(s);
+            this.parties.push(s);
+        }
     }
+
 
     
     ngAfterViewInit() {
@@ -119,11 +134,15 @@ export class PlacerComponent{
 
         // si le joueur sélectionné n'est pas en haut, on le monte, on met à jour sa place et on met à jour son rang dans joueurSel
         if(this.joueurSel > 0) {
-            var swap = this.equipe[this.joueurSel - 1];
+            let swap = this.equipe[this.joueurSel - 1];
+            let p0:string = this.equipe[this.joueurSel - 1].place;
+            let p1: string = this.equipe[this.joueurSel].place;
+
             this.equipe[this.joueurSel - 1] = this.equipe[this.joueurSel];
             this.equipe[this.joueurSel - 1].place = this.listePlaces[this.joueurSel - 1];
             this.equipe[this.joueurSel] = swap;
-            this.equipe[this.joueurSel].place = this.listePlaces[this.joueurSel];
+            this.equipe[this.joueurSel].place = p1;
+            this.equipe[this.joueurSel-1].place = p0;
             this.joueurSel--;
         }
     }
@@ -133,18 +152,30 @@ export class PlacerComponent{
 
         // si le joueur sélectionné n'est pas en bas, on le descend, on met à jour sa place et on met à jour son rang dans joueurSel
         if(this.joueurSel < SessionAppli.nbJoueurs - 1) {
-            var swap = this.equipe[this.joueurSel + 1];
+            let swap = this.equipe[this.joueurSel + 1];
+            let p1:string = this.equipe[this.joueurSel + 1].place;
+            let p0: string = this.equipe[this.joueurSel].place;
+
             this.equipe[this.joueurSel + 1] = this.equipe[this.joueurSel];
             this.equipe[this.joueurSel + 1].place = this.listePlaces[this.joueurSel + 1];
             this.equipe[this.joueurSel] = swap;
-            this.equipe[this.joueurSel].place = this.listePlaces[this.joueurSel];
+            this.equipe[this.joueurSel].place = p0;
+            this.equipe[this.joueurSel+1].place = p1;
             this.joueurSel++;
         }
     }
 
     onAnnulerTap(args: EventData) {
         let button = args.object as Button;
-        this.routerExt.navigate(["preparation"]);
+        this.router.navigate(["preparation"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onValiderTap(args: EventData) {
@@ -169,7 +200,15 @@ export class PlacerComponent{
             } else {
                 SessionAppli.equipeA = equipeFinale;
             }
-            this.routerExt.navigate(["preparation"]);
+            this.router.navigate(["preparation"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }
 
     }
@@ -179,7 +218,7 @@ export class PlacerComponent{
         const titre:string=SessionAppli.titreRencontre + " équipe " + this.clubChoisi.nom;
         const dim:number = SessionAppli.dimEcran - 40;
 
-         this.routerExt.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/placer/" + (this.cote ? "X" : "A")]);
+         this.router.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/placer/" + (this.cote ? "X" : "A")]);
     }
 
     onEquipeLoaded(args: EventData) {

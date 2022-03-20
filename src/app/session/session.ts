@@ -16,7 +16,7 @@
 
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules, Signature } from "../db/RespeqttDAO";
-import { toSQL, bool2SQL, SQL2bool, toHTML } from "../outils/outils";
+import { toSQL, bool2SQL, SQL2bool, toHTML, toURL } from "../outils/outils";
 
 import { Feuille18 } from "./feuille18";    // championnat par équipes départemental Rhone etc
 import { Feuille14 } from "./feuille14";    // championnat par équipes régional et national
@@ -26,7 +26,7 @@ import { Verso }  from "./verso";           // verso de toutes les feuilles
 
 export class SessionAppli {
 
-    public static version = "ns8-1.091b";
+    public static version = "ns8-1.092b";
     public static presentation:boolean = true;
     public static listeRencontres:Array<EltListeRencontre>=[];
     public static recoitCoteX = false;
@@ -282,6 +282,148 @@ export class SessionAppli {
             equipe = [];
         }
         return equipe;
+    }
+
+    private static Encode(j:string):string {
+        let s:string="";
+
+        for(let i = 0; i < j.length; i++) {
+            let c:string;
+            switch(j.charAt(i)) {
+                case '"' : c = ""; break;       // on supprime les ""
+                case '{' : c = "N"; break;
+                case ':' : c = "P"; break;
+                case '[' : c = "Q"; break;
+                case ']' : c = "R"; break;
+                case '}' : c = "S"; break;
+                case ',' : c = "T"; break;
+                case '-' : c = "O"; break;
+                default : c = j.charAt(i).toUpperCase();
+            }
+            s = s + c;
+        }
+
+        return s;
+    }
+
+    private static Decode(j:string):string {
+        let s:string="";
+
+        let c:string;
+        let c0:string = "%";
+        for(let i = 0; i < j.length; i++) {
+            switch(j.charAt(i)) {
+                case 'N' : c = "{"; break;
+                case 'P' : c = ":"; break;
+                case 'Q' : c = "["; break;
+                case 'R' : c = "]"; break;
+                case 'S' : c = "}"; break;
+                case 'T' : c = ","; break;
+                case 'O' : c = "-"; break;
+
+                case 'G' : c = "parties"; break;
+                case 'H' : c = "partie"; break;
+                case 'I' : c = "desc"; break;
+                case 'J' : c = "nbSets"; break;
+                case 'K' : c = "sets"; break;
+                case 'L' : c = "set"; break;
+                case 'M' : c = "score"; break;
+                default :  c = j.charAt(i);
+            }
+            // si on commence un texte ou un nombre ou si on en sort on met un "
+            let an:boolean = c.match(/[A-Za-z0-9\-]/) != null;
+            let an0:boolean = c0.match(/[A-Za-z0-9\-]/) != null;
+
+//            console.log("c0="+c0+", c=" + c + ", an0=" + an0.toString() + ", an=" + an.toString());
+
+            if( (!an0 && an) || (an0 && !an) ) {
+                  s = s + '"';
+            }
+            s = s + c;
+            c0 = c;
+        }
+        return s;
+    }    
+
+    public static ScoresToJSon ():string {
+        let json:string = '{"G":[';
+    
+        // boucler sur les parties
+        for(let i = 0; i< SessionAppli.listeParties.length; i++) {
+            // encoder les / de la description
+            const desc = ListeFormules.getFormule(SessionAppli.formule).desc.substring(i*3, i*3+2);
+            // trop long
+//            const desc = SessionAppli.listeParties[i].joueurA.toString() + "-" + SessionAppli.listeParties[i].joueurX.toString();
+            json = json + '{"H":"' + i
+            + '","I":"' + desc
+            + '","J":"' + SessionAppli.listeParties[i].sets.length
+            + '","K":[';
+            // Coder le résultat des sets en JSON
+            for(let j = 0; j < SessionAppli.listeParties[i].sets.length; j++) {
+                if(j>0) json = json + ","
+                json = json + '{"L":"' + j + '","M":"' + SessionAppli.listeParties[i].sets[j].score  + '"}';
+            }
+            json = json + ']}';
+            if(i+1 < SessionAppli.listeParties.length) {
+                json = json + ',';
+            }
+        }
+        json = json + ']}';
+        console.log("Json = " + json.length.toString() + " caractères");
+        console.log("Json = " + json);
+    
+        return SessionAppli.Encode(json);
+    }
+
+    public static JSonToScores(s:string){
+        // on décode ce qui est reçu pour le remettre en json
+        let json:string = SessionAppli.Decode(s);
+        console.log("json décodé=" + json);
+        let data;
+
+        // récupérer la formule de la rencontre
+        let f:FormuledeRencontre = ListeFormules.getFormule(SessionAppli.formule);
+
+        // analyse du JSON en entrée
+        data = JSON.parse(json);
+        console.log("data.parties.length="+ data.parties.length);
+        for(let i = 0; i < data.parties.length; i++) {
+            // TODO : reconstruire la description de la partie
+            console.log("data.parties[" + i + "].desc="+ data.parties[i].desc);
+            let partie:Partie = new Partie(f, data.parties[i].desc, SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
+            
+            let nbSetsA:number=0;
+            console.log("data.parties[" + i + "].nbSets="+ data.parties[i].nbSets);
+            for(let j=0; j < data.parties[i].nbSets; j++) {
+                console.log("data.parties[" + i + "].sets["+j+"].score="+ data.parties[i].sets[j].score);
+                // extraire les scores de chaque set et les affecter à la partie
+                let set:Set = new Set(data.parties[i].sets[j].score);
+                partie.sets.push(set);
+                if(Set.AVainqueur(set.score)) {
+                    nbSetsA++;
+                }
+            }
+            // score de la partie
+            // TODO : traiter les forfaits
+            SessionAppli.scoreA=0;
+            SessionAppli.scoreX=0;
+            if(nbSetsA >= SessionAppli.nbSetsGagnants) {
+                if(SessionAppli.ptsParVictoire == 1) {
+                    partie.scoreAX = "1-0";
+                } else {
+                    partie.scoreAX = "2-1";
+                }
+                SessionAppli.scoreA++;
+            } else {
+                if(SessionAppli.ptsParVictoire == 1) {
+                    partie.scoreAX = "0-1";
+                } else {
+                    partie.scoreAX = "1-2";
+                }
+                SessionAppli.scoreX++;
+            }
+            SessionAppli.listeParties.push(partie);
+        } 
     }
 
     private static CompleteFeuille(feuille:string, val:string, template:string):string {

@@ -305,6 +305,11 @@ export class QRScanComponent implements OnInit{
                     }
                     this.destination = "signer/" + sig.GetLicence().toString();
                 break;
+                case "SCORES" :
+                    SessionAppli.JSonToScores(result.text);
+                    // retour à la page de consultation des scores
+                    this.destination = "lancement";
+                break;
             }
             // retour à la page appelante
             this.router.navigate([this.destination],
@@ -338,85 +343,7 @@ export class QRScanComponent implements OnInit{
                         curve : "easeIn"
                     }
                 });
-/*
 
-        switch(this.quoi) {
-            case "PARTIE":
-            case "RESULTAT":
-                    if(this.iPartie == 0) {
-                    console.log("Retour vers les actions");
-                    this.router.navigate(["actions"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationRetour, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });            
-                } else {
-                    console.log("Retour vers la saisie du score");
-                    this.router.navigate(["resultat/" + this.iPartie.toString()],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationRetour, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });
-                }
-            break;
-            case "COMPO":
-                console.log("Retour vers la compo des équipes");
-
-                this.router.navigate(["preparation"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
-            break;
-            case "EQUIPE":
-                console.log("Retour vers les actions");
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
-            break;
-            case "DOUBLES":
-                console.log("Retour vers les actions");
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
-                });
-            break;
-            default: console.log("sortie de :" + this.quoi);
-            console.log("Retour vers les actions");
-            this.router.navigate(["actions"],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationRetour, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
-            });
-        }
-    */        
     }
     EnregistreSignatures(sigA:string, sigX:string, lic:number) {
         

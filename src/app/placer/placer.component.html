@@ -7,10 +7,9 @@
     </ActionBar>    
         
     <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
-        <Label class="titre" text="PLACEMENT JOUEURS" flexGrow="0" flexShrink="0"></Label>
-        <Label class = "sous-titre" [text] = "this.clubChoisi.nom" flexGrow="0" fleShrink="1"> </Label>
-        <Label class = "sous-titre" text = "EQUIPE" flexGrow="0" flexShrink="0"> </Label>
-        <ListView [items]="equipe"   (itemTap)="onJoueurTap($event)"  rowheight = "50em" flexGrow="1" flexShrink="1" (loaded)="onEquipeLoaded($event)">
+        <Label class = "titre"      text="PLACEMENT JOUEURS" flexGrow="0" flexShrink="0"></Label>
+        <Label class = "sous-titre" text = "EQUIPE"         flexGrow="0" flexShrink="0"> </Label>
+        <ListView [items]="equipe"   (itemTap)="onJoueurTap($event)"  rowheight = "40em" flexGrow="1" flexShrink="0" (loaded)="onEquipeLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                     <Label [class.odd]="odd" [class.even]="even" [text]="item.place + '/ ' + item.nom + ' ' + item.prenom + ' ' + item.points"
@@ -27,7 +26,18 @@
             <Button text="Capitaine" class="bouton" min-width= "200" width= "1000" flex-grow="1" flexShrink="1" (tap)="onCapitaine($event)"></Button>
             <TextField #tfLic hint="licence" min-width= "200" width= "1000" flexGrow="1" flexShrink="1" secure="false" maxLength="20" keyboardType="number" [(ngModel)]='this.licenceCapitaine'></TextField>
         </FlexboxLayout>
-        <Label [text]="this.capitaine" class = "centree" min-width= "50" width= "1000" flexGrow="0" flexShrink="1"></Label>
+        <Label [text]="this.capitaine" class = "centree" min-width= "50" width= "1000" flexGrow="0" flexShrink="0"></Label>
+
+        <Label class = "sous-titre" text = "Ordre des parties" flexGrow="0" flexShrink="0"> </Label>
+        <ListView [items]="parties"  rowheight = "30em" flexGrow="1" flexShrink="4">
+            <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
+                <StackLayout orientation="vertical" height="25" [class.odd]="odd" [class.even]="even">
+                    <Label [class.odd]="odd" [class.even]="even" [text]="item" >
+                    </Label>
+                </StackLayout>
+            </ng-template>
+        </ListView>
+
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
             <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onAnnulerTap($event)"></Button>
             <Button text="QR CODE" min-width= "50" width= "1000" flex-grow="1" class="bouton" (tap)="onQRCodeTap($event)"></Button>

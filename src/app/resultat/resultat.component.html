@@ -13,7 +13,7 @@
             <Button text="QR Code" flexGrow="1" class="bouton" (tap)="onTapQRCode($event)"></Button>
             <Button text="Scan résultat" flexGrow="1" class="bouton" (tap)="onTapScan($event)"></Button>
         </FlexboxLayout>
-        <Label class="sous-titre" text="Résultats" horizontalAlignment="stretch" flexGrow="0" flexShrink="1"></Label>
+        <Label class="sous-titre" [text]="this.arbitre" horizontalAlignment="stretch" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" alignItems="stretch" flexGrow="1" flexShrink="1">
             <Label class="sets" text="1e set" flexGrow="0.5"></Label>
             <TextField #s1 class="sets" hint="1er set" flexGrow="1" secure="false" maxLength="3" keyboardType="number" [(ngModel)]='this.set1' (blur)="onBlur1($event)"></TextField>

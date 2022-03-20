@@ -50,9 +50,11 @@ export class ActionsComponent implements OnInit {
     actAbandonner:boolean=false;              // si domicile ou extérieur
     actComposerEquipe:boolean=false;          // si extérieur et rencontre choisie
     actComposerDoubles:boolean=false;         // si extérieur et équipe saisie
+    actImporterScores:boolean=false;          // si extérieur et compo des deux équipes renseignée
     actSaisirPartie:boolean=false;            // sauf si à domicile
     actAbandonnerExt:boolean=false;           // si extérieur et rencontre choisie
     actSigner:boolean=false;                  // si extérieur et rencontre choisie
+    actConsulterScores:boolean=false;         // si extérieur et scores existent
 
     constructor(private _routerExtensions: RouterExtensions) {
         this.router = _routerExtensions;
@@ -91,15 +93,6 @@ export class ActionsComponent implements OnInit {
                         SessionAppli.listeRencontres = liste as Array<EltListeRencontre>;
                         console.log("Liste rencontres chargées = " + SessionAppli.listeRencontres.length + " éléments");
                     }    
-                    // positionnement sur un onglet
-                    switch (SessionAppli.domicile) {
-                        case 1 : this.tab = 0;
-                        break;
-                        case 0 : this.tab = 1;
-                        break;
-                        case -1 : this.tab  = 2;
-                    }
-                    console.log("[Montrer l'onglet " + this.tab.toString() + "]");
                     // Chargement des formules
                     ListeFormules.Init();
                     console.log("Liste des formules chargée (" + ListeFormules.tabFormules.length + " formules)");
@@ -127,6 +120,15 @@ export class ActionsComponent implements OnInit {
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
         this.dim = SessionAppli.dimEcran;
         console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api);
+
+        // positionnement sur un onglet
+        switch (SessionAppli.domicile) {
+            case 1 : this.tab = 0;
+            break;
+            case 0 : this.tab = 1;
+            break;
+            case -1 : this.tab  = 2;
+        }
     }  
 
     ActiveBoutons() {
@@ -157,6 +159,12 @@ export class ActionsComponent implements OnInit {
         // composer les doubles
         this.actComposerDoubles = (SessionAppli.domicile == 0) 
                                 && ((SessionAppli.equipeA.length > 0) ||  (SessionAppli.equipeX.length > 0));
+        // importer les scores
+        this.actImporterScores = (SessionAppli.domicile == 0) 
+                                && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0;
+        // consulter les scores
+        this.actConsulterScores = (SessionAppli.domicile == 0) 
+                                && SessionAppli.listeParties.length > 0 && SessionAppli.listeParties.length > 0;
         // saisir une partie
         this.actSaisirPartie = SessionAppli.domicile != 1;
         // abandonner la rencontre en cours
@@ -281,6 +289,9 @@ export class ActionsComponent implements OnInit {
                         this.actComposerDoubles = false;
                         this.actAbandonnerExt = false;
                         this.actSigner = false;
+                        this.actImporterScores = false;
+                        this.actConsulterScores = false;
+
             
                         alert("Rencontre abandonnée");
                     }, error => {
@@ -319,6 +330,9 @@ export class ActionsComponent implements OnInit {
                         this.actComposerDoubles = false;
                         this.actAbandonnerExt = false;
                         this.actSigner = false;
+                        this.actImporterScores = false;
+                        this.actConsulterScores = false;
+
 
                         alert("Rencontre abandonnée");
                     }, error => {
@@ -569,6 +583,75 @@ export class ActionsComponent implements OnInit {
         });
     }
 
+    onPartager(args: EventData) {
+        
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        const quoi:string= SessionAppli.ScoresToJSon();
+        const titre:string="Scores de " + SessionAppli.titreRencontre;
+        const dim:number = SessionAppli.dimEcran - 40;
+
+        // appeler la page d'affichage du QRCode des scores
+
+         this.router.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/actions/aucun"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+
+    }
+
+    onImporter(args: EventData) {
+        
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        if(this.actImporterScores) {
+            // appeler la page de scan des scores
+            this.router.navigate(["qrscan/SCORES/0"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+        }
+    }
+
+
+    onConsulter(args: EventData) {
+        
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        // appeler la page de lancement
+        if(this.actConsulterScores) {
+            this.router.navigate(["lancement"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+        }
+
+    }
+
     onPartie(args: EventData) {
         
         // préparation de la session
@@ -590,7 +673,7 @@ export class ActionsComponent implements OnInit {
     }
 
     onSigner(args:Event) {
-        // appeler la page des rencontres
+        // appeler la page de signature
         this.router.navigate(["../signer/MONTRER"],
         {
             animated:true,

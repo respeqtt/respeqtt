@@ -38,6 +38,7 @@ export class CompoComponent{
     routerExt: RouterExtensions;
     equipe:Array<EltListeLicencie> = [];
     modeRencontre:boolean = SessionAppli.modeRencontre;
+    actScanner:boolean=true;
     version:string;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {

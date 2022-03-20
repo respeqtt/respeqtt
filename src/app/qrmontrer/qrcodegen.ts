@@ -102,8 +102,8 @@ import { Canvas, Paint, createRect } from '@nativescript-community/ui-canvas';
 					break;  // This version number is found to be suitable
 				}
                 if (version >= maxVersion) {  // All versions in the range could not fit the given data
-                    alert("Data too long");
-                    throw "Data too long";
+                    alert("Data too long (" + usedBits + "> " + dataCapacityBits + ")");
+                    throw "Data too long (" + usedBits + "> " + dataCapacityBits + ")";
                 }
             }
 

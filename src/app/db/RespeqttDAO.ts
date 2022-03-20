@@ -163,6 +163,7 @@ export class FormuledeRencontre {
     desc:string;        // description des parties
     joueursA:string;    // liste des lettres des joueurs coté A
     joueursX:string;    // liste des lettres des joueurs coté X
+    arbitres:string;    // liste des lettres des joueurs proposés pour arbitrer
     nbDoubles:number;   // nb de doubles à disputer
     nbJoueurs:number;   // nb de joueurs par équipe
 
@@ -171,6 +172,7 @@ export class FormuledeRencontre {
         this.desc = f.desc
         this.joueursA = f.joueursA;
         this.joueursX = f.joueursX;
+        this.arbitres = f.arbitres;
         this.nbDoubles = f.nbDoubles;
         this.nbJoueurs = f.nbJoueurs;
     }
@@ -731,6 +733,36 @@ export class Licencie{
     }
 };
 
+// renvoie le joueur qui correspond à la lettre
+export function getJoueur(lettre:string):EltListeLicencie {
+    switch(lettre) {
+        case "A" : return SessionAppli.equipeA[0];
+        case "B" : if(SessionAppli.formule > 1) return SessionAppli.equipeA[1];
+        case "C" : if(SessionAppli.formule > 5) return SessionAppli.equipeA[2];
+                   else return null;
+        case "D" : if(SessionAppli.formule > 5) return SessionAppli.equipeA[3];
+                   else return null;
+        case "W" : if(SessionAppli.formule > 5) return SessionAppli.equipeX[0];
+                   else return null;
+        case "X" : switch(SessionAppli.formule) {
+                            case 5:  return SessionAppli.equipeX[0];
+                            case 14: return SessionAppli.equipeX[1];
+                            case 18: return SessionAppli.equipeX[1];
+                            default: return null;
+                    }
+        case "Y" : switch(SessionAppli.formule) {
+                        case 5:  return SessionAppli.equipeX[1];
+                        case 14: return SessionAppli.equipeX[2];
+                        case 18: return SessionAppli.equipeX[2];
+                        default: return null;
+                   }
+        case "Z" : if(SessionAppli.formule > 5) return SessionAppli.equipeX[3];
+                   else return null;
+        default  : console.log("Joueur >" + lettre + "< pas trouvé");
+        return null;
+    }
+}
+
 export class Partie{
     id:number;                  // clé
     joueurA:number;             // numéro de licence joueur de l'équipe A ; 2 numéros séparés par la virgule pour les doubles
@@ -900,6 +932,7 @@ export class Partie{
         return true;
     }
 
+    // Convertit le score d'une partie en JSON
     ScoreToJSon (numPartie:number, numRencontre:number):string {
         let json:string;
 
@@ -1096,6 +1129,7 @@ export class Partie{
 };
 
 
+
 export class Set{
     numSet:number;
     score:string;
@@ -1229,6 +1263,7 @@ export class ListeFormules {
                 "desc": "AX",
                 "joueursA": "A",
                 "joueursX": "X",
+                "arbitres": "",
                 "nbDoubles":"0",
                 "nbJoueurs":"1"
             },
@@ -1237,6 +1272,7 @@ export class ListeFormules {
                 "desc": "AX",
                 "joueursA": "A",
                 "joueursX": "X",
+                "arbitres": "",
                 "nbDoubles":"0",
                 "nbJoueurs":"1"
             },
@@ -1245,6 +1281,7 @@ export class ListeFormules {
                 "desc": "AX BY 11 AY BX",
                 "joueursA": "A B",
                 "joueursX": "X Y",
+                "arbitres": "B X - B Y",
                 "nbDoubles":"1",
                 "nbJoueurs":"2"
             },
@@ -1253,6 +1290,7 @@ export class ListeFormules {
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 AY CW DX BZ",
                 "joueursA": "A B C D",
                 "joueursX": "W X Y Z",
+                "arbitres": "D Z B W C Z A X - - D X A Y",
                 "nbDoubles":"2",
                 "nbJoueurs":"4"
             },
@@ -1261,6 +1299,7 @@ export class ListeFormules {
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ",
                 "joueursA": "A B C D",
                 "joueursX": "W X Y Z",
+                "arbitres": "D Z B W C Z A X - - B Y D X B Z C W",
                 "nbDoubles":"2",
                 "nbJoueurs":"4"
             }

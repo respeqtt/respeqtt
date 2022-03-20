@@ -38,7 +38,8 @@ export class PreparationComponent{
     recoitCoteX:boolean
     titreRencontre:string;
     modif:boolean=false;
-    resValid:boolean=false;
+    actValider:boolean=false;
+    actReserve:boolean=false;
     switchActif:boolean=false;
     router:RouterExtensions;
     btnResA:string;
@@ -51,6 +52,8 @@ export class PreparationComponent{
     carton:couleur=null;
     cartonsActifs:boolean=true;
     version:string;
+    valEqA:boolean=false;
+    valEqX:boolean=false;
 
     tf:TextField=null;
 
@@ -110,6 +113,7 @@ export class PreparationComponent{
             this.listeEquipeX.push(SessionAppli.equipeX[i]);
         }
 
+
         // Trace de la date et de l'heure de la rencontre
         console.log("Date heure de la rencontre :" + SessionAppli.date);
 
@@ -121,12 +125,22 @@ export class PreparationComponent{
             this.EchangerCotes();
         }
 
+        // on valide les boutons QRCode si équipe chargée
+        if(SessionAppli.equipeA.length > 0) {
+            this.valEqA = true;
+        }
+        if(SessionAppli.equipeX.length > 0) {
+            this.valEqX = true;
+        }
+
         this.modif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
         this.switchActif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
-        this.resValid = (SessionAppli.modeRencontre && !SessionAppli.compoFigee) && !SessionAppli.scoreValide;
+        this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide) 
+                        || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
+        this.actReserve = (SessionAppli.domicile == 1) && !(SessionAppli.listeParties.length > 0);
         this.cartonsActifs = !SessionAppli.scoreValide;
 
-        console.log("resValid=" + this.resValid.toString());
+        console.log("actValider=" + this.actValider.toString());
     }
 
     ngOnInit(): void {
@@ -193,7 +207,7 @@ export class PreparationComponent{
         // mémoriser le lieu s'il a été saisi
         SessionAppli.lieu = this.lieu;
         // Ouvrir la page de saisie des réserves
-        if(this.resValid) {
+        if(this.actReserve) {
             // ouverture en saisie
             this.router.navigate(["saisiecommentaire/RESERVE/A/preparation"],
             {
@@ -222,7 +236,7 @@ export class PreparationComponent{
         let button = args.object as Button;
         // mémoriser le lieu s'il a été saisi
         SessionAppli.lieu = this.lieu;
-        if(this.resValid) {
+        if(this.actReserve) {
             // ouverture en saisie
             this.router.navigate(["saisiecommentaire/RESERVE/X/preparation"],
             {
@@ -276,10 +290,10 @@ export class PreparationComponent{
                 }
                 SessionAppli.lieu = this.lieu;
                 // désactiver les boutons
-                this.modif = !SessionAppli.compoFigee;
-                this.switchActif = !SessionAppli.compoFigee;
-                this.resValid = !SessionAppli.compoFigee;
-            }
+                this.modif = false;
+                this.switchActif = false;
+                this.actValider = false;
+    }
 
             // sauvegarder la session en BDD
             SessionAppli.Persiste().then(cr => {
@@ -443,6 +457,40 @@ export class PreparationComponent{
 
         // affichage
         alert("Equipe A:\n" + texteA + "\nEquipe X:\n" + texteX);
+    }
+
+    onQRCodeA(args: EventData) {
+        // montrer le QRCode de l'équipe A
+        const quoi:string= SessionAppli.EquipetoJSon(SessionAppli.equipeA, SessionAppli.clubA.id, SessionAppli.capitaineA.id, SessionAppli.formule);
+        const titre:string=SessionAppli.titreRencontre + " équipe " + SessionAppli.clubA.nom;
+        const dim:number = SessionAppli.dimEcran - 40;
+
+         this.router.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/preparation/aucun"],
+         {
+             animated:true,
+             transition: {
+                 name : SessionAppli.animationAller, 
+                 duration : 380,
+                 curve : "easeIn"
+             }
+         });
+    }
+
+    onQRCodeX(args: EventData) {
+        // montrer le QRCode de l'équipe X
+        const quoi:string= SessionAppli.EquipetoJSon(SessionAppli.equipeX, SessionAppli.clubX.id, SessionAppli.capitaineX.id, SessionAppli.formule);
+        const titre:string=SessionAppli.titreRencontre + " équipe " + SessionAppli.clubX.nom;
+        const dim:number = SessionAppli.dimEcran - 40;
+
+         this.router.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/preparation/aucun"],
+         {
+             animated:true,
+             transition: {
+                 name : SessionAppli.animationAller, 
+                 duration : 380,
+                 curve : "easeIn"
+             }
+         });
     }
 
     // Fermer

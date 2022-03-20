@@ -41,21 +41,27 @@
                 </ng-template>
             </ListView>
         </FlexboxLayout>
+
+        <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
+            <Button text="QRCODE A" class="bouton" flexGrow="1" flexShrink="1" (tap)="onQRCodeA($event)" [isenabled]="this.valEqA"></Button>
+            <Button text="QRCODE X"  class="bouton" flexGrow="1" flexShrink="1" (tap)="onQRCodeX($event)"[isenabled]="this.valEqX"></Button>
+        </FlexboxLayout>
+
         <FlexboxLayout height = "60" min-height = "60" flexDirection="row" flexGrow="0" flexShrink="1" justifyContent="space-between">
             <Label class="normal" text="Lieu" flexGrow="0.2" flexShrink="1"></Label>
             <TextField style.margin="0" style.padding="0" class="lieu" hint="Lieu de la rencontre" flexGrow="1" flexShrink="1" secure="false" maxLength="40" [text]='this.lieu'
-                    [visibility]="(this.resValid ? 'visible' : 'collapse')"  (focus)="onFocusLieu($event)" (blur)="onBlurLieu($event)">
+                    [visibility]="(this.actValider ? 'visible' : 'collapse')"  (focus)="onFocusLieu($event)" (blur)="onBlurLieu($event)">
             </TextField>
-        <TextView class="lieu" [text]="this.lieu" flexGrow="1" flexShrink="1" secure="false" maxLength="20"
-                         [visibility]="(this.resValid ? 'collapse' : 'visible')"  [isenabled]="this.resValid">
+            <TextView class="lieu" [text]="this.lieu" flexGrow="1" flexShrink="1" secure="false" maxLength="20"
+                         [visibility]="(this.actValider ? 'collapse' : 'visible')"  [isenabled]="this.actValider">
             </TextView>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button [text]="this.btnResA" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveA($event)"></Button>
-            <Button [text]="this.btnResX" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveX($event)"></Button>
+            <Button [text]="this.btnResA" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveA($event)" [isenabled]="this.actReserve"></Button>
+            <Button [text]="this.btnResX" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveX($event)" [isenabled]="this.actReserve"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button text="VALIDER" class="bouton" flexGrow="1" flexShrink="1" (tap)="onValiderFeuille($event)" [isenabled]="this.resValid"></Button>
+            <Button text="VALIDER" class="bouton" flexGrow="1" flexShrink="1" (tap)="onValiderFeuille($event)" [isenabled]="this.actValider"></Button>
             <Button text="FERMER"  class="bouton" flexGrow="1" flexShrink="1" (tap)="onFermer($event)"></Button>
         </FlexboxLayout>
     </FlexboxLayout>
