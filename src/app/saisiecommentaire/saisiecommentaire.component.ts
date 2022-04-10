@@ -223,8 +223,16 @@ export class SaisieCommentaireComponent {
 
     onTapClose(args: EventData) {
         let button = args.object as Button;
-        // fermer et revenir à la page précédente
-        this.router.backToPreviousPage();
+        // retour à la page appelante
+        this.router.navigate([this.retour],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
     }
 
 }

@@ -19,7 +19,7 @@ import { Page, Button, EventData, ListView, ItemEventData } from "@nativescript/
 import { RouterExtensions } from "@nativescript/angular";
 import { ActivatedRoute } from "@angular/router";
 
-import { EltListeRencontre, Rencontre, Club, ListeFormules } from "../db/RespeqttDAO";
+import { EltListeRencontre, Rencontre, Club, ListeFormules, Licencie, Respeqtt } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
 import { Mobile } from "../outils/outils";
@@ -53,12 +53,54 @@ export class ChoixRencontreComponent {
 
         this.titre = "CHOIX DE LA RENCONTRE";
         this.sousTitre = "dans la liste ci-dessous";
-        Rencontre.getListe().then(liste => {
+
+        let moi:Licencie;
+        let dom:boolean = (SessionAppli.tab == 0);
+        SessionAppli.domicile = dom ? 1 : 0;
+
+        console.log((dom? "A domicile" : "A l'extérieur"));
+
+        // retrouver le joueur propriétaire du téléphone et son club
+        Licencie.getLic(Respeqtt.GetLicence()).then(joueur => {
+            if(joueur) {
+                moi = joueur as Licencie;
+                console.log("moi=" + moi.nom + " " + moi.prenom + ", mon club=" + moi.club.toString());
+                // rechercher les rencontres du club à domicile ou à l'extérieur selon la valeur de dom
+                Rencontre.getListeDom(moi.club, dom).then(liste => {
+                    var r:EltListeRencontre;
+                    this.listeRencontres = liste as Array<EltListeRencontre>;
+                }, error => {
+                    console.log("Impossible de lire la liste des rencontres : " + error.toString());
+                });
+            } else {
+                SessionAppli.tab = 2; 
+                alert("Vous n'avez renseigné aucune rencontre à " + (dom ? "domicile." : "l'extérieur."));
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            }
+        }, error => {
+            console.log("Impossible de récupérer le joueur demandé : " + error.toString());
+        });
+
+        if(SessionAppli.tab == 0) {
+            // rencontre à domicile
+        } else {
+            // rencontre à l'extérieur
+        }
+/*        Rencontre.getListe().then(liste => {
             var r:EltListeRencontre;
             this.listeRencontres = liste as Array<EltListeRencontre>;
         }, error => {
             console.log("Impossible de lire la liste des rencontres : " + error.toString());
         });
+*/
     }
 
     // Charge la liste des rencontres pour affichage
@@ -111,12 +153,6 @@ export class ChoixRencontreComponent {
                     // calculer le nb de pts par victoire
                     SessionAppli.ptsParVictoire = this.CalculePtsParVictoire(r);
                     console.log(SessionAppli.ptsParVictoire + " pt/victoire");
-                    // domicile ou extérieur
-                    if(SessionAppli.tab == 0) {
-                        SessionAppli.domicile = 1;
-                    } else {
-                        SessionAppli.domicile = 0;
-                    }
                     console.log("NbJoueurs = " + SessionAppli.nbJoueurs);
                     // récupérer le club 1 placé en A en attendant de savoir
                     Club.getClub(r.club1).then(club => {

@@ -20,6 +20,7 @@ import { SessionAppli } from "../session/session";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { toURL } from "../outils/outils";
+import { EltListeLicencie, Respeqtt, Signature } from "../db/RespeqttDAO";
 
 var dialogs = require("@nativescript/core/ui/dialogs");
 
@@ -42,6 +43,8 @@ export class ValiderComponent{
     btnRecX:string;
     scoreA:string;
     scoreX:string;
+    signatureDomicile:string;
+    signatureExterieur:string;
 
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
@@ -58,6 +61,14 @@ export class ValiderComponent{
         this.scoreA = SessionAppli.scoreA.toString();
         this.scoreX = SessionAppli.scoreX.toString();
 
+        if(SessionAppli.recoitCoteX) {
+            this.signatureDomicile = "Signature " + SessionAppli.clubX.nom;
+            this.signatureExterieur = "Signature " + SessionAppli.clubA.nom;
+        } else {
+            this.signatureDomicile = "Signature " + SessionAppli.clubA.nom;
+            this.signatureExterieur = "Signature " + SessionAppli.clubX.nom;
+        }
+
         if(SessionAppli.reclamationClubA == "") {
             this.btnRecA = "0 réclamation club A";
         } else {
@@ -70,10 +81,27 @@ export class ValiderComponent{
         }
     }
 
+
+    onSignatureExt(args: EventData) {
+        let button = args.object as Button;
+        // Demander la signature du capitaine adverse
+        this.router.navigate(["signer/FAIRE_SIGNER"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
+
+    }
+
+
     onReclamA(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.router.navigate(["saisiecommentaire/RECLAMATION/A/valider" + toURL("/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX)],
+        this.router.navigate(["saisiecommentaire/RECLAMATION/A/valider"],
         {
             animated:true,
             transition: {
@@ -88,7 +116,7 @@ export class ValiderComponent{
     onReclamX(args: EventData) {
         let button = args.object as Button;
         // Ouvrir la page de saisie des réclamations
-        this.router.navigate(["saisiecommentaire/RECLAMATION/X/valider" + toURL("/" + SessionAppli.scoreA + "/" + SessionAppli.scoreX)],
+        this.router.navigate(["saisiecommentaire/RECLAMATION/X/valider"],
         {
             animated:true,
             transition: {
@@ -115,22 +143,49 @@ export class ValiderComponent{
 
     onValider(args: EventData) {
         let button = args.object as Button;
+        let alerte:string="";
+
+        // signature du club qui reçoit
+        let cap:EltListeLicencie = SessionAppli.recoitCoteX ? SessionAppli.capitaineX : SessionAppli.capitaineA;
+        if(Respeqtt.GetLicence() != cap.id) {
+            // ce n'est pas la signature du capitaine             
+            alert("Feuille non signée, pas de transmission possible à SPID.");
+        } else {
+            if(SessionAppli.recoitCoteX) {
+                SessionAppli.signatureX = Respeqtt.GetSignature();
+            } else {
+                SessionAppli.signatureA = Respeqtt.GetSignature();
+            }
+            alert("Feuille signée");
+        }       
+
+        // Vérifier la présence des signatures
+        let sigExt:string = SessionAppli.recoitCoteX ? SessionAppli.signatureA : SessionAppli.signatureX;
+        if(sigExt.length < 10) {
+            alerte = "Le club " + (SessionAppli.recoitCoteX ? SessionAppli.clubA.nom : SessionAppli.clubX.nom) + "  n'a pas signé la feuille.\n\n";
+        }
 
         // Demander confirmation
         dialogs.prompt({title:"Confirmation",
-        message:"Etes vous sûr de valider la rencontre ?",
+        message:alerte + "Etes vous sûr de valider la rencontre ?",
         okButtonText:"VALIDER",
         cancelButtonText:"ANNULER"
         }).then(r => {
-            // Demander la signature du capitaine adverse
-            this.router.navigate(["signer/FAIRE_SIGNER"],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationAller, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
+            SessionAppli.scoreValide = true;
+            // mémoriser la session
+            SessionAppli.Persiste().then(cr => {
+                // retour à la page des actions
+                this.router.navigate(["actions"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+            }, error => {
+                console.log("Impossible de persister la session : " + error);
             });
         });
     }

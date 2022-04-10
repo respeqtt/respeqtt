@@ -19,7 +19,7 @@ import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray
 import { ActivatedRoute } from "@angular/router";
 import { ElementRef, ViewChild } from "@angular/core";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre, Respeqtt } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 import { TextField } from "@nativescript/core";
@@ -44,6 +44,7 @@ export class PlacerComponent{
     licenceCapitaine:number=null;
     version:string;
     actValider:boolean=true;
+    actCapitaine:boolean=true;
 
     tf:TextField=null;              // pour récupérer le textfield de la licence
 
@@ -118,12 +119,60 @@ export class PlacerComponent{
             console.log(s);
             this.parties.push(s);
         }
+
+        // si on est à domicile ou à l'extérieur, renseigner le capitaine avec la licence du téléphone
+        if((SessionAppli.tab == 0 && ((this.cote && SessionAppli.recoitCoteX) || (!this.cote && !SessionAppli.recoitCoteX)))
+        || (SessionAppli.tab == 1 && ((this.cote && !SessionAppli.recoitCoteX) || (!this.cote && SessionAppli.recoitCoteX)))
+          ) {
+            this.actCapitaine = false;
+            this.licenceCapitaine = Respeqtt.GetLicence();
+            // recherche du nom dans l'équipe
+            let i:number=0;
+            let trouve:boolean = false;
+            while (!trouve && i < this.equipe.length) {
+                if(this.equipe[i].id == this.licenceCapitaine) {
+                    trouve = true;
+                    this.capitaine = this.equipe[i].nom + " " + this.equipe[i].prenom;
+                    alert("Capitaine de " + this.clubChoisi.nom + " = " + this.capitaine);
+                }
+                i++;
+            }
+            if(!trouve) {
+                this.capitaine = "(pas dans l'équipe)";
+                alert("Licence du capitaine de " + this.clubChoisi.nom + " : " + this.licenceCapitaine.toString());
+            }
+            Licencie.get(this.licenceCapitaine, this.clubChoisi.id).then(j =>{
+                if(j) {
+                    if(this.cote) {
+                        SessionAppli.capitaineX = j as EltListeLicencie;
+                        this.capitaine = SessionAppli.capitaineX.nom + " " + SessionAppli.capitaineX.prenom;
+                    } else {
+                        SessionAppli.capitaineA = j as EltListeLicencie;
+                        this.capitaine = SessionAppli.capitaineA.nom + " " + SessionAppli.capitaineA.prenom;
+                        }
+                    } else {
+                        alert("Licence " + this.licenceCapitaine + " inconnue pour le club " + this.clubChoisi.nom);
+                        this.licenceCapitaine = null;
+                        this.capitaine = "";
+                        if(this.cote) {
+                            SessionAppli.capitaineX = null;
+                        } else {
+                            SessionAppli.capitaineA = null;
+                        }
+                    }
+            }, error => {alert("Erreur :" + error.toString())
+            });
+        }
     }
 
 
     
     ngAfterViewInit() {
         this.tf = this.tfLic.nativeElement;     // mémoriser le textField dans le composant (cf onCapitaine)
+        if(this.licenceCapitaine > 0) {
+            this.tf.text = this.licenceCapitaine.toString();
+        }
+
     } 
 
     ngOnInit(args: EventData): void {
@@ -188,12 +237,12 @@ export class PlacerComponent{
             this.licenceCapitaine = Number(this.tf.text);
 
             // trier les joueurs dans l'ordre des places
-            var equipeFinale:Array<EltListeLicencie> = [];
-            for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
+            let equipeFinale:Array<EltListeLicencie> = [];
+            for(let i = 0; i < SessionAppli.nbJoueurs; i++) {
                 equipeFinale.push(this.equipe[i]);
             }
             // tracer le json
-            console.log("Equipe= " + SessionAppli.EquipetoJSon(this.equipe, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
+            console.log("Equipe= " + SessionAppli.EquipetoJSon(equipeFinale, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
 
             if(this.cote) {
                 SessionAppli.equipeX = equipeFinale;

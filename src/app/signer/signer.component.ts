@@ -79,8 +79,41 @@ export class SignerComponent{
                 });
             break;
             case "MONTRER" :            // montrer le QRCode de la signature
+                let cap:number;
                 // vérifier qu'on est bien le capitaine qui se déplace
-                let cap:number = SessionAppli.recoitCoteX ? SessionAppli.capitaineA.id : SessionAppli.capitaineX.id;
+                if(SessionAppli.recoitCoteX) {
+                    // capitaine A
+                    if(SessionAppli.capitaineA) {
+                        cap =  SessionAppli.capitaineA.id;
+                    } else {
+                        alert("Le capitaine de l'équipe A n'a pas été renseigné (Menu 'Composer son équipe')");
+                        this.router.navigate(["actions"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationRetour, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
+                    }
+                } else {
+                    // capitaine X
+                    if(SessionAppli.capitaineX) {
+                        cap =  SessionAppli.capitaineX.id;
+                    } else {
+                        alert("Le capitaine de l'équipe X n'a pas été renseigné (Menu 'Composer son équipe')");
+                        this.router.navigate(["actions"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationRetour, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
+                    }
+                }
                 if(cap != Respeqtt.GetLicence()) {
                     alert("La licence du téléphone (" + Respeqtt.GetLicence().toString() + ") ne correspond pas à celle du capitaine : " + cap);
                     this.router.navigate(["actions"],

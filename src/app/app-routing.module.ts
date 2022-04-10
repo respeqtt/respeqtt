@@ -59,7 +59,7 @@ const routes: Routes = [
   { path: "rencontre", component: RencontreComponent },
   { path: "resultat/:partie", component: ResultatComponent },
   { path: "saisiecommentaire/:quoi/:auteur/:retour", component: SaisieCommentaireComponent },    // quoi = RESERVE ou RECLAMATION ou RAPPORT ; auteur = club ou JA ; retour = page d'appel
-  { path: "signer/:quoi", component: SignerComponent },   // quoi = MONTRER ou FAIRE_SIGNER si pas signé, num licence si signé
+  { path: "signer/:quoi", component: SignerComponent },   // quoi = MONTRER ou FAIRE_SIGNER ou numéro de licence
   { path: "valider", component: ValiderComponent }
 ]
 

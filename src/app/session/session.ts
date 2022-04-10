@@ -1001,10 +1001,10 @@ export class SessionAppli {
                 // insertion des équipes
                 if(SessionAppli.equipeA.length > 0) {
                     Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeA, false);
-                    console.log("Equipe A persistée");
+                    console.log("Equipe A persistée : " + SessionAppli.equipeA.length + " joueurs");
                     if(SessionAppli.equipeX.length > 0) {
                         Compo.PersisteEquipe(SessionAppli.rencontreChoisie, SessionAppli.equipeX, true);
-                        console.log("Equipe X persistée");
+                        console.log("Equipe X persistée : " + SessionAppli.equipeX.length + " joueurs");
                         // insertion des parties
                         if(SessionAppli.listeParties.length > 0) {
                             Partie.PersisteListeParties(SessionAppli.rencontreChoisie, SessionAppli.listeParties);
@@ -1155,12 +1155,19 @@ export class SessionAppli {
                 del = "delete from Partie where par_ren_kn = " + rencontre;
                 RespeqttDb.db.execSQL(del).then(id => {
                     console.log("Parties de la rencontre " + rencontre + " effacées de la BDD");
-                    del = "delete from Session where ses_ren_kn = " + rencontre;
+                    del = "delete from compo where cpo_ren_kn = " + rencontre;
                     RespeqttDb.db.execSQL(del).then(id => {
-                        console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
-                        resolve(true);
+                        console.log("Coposition des équipes de la rencontre " + rencontre + " effacée de la BDD");
+                        del = "delete from Session where ses_ren_kn = " + rencontre;
+                        RespeqttDb.db.execSQL(del).then(id => {
+                            console.log("Session de la rencontre " + rencontre + " effacée de la BDD");
+                            resolve(true);
+                        }, error => {
+                            console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                            reject(error);
+                        });
                     }, error => {
-                        console.log("Impossible d'effacer la session de la rencontre " + rencontre + " en BDD", error);
+                        console.log("Impossible d'effacer la composition des équipes de la rencontre " + rencontre + " en BDD", error);
                         reject(error);
                     });
                 }, error => {

@@ -114,7 +114,6 @@ export class ActionsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         // calcul de la largeur de l'écran
         let mobile:Mobile= new Mobile;
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
@@ -122,12 +121,17 @@ export class ActionsComponent implements OnInit {
         console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api);
 
         // positionnement sur un onglet
-        switch (SessionAppli.domicile) {
-            case 1 : this.tab = 0;
-            break;
-            case 0 : this.tab = 1;
-            break;
-            case -1 : this.tab  = 2;
+        console.log("Tab=" + SessionAppli.tab.toString());
+        if(SessionAppli.tab < 0) {
+            switch (SessionAppli.domicile) {
+                case 1 : this.tab = 0;
+                break;
+                case 0 : this.tab = 1;
+                break;
+                case -1 : this.tab  = 2;
+            }
+        } else {
+            this.tab = SessionAppli.tab;
         }
     }  
 
@@ -169,8 +173,18 @@ export class ActionsComponent implements OnInit {
         this.actSaisirPartie = SessionAppli.domicile != 1;
         // abandonner la rencontre en cours
         this.actAbandonnerExt = (SessionAppli.domicile == 0) && (SessionAppli.rencontreChoisie != -1);
-        // signer la feuille
-        this.actSigner = (SessionAppli.domicile == 0) && (SessionAppli.rencontreChoisie != -1);
+        // signer la feuille : on a choisi le capitaine de l'équipe qui se déplace
+        console.log("CapitaineA =" + (SessionAppli.capitaineA != null).toString());
+        console.log("CapitaineX =" + (SessionAppli.capitaineX != null).toString());
+        if(SessionAppli.recoitCoteX && SessionAppli.capitaineA != null) {
+            this.actSigner = (SessionAppli.domicile == 0) && (SessionAppli.rencontreChoisie != -1) && SessionAppli.capitaineA.id > 0;
+        }else {
+            if(!SessionAppli.recoitCoteX && SessionAppli.capitaineX != null) {
+            this.actSigner = (SessionAppli.domicile == 0) && (SessionAppli.rencontreChoisie != -1) && SessionAppli.capitaineX.id > 0;
+            } else {
+                this.actSigner = false;
+            }
+        }
         // page d'aide
         this.aide = this.pageAide('aide');
 

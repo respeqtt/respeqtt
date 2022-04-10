@@ -23,7 +23,7 @@
             <Button class="bouton" text="&#xf13a;" class="fas" min-width= "100" width= "1000" flex-grow="1" (tap)="onDown($event)"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="Capitaine" class="bouton" min-width= "200" width= "1000" flex-grow="1" flexShrink="1" (tap)="onCapitaine($event)"></Button>
+            <Button text="Capitaine" class="bouton" min-width= "200" width= "1000" flex-grow="1" flexShrink="1" (tap)="onCapitaine($event)" [isenabled]="actCapitaine"></Button>
             <TextField #tfLic hint="licence" min-width= "200" width= "1000" flexGrow="1" flexShrink="1" secure="false" maxLength="20" keyboardType="number" [(ngModel)]='this.licenceCapitaine'></TextField>
         </FlexboxLayout>
         <Label [text]="this.capitaine" class = "centree" min-width= "50" width= "1000" flexGrow="0" flexShrink="0"></Label>

@@ -11,7 +11,7 @@
         <Label class="sous-titre" [text]="this.titreRencontre" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
             <Label class = "switch-label" [text]="this.clubA" flexGrow="1" flexShrink="1"></Label>
-            <Switch checked="false" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" [isenabled]="this.switchActif"></Switch>
+            <Switch [checked]="recoitCoteX" (checkedChange)="onCheckedChange($event)"  flexGrow="0" flexShrink="0" [isenabled]="this.switchActif"></Switch>
             <Label class = "switch-label" [text]="this.clubX" flexGrow="1" flexShrink="1"></Label>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1" [visibility]="(this.modif ? 'visible' : 'collapsed')">
@@ -57,8 +57,8 @@
             </TextView>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
-            <Button [text]="this.btnResA" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveA($event)" [isenabled]="this.actReserve"></Button>
-            <Button [text]="this.btnResX" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveX($event)" [isenabled]="this.actReserve"></Button>
+            <Button id="btnReservesA" [text]="this.btnResA" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveA($event)" [isenabled]="this.actReserve"></Button>
+            <Button id="btnReservesX" [text]="this.btnResX" class="bouton" flexGrow="1" flexShrink="1" width= "1000" min-width="100" (tap)="onReserveX($event)" [isenabled]="this.actReserve"></Button>
         </FlexboxLayout>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="1">
             <Button text="VALIDER" class="bouton" flexGrow="1" flexShrink="1" (tap)="onValiderFeuille($event)" [isenabled]="this.actValider"></Button>

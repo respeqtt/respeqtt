@@ -14,7 +14,7 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, ChangeDetectionStrategy } from "@angular/core";
+import { Component, ChangeDetectionStrategy, ElementRef, ViewChild } from "@angular/core";
 import { Button, EventData, Switch, ItemEventData, TextField } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
@@ -42,8 +42,8 @@ export class PreparationComponent{
     actReserve:boolean=false;
     switchActif:boolean=false;
     router:RouterExtensions;
-    btnResA:string;
-    btnResX:string;
+    txtBtnResA:string;
+    txtBtnResX:string;
     clubA:string;
     clubX:string;
     listeEquipeA:Array<EltListeLicencie>=[];
@@ -54,34 +54,36 @@ export class PreparationComponent{
     version:string;
     valEqA:boolean=false;
     valEqX:boolean=false;
+    btnResA:string;
+    btnResX:string;
 
     tf:TextField=null;
+
 
 
     private MajLibBoutonsReserves() {
         if(SessionAppli.reserveClubA == "") {
             this.btnResA = "0 réserve club A";
         } else {
-            this.btnResA = "1 réserve club A";
+            this.btnResA = "Réserve(s) club A";
         }
         if(SessionAppli.reserveClubX == "") {
             this.btnResX = "0 réserve club X";
         } else {
-            this.btnResX = "1 réserve club X";
+            this.btnResX = "Réserve(s) club X";
         }
-
     }
 
     constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+
         // version logicielle
         this.version = SessionAppli.version;
 
         this.router = routerExtensions;
-        this.recoitCoteX=false;
+        this.recoitCoteX=SessionAppli.recoitCoteX;
         this.titreRencontre = SessionAppli.titreRencontre;
         console.log("Rencontre : " + this.titreRencontre);
 
-        this.MajLibBoutonsReserves();
 
         // si rencontre de travail alors club A = club choisi
         if(SessionAppli.rencontreChoisie) {
@@ -112,7 +114,8 @@ export class PreparationComponent{
         for(var i = 0; i < SessionAppli.equipeX.length; i++) {
             this.listeEquipeX.push(SessionAppli.equipeX[i]);
         }
-
+        // Renseigne les boutons des réserves
+        this.MajLibBoutonsReserves();
 
         // Trace de la date et de l'heure de la rencontre
         console.log("Date heure de la rencontre :" + SessionAppli.date);
@@ -135,15 +138,15 @@ export class PreparationComponent{
 
         this.modif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
         this.switchActif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
-        this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide) 
-                        || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
+        this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide);
+//                        || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
         this.actReserve = (SessionAppli.domicile == 1) && !(SessionAppli.listeParties.length > 0);
         this.cartonsActifs = !SessionAppli.scoreValide;
 
         console.log("actValider=" + this.actValider.toString());
     }
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
     }
 
     private EchangerCotes() {
@@ -177,6 +180,11 @@ export class PreparationComponent{
         for(var i = 0; i < SessionAppli.equipeX.length; i++) {
             this.listeEquipeX.push(SessionAppli.equipeX[i]);
         }
+        // validité des équipes
+        let v:boolean;
+        v = this.valEqA;
+        this.valEqA = this.valEqX;
+        this.valEqX = v;
 
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
 
@@ -185,6 +193,7 @@ export class PreparationComponent{
     onCheckedChange(args: EventData) {
         let sw = args.object as Switch;
         this.recoitCoteX = sw.checked; // boolean
+        SessionAppli.recoitCoteX = sw.checked; // boolean
 
         this.EchangerCotes();
     }
@@ -495,9 +504,16 @@ export class PreparationComponent{
 
     // Fermer
     onFermer(args: EventData) {
-        // mémoriser le lieu saisi (ou pas)
-        console.log("Lieu =" + this.lieu);
-        SessionAppli.lieu = this.lieu;
+        // on efface tout si rien n'a été saisi
+        if(SessionAppli.equipeA.length == 0 && SessionAppli.equipeX.length == 0) {
+            SessionAppli.titreRencontre = "";
+            SessionAppli.rencontreChoisie = -1;
+            SessionAppli.domicile = -1;
+        } else {
+            // mémoriser le lieu saisi (ou pas)
+            console.log("Lieu =" + this.lieu);
+            SessionAppli.lieu = this.lieu;
+        }
         // retourner à la page des actions
         this.router.navigate(["actions"],
         {

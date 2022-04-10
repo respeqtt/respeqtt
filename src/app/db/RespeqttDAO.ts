@@ -258,7 +258,48 @@ export class Rencontre{
 
         let promise = new Promise(function(resolve, reject) {
 
-            RespeqttDb.db.all(selListe).then(rows => {
+            RespeqttDb.db.all(selListe + order).then(rows => {
+                liste = [];
+                n = 0;
+                for(let row in rows) {
+                    let elt = new EltListeRencontre;
+                    elt.id = Number(rows[row][0]);
+                    console.log("li" + n, "id=" + elt.id + "/" + rows[row][0]);
+                    elt.division = rows[row][1];
+                    console.log("li" + n, "division=" + elt.division + "/" + rows[row][1]);
+                    elt.poule = rows[row][4];
+                    console.log("li" + n, "poule=" + elt.poule + "/" + rows[row][4]);
+                    elt.journee = Number(rows[row][2]);
+                    console.log("li" + n, "journee=" + elt.journee + "/" + rows[row][2]);
+                    elt.date = rows[row][3];
+                    console.log("li" + n, "date=" + elt.date + "/" + rows[row][3]);
+                    elt.phase = rows[row][5];
+                    console.log("li" + n, "phase=" + elt.phase.toString() + "/" + rows[row][5]);
+                    elt.sel= false;
+                    liste.push(elt);
+                    n = n + 1;
+                }
+                console.log(n + " rencontres lues");
+                resolve(liste);
+            }, error => {
+                reject(error);
+            });
+        });
+        return promise;
+    }
+
+    // Renvoie la liste des rencontres à domicile ou à l'extérieur pour le club demandé
+    public static getListeDom(club:number, dom:boolean) {
+        let liste:Array<any>;
+        let n:number;
+        // requêtes SQL
+        let selListe:string = "select ren_kn, ren_va_division, ren_vn_journee, ren_vd_date, ren_va_poule, ren_vn_phase from Rencontre";
+        let where:string = " where ren_club" + (dom ? "1" : "2") + "_kn=" + club.toString();
+        let order:string=" order by  ren_va_division, ren_va_poule, ren_vn_phase, ren_vn_journee asc";
+
+        let promise = new Promise(function(resolve, reject) {
+
+            RespeqttDb.db.all(selListe + where + order).then(rows => {
                 liste = [];
                 n = 0;
                 for(let row in rows) {
@@ -599,6 +640,7 @@ export class Licencie{
     mute:boolean;
     etranger:boolean;
     feminin:boolean;
+    club:number;
 
     // requêtes SQL
     private static selListe = "select lic_kn, lic_va_nom, lic_va_prenom, lic_vn_points, lic_vn_mute, lic_vn_etranger, lic_vn_feminin from Licencie";
@@ -606,34 +648,61 @@ export class Licencie{
     // liste des licencies
     public static liste:Array<any>;
 
+    // renvoie un Licencie à partir de sa licence
+    public static getLic(id:number) {
+        const select = "select lic_va_nom, lic_va_prenom, lic_vn_points, lic_vn_mute, lic_vn_etranger, lic_vn_feminin, lic_clu_kn from Licencie where lic_kn = " + id.toString();
+        let promise = new Promise(function(resolve, reject) {
+            RespeqttDb.db.get(select).then(row => {
+                if(row) {
+                    let lic = new Licencie;
+                    lic.id = id;
+                    lic.nom = row[0];
+                    lic.prenom = row[1];
+                    lic.points = Number(row[2]);
+                    lic.mute = Boolean(row[3]);
+                    lic.etranger = Boolean(row[4]);
+                    lic.feminin = Boolean(row[5]);
+                    lic.club = Number(row[6]);
+                    resolve(lic);
+                }
+                else {
+                    resolve(null);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+        return promise;
+    };
+
     // renvoie un EltListeLicencie (nom, prenom et points) à partir de sa licence
     public static get(id:number, club:number) {
         let where:string = "";
-    if(club > 0) {
-        where = " and lic_clu_kn = " + club.toString();
-    }
-    const select = "select lic_va_nom, lic_va_prenom, lic_vn_points from Licencie where lic_kn = " + id.toString() + where;
-    let promise = new Promise(function(resolve, reject) {
-        RespeqttDb.db.get(select).then(row => {
-            if(row) {
-                let lic = new EltListeLicencie;
-                lic.id = id;
-                lic.nom = row[0];
-                lic.prenom = row[1];
-                lic.points = Number(row[2]);
-                lic.cartons = 0;
-                lic.place="";
-                resolve(lic);
-            }
-            else {
-                resolve(null);
-            }
-        }, error => {
-            reject(error);
+        if(club > 0) {
+            where = " and lic_clu_kn = " + club.toString();
+        }
+        const select = "select lic_va_nom, lic_va_prenom, lic_vn_points from Licencie where lic_kn = " + id.toString() + where;
+        let promise = new Promise(function(resolve, reject) {
+            RespeqttDb.db.get(select).then(row => {
+                if(row) {
+                    let lic = new EltListeLicencie;
+                    lic.id = id;
+                    lic.nom = row[0];
+                    lic.prenom = row[1];
+                    lic.points = Number(row[2]);
+                    lic.cartons = 0;
+                    lic.place="";
+                    resolve(lic);
+                }
+                else {
+                    resolve(null);
+                }
+            }, error => {
+                reject(error);
+            });
         });
-    });
-    return promise;
-};
+        return promise;
+    };
 
 
     // renvoie un EltListeLicencie (nom, prenom et points) à partir de sa licence
@@ -1299,7 +1368,7 @@ export class ListeFormules {
                 "desc": "AW BX CY DZ AX BW DY CZ 11 22 DW CX AZ BY CW DX AY BZ",
                 "joueursA": "A B C D",
                 "joueursX": "W X Y Z",
-                "arbitres": "D Z B W C Z A X - - B Y D X B Z C W",
+                "arbitres": "D Z B W C Y X A - - B Y X D A Z W C",
                 "nbDoubles":"2",
                 "nbJoueurs":"4"
             }
@@ -1372,7 +1441,7 @@ export class Compo{
             console.log(update);
             RespeqttDb.db.execSQL(update).then(n => {
                 if(n > 0) {
-                    console.log("Joueur " + joueur.place + " mis à jour en BDD");
+                    console.log("*> Joueur " + joueur.place + " mis à jour en BDD");
                     resolve(joueur);
                 } else {
                     // le joueur n'existe pas => insert
@@ -1388,7 +1457,7 @@ export class Compo{
                         + joueur.cartons.toString() + ")";
 
                     RespeqttDb.db.execSQL(insert + values).then(id => {
-                        console.log("Joueur " + joueur.place + " inséré en BDD");
+                        console.log("+> Joueur " + joueur.place + " inséré en BDD");
                         resolve(joueur);
                     }, error2 => {
                         console.log("Echec insertion dans la table Compo", error2);
@@ -1410,8 +1479,9 @@ export class Compo{
         let sql:string = `select cpo_va_place, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons
                from Compo where cpo_ren_kn = ` + rencontre; + " order by cpo_vn_num asc"
         RespeqttDb.db.all(sql).then(rows => {
+            console.log("Trouvé " + rows.length.toString() + " joueurs");
             for(let row in rows) {
-                let rang = Number(rows[row][0]);
+                let rang = Number(rows[row][0]); 6
                 let elt:EltListeLicencie = new EltListeLicencie();
 
                 elt.id = Number(rows[row][1]);
