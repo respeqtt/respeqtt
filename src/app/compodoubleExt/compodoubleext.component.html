@@ -6,11 +6,12 @@
         </GridLayout>
     </ActionBar>    
     
-    <StackLayout alignment="vertical" backgroundColor="lightblue">
-        <Label class="titre" text="COMPOSITION DES DOUBLES"></Label>
-        <Label class = "sous-titre" [text] = "this.sousTitre"> </Label>
-        <Button text="VALIDER" class="bouton" (tap)="onValiderTap($event)"></Button>
-        <ListView [items]="listeJoueurs"   rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+    <FlexboxLayout flexDirection="column" justifyContent="space-between" height = "100%">
+        <StackLayout alignment="vertical" flexGrow="0" flexShrink="0">
+            <Label class="titre" text="COMPOSITION DES DOUBLES"></Label>
+            <Label class = "sous-titre" [text] = "this.sousTitre"> </Label>
+        </StackLayout>
+        <ListView [items]="listeJoueurs"   rowheight = "50em" flexGrow="0" flexShrink="1" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                     <StackLayout orientation="horizontal">
@@ -22,5 +23,9 @@
                 </StackLayout>
             </ng-template>
         </ListView>
-    </StackLayout>
+        <FlexboxLayout height="50em" flexDirection="row" justifyContent="space-between" flexGrow="0" flexShrink="0">
+            <Button text="VALIDER" class="bouton" flexGrow="0" flexShrink="0" (tap)="onValider($event)"></Button>
+            <Button text="FERMER" class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>
+        </FlexboxLayout>
+    </FlexboxLayout>
 

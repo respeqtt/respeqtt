@@ -22,6 +22,7 @@ import { InitComponent } from "./init/init.component";
 import { JoueursComponent } from "./joueurs/joueurs.component";
 import { JugeArbitreComponent } from "./jugearbitre/jugearbitre.component";
 import { LancementComponent } from "./lancement/lancement.component";
+import { MessageComponent } from "./message/message.component";
 import { PlacerComponent } from "./placer/placer.component";
 import { PreparationComponent } from "./preparation/preparation.component";
 import { RencontreComponent } from "./rencontre/rencontre.component";
@@ -54,6 +55,7 @@ import { ValiderComponent } from "./valider/valider.component";
                 JugeArbitreComponent,
                 InitComponent,
                 LancementComponent,
+                MessageComponent,
                 PlacerComponent,
                 PreparationComponent,
                 QRMontrerComponent,
@@ -64,6 +66,7 @@ import { ValiderComponent } from "./valider/valider.component";
                 SaisieCommentaireComponent,
                 ValiderComponent, 
               ],
+  entryComponents: [MessageComponent],              
   providers: [],
   schemas: [NO_ERRORS_SCHEMA],
 })

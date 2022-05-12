@@ -63,8 +63,10 @@ export class AjouterRencontreComponent {
         // mémoriser le club sélectionné pour usage ultérieur, désélectionner si déjà sélectionné
         if(this.club == this.listeClubs[index].numero) {
             this.club = -1;
+            this.listeClubs[index].sel = false;
         } else {
             this.club = index;
+            this.listeClubs[index].sel = true;
         }
 
         console.log("Club sélectionné : " + this.club);
@@ -80,6 +82,7 @@ export class AjouterRencontreComponent {
             }
         } else {
             this.clubADomicile = this.listeClubs[this.club];
+            this.listeClubs[this.club].sel = false;
             this.titreRencontre = this.clubADomicile.nom + " vs ";
             if(this.clubVisiteur) {
                 this.titreRencontre = this.titreRencontre + this.clubVisiteur.nom;
@@ -98,6 +101,7 @@ export class AjouterRencontreComponent {
                 this.clubVisiteur = null;
         } else {
             this.clubVisiteur = this.listeClubs[this.club];
+            this.listeClubs[this.club].sel = false;
             this.titreRencontre = this.titreRencontre + this.clubVisiteur.nom;
         }
     }

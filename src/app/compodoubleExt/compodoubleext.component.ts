@@ -22,6 +22,10 @@ import { EltListeLicencie } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
 var dialogs = require("@nativescript/core/ui/dialogs");
 
 
@@ -44,7 +48,7 @@ export class CompoDoubleExtComponent{
     version:string;
 
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
         // version logicielle
         this.version = SessionAppli.version;
 
@@ -112,7 +116,7 @@ export class CompoDoubleExtComponent{
         if(iPasDouble.length == 2) {
             this.listeJoueurs[iPasDouble[0]].double = this.numDouble;
             this.listeJoueurs[iPasDouble[1]].double = this.numDouble;
-            var double:string = this.listeJoueurs[iPasDouble[0]].nom + " " + this.listeJoueurs[iPasDouble[0]].prenom;
+            var double:string = this.listeJoueurs[iPasDouble[0]].place + this.listeJoueurs[iPasDouble[1]].place + "-" + this.listeJoueurs[iPasDouble[0]].nom + " " + this.listeJoueurs[iPasDouble[0]].prenom;
             double = double + ", " + this.listeJoueurs[iPasDouble[1]].nom + " " + this.listeJoueurs[iPasDouble[1]].prenom;
             this.MemoDouble(double);
             // on passe au suivant
@@ -237,12 +241,12 @@ export class CompoDoubleExtComponent{
         finA = SessionAppli.listeParties[iPartie].desc.indexOf("vs");
 
         // est-ce que doubleA est forfait ?
-        doubleA = SessionAppli.listeParties[iPartie].desc.substr(0, finA);
+        doubleA = SessionAppli.listeParties[iPartie].desc.substring(0, finA);
         console.log(">>doubleA=" + doubleA + "/" + doubleA.indexOf("(absent)"));
         if(SessionAppli.forfaitA || doubleA.indexOf("(absent)")>0) forfaitA = true;
 
         // est-ce que doubleX est forfait ?
-        doubleX = SessionAppli.listeParties[iPartie].desc.substr(finA);
+        doubleX = SessionAppli.listeParties[iPartie].desc.substring(finA);
         console.log(">>doubleX=" + doubleX + "/" + doubleX.indexOf("(absent)"));
         if(SessionAppli.forfaitX || doubleX.indexOf("(absent)")>0) forfaitX = true;
 
@@ -289,7 +293,7 @@ export class CompoDoubleExtComponent{
 
     }
 
-    onValiderTap(args: EventData) {
+    onValider(args: EventData) {
         let button = args.object as Button;
 
         console.log(this.listeJoueurs.length.toString() + "joueurs dans la liste avant validation");
@@ -297,23 +301,25 @@ export class CompoDoubleExtComponent{
         // compter les joueurs sélectionnés
         var n:number = 0;
         var double:string="";
+        let compoDouble:string="";
 
         for(var i = 0 ; i < this.listeJoueurs.length; i++) {
             if(this.listeJoueurs[i].sel) {
                 if(double.length > 0){
                     double = double + ", ";
                 }
-                double = double + this.listeJoueurs[i].nom + " " + this.listeJoueurs[i].prenom
+                double = double + this.listeJoueurs[i].nom + " " + this.listeJoueurs[i].prenom;
+                compoDouble = compoDouble + this.listeJoueurs[i].place;
                 n++;
             }
         }
         if(n < 2) {
-            alert("Il manque " + (2 - n) + " joueurs dans le double 1");
+            erreur(this, "Il manque " + (2 - n) + " joueurs dans le double 1");
             return;
         }
 
         if(n > 2) {
-            alert("Il y a " + (n - 2) + " joueurs de trop dans le double 1");
+            erreur(this, "Il y a " + (n - 2) + " joueurs de trop dans le double 1");
             return;
         }
         // retirer de la liste les joueurs sélectionnés
@@ -324,6 +330,8 @@ export class CompoDoubleExtComponent{
                 this.listeJoueurs.splice(i, 1);
             }
         }
+        // ajouter la compo en début de double
+        double = compoDouble + "-" + double;
         // mémoriser le double dans la liste des parties
         this.MemoDouble(double);
         this.DoubleSuivant();
@@ -349,6 +357,20 @@ export class CompoDoubleExtComponent{
             }
         }
         this.listeJoueurs[index].sel = !this.listeJoueurs[index].sel;
+    }
+
+    onFermer(args: EventData) {
+        let button = args.object as Button;
+
+        this.routerExt.navigate(["actions"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 

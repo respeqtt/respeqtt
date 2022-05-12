@@ -22,6 +22,10 @@ import { Club, EltListeClub } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { ElementRef, ViewChild } from "@angular/core";
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
 
 var dialogs = require("@nativescript/core/ui/dialogs");
 
@@ -43,7 +47,7 @@ export class AjouterClubComponent {
     @ViewChild('tfNom') tfNom: ElementRef;  // pour récupérer le textfield dont l'id est #tfLic
     @ViewChild('tfNumClub') tfNumClub: ElementRef;  // pour récupérer le textfield dont l'id est #tfLic
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
 
         this.router = _routerExtensions;
 
@@ -104,7 +108,7 @@ export class AjouterClubComponent {
                         SessionAppli.tab = 0;
                                     }
                 } else {
-                    dialogs.alert("Renseigner le nom et le numéro du club");
+                    erreur(this, "Renseigner le nom et le numéro du club");
                     return;
                 }
             }, error =>{
@@ -159,7 +163,7 @@ export class AjouterClubComponent {
                         return;
                     }
                 } else {
-                    dialogs.alert("Renseigner le numéro du club");
+                    erreur(this, "Renseigner le numéro du club");
                     return;
                 }
         }, error =>{

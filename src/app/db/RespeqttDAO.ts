@@ -74,7 +74,7 @@ export class Respeqtt {
     private static CreeSignature():string {
         let s: string = "";
         let d:Date = new Date();
-        let inOptions: string = '{[(abcdefghijklmnopqrstuvwxyz+-/*%$_,;:#<>&|0123456789)]}';
+        let inOptions: string = '{[(abcdefghijklmnopqrstuvwxyz+-§*%$_.;:#<>&|0123456789)]}';
     
         // génération aléatoire de la signature
         for (let i = 0; i < 20; i++) {
@@ -511,6 +511,7 @@ export class Rencontre{
 export class EltListeClub {
     numero:number;
     nom:string;
+    sel:boolean=false;
 }
 
 export class Club{
@@ -881,12 +882,11 @@ export class Partie{
         if(p != ""){
             // pas sélectionnée
             this.sel = false;
-            // description = A/nom prénom vs X/nom prénom = points
-            this.desc = p.charAt(0) + "/";
             console.log(p);
-            if(p.charCodeAt(0) < debutA) {
-                // c'est un double
-                this.desc = "*** double" + this.desc + " *** = ";
+            if(p.charAt(0) == "1" || p.charAt(0) == "2") {
+                // c'est un double pas encore composé
+                this.simple = false;
+                this.desc = "*** double" + p.charAt(0) + " *** = ";
                 // mettre le score en cas de forfait
                 if(forfaitA && !forfaitX) {
                     if(SessionAppli.ptsParVictoire == 2) {
@@ -906,36 +906,65 @@ export class Partie{
                     this.scoreAX = "0-0";
                 }
             } else {
-                // c'est un simple
-                // coté A
-                if(!forfaitA) {
-                    joueur = eqA[p.charCodeAt(0)-debutA];
-                    console.log("Rang A =" + (p.charCodeAt(0)-debutA));
-                    this.desc = this.desc + joueur.nom + " " + joueur.prenom + " vs ";
-                    this.joueurA = joueur.id;
+                if(p.length>2) {
+                    // c'est un double déjà composé
+                    console.log("Composition du double : " + p);
+                    this.simple = false;
+                    for(let j=0; j < p.length; j++) {
+                        // ajouter les lettres en début de double pour avoir : AB-nom prénom , nom prénom vs WX-nom prénom, nom prénom
+                        switch(j) {
+                            case 0 :
+                                this.desc = "#" + p.substring(0,2) + "-";
+                            break;
+                            case 2 :
+                                this.desc = this.desc + " vs " + p.substring(2,4) + "-";
+                            break;
+                            default :
+                                this.desc = this.desc + ", ";
+                            break;
+                        }
+                        if(j < 2) {
+                            joueur = eqA[p.charCodeAt(j)-debutA]
+                        } else {
+                            joueur = eqX[p.charCodeAt(j)-debutX]
+                        }
+                        this.desc = this.desc + joueur.nom + " " + joueur.prenom;
+                    }
                 }
-                // coté X
-                if(!forfaitX) {
-                    this.desc = this.desc + p.charAt(1) + "/";
-                    console.log("Rang X =" + (p.charCodeAt(1)-debutX));
-                    joueur = eqX[p.charCodeAt(1)-debutX];
-                    this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
-                    this.joueurX = joueur.id;
-                }
-                // mettre le score en cas de forfait
-                if(forfaitA || eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
-                    this.scoreAX = "0-2";
-                }
-                if(forfaitX || eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
-                    this.scoreAX = "2-0";
-                }
+                else {
+                    // c'est un simple
+                    this.simple = true;
+                    // coté A
+                    if(!forfaitA) {
+                        joueur = eqA[p.charCodeAt(0)-debutA];
+                        console.log("Rang A =" + (p.charCodeAt(0)-debutA));
+                        this.desc = p.charAt(0) + "/" + joueur.nom + " " + joueur.prenom + " vs ";
+                        this.joueurA = joueur.id;
+                    }
+                    // coté X
+                    if(!forfaitX) {
+                        this.desc = this.desc + p.charAt(1) + "/";
+                        console.log("Rang X =" + (p.charCodeAt(1)-debutX));
+                        joueur = eqX[p.charCodeAt(1)-debutX];
+                        this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
+                        this.joueurX = joueur.id;
+                    }
+                    // mettre le score en cas de forfait
+                    if(forfaitA || eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
+                        this.scoreAX = "0-2";
+                    }
+                    if(forfaitX || eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
+                        this.scoreAX = "2-0";
+                    }
 
-                // corriger si double forfait
-                if((forfaitA && eqX[p.charCodeAt(1)-debutX].nom == "(absent)")
-                || (forfaitX && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
-                || (eqX[p.charCodeAt(1)-debutX].nom == "(absent)" && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
-                ) {
-                    this.scoreAX = "0-0";
+                    // corriger si double forfait
+                    if((forfaitA && eqX[p.charCodeAt(1)-debutX].nom == "(absent)")
+                    || (forfaitX && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
+                    || (eqX[p.charCodeAt(1)-debutX].nom == "(absent)" && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
+                    ) {
+                        this.scoreAX = "0-0";
+                    }
+
                 }
             }
         }
@@ -989,7 +1018,7 @@ export class Partie{
                 this.scoreAX = "1-0";
             }
             // mettre à jour la description
-            console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substr(0, this.desc.search("=")));
+            console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substring(0, this.desc.search("=")));
         } else {
             if(SessionAppli.ptsParVictoire == 2) {
                 this.scoreAX = "1-2";
@@ -1087,13 +1116,6 @@ export class Partie{
             }
             // mettre à jour les sets et le score de la partie
             SessionAppli.listeParties[iPartie].setScore(listeSets, SessionAppli.nbSetsGagnants);
-            // consigner les réclamations
-            if(data.reclamA != "") {
-                SessionAppli.reclamationClubA = SessionAppli.reclamationClubA + "\n Partie n°" + data.num + ": " + data.reclamA;
-            }
-            if(data.reclamX != "") {
-                SessionAppli.reclamationClubX = SessionAppli.reclamationClubX + "\n Partie n°" + data.num + ": " + data.reclamX;
-            }
             return iPartie;
         } else {
             console.log("Ce n'est pas le résultat de la partie ou de la rencontre attendue");
@@ -1213,6 +1235,10 @@ export class Set{
 
     public static AVainqueur(s:string):boolean {
         return this.rxA.test(s);
+    }
+
+    public static XVainqueur(s:string):boolean {
+        return this.rxX.test(s);
     }
 
     public static ScoreOK(s:string):boolean {
@@ -1407,6 +1433,7 @@ export class Compo{
     // écrit une équipe en BDD ; essaie update, si ne marche pas essaie insert
     public static PersisteEquipe(rencontre:number, equipe:Array<EltListeLicencie>, coteX:boolean, debutJoueurs:number=0) {
 
+        console.log("-- Persiste joueur " + debutJoueurs.toString() + " = " + equipe[debutJoueurs].id.toString() + " place " + equipe[debutJoueurs].place);
         Compo.PersisteJoueur(equipe[debutJoueurs], rencontre).then(cr=> {
             if(debutJoueurs+1 < equipe.length) {
                 Compo.PersisteEquipe(rencontre, equipe, coteX, debutJoueurs+1);
@@ -1477,7 +1504,8 @@ export class Compo{
     public static RechargeEquipes(rencontre:number) {
 
         let sql:string = `select cpo_va_place, cpo_lic_kn, cpo_va_nom, cpo_va_prenom, cpo_vn_points, cpo_vn_mute, cpo_vn_etranger, cpo_vn_feminin, cpo_vn_cartons
-               from Compo where cpo_ren_kn = ` + rencontre; + " order by cpo_vn_num asc"
+               from Compo where cpo_ren_kn = ` + rencontre + " order by cpo_va_place asc"
+
         RespeqttDb.db.all(sql).then(rows => {
             console.log("Trouvé " + rows.length.toString() + " joueurs");
             for(let row in rows) {
@@ -1500,7 +1528,7 @@ export class Compo{
                     // équipe A
                     SessionAppli.equipeA.push(elt);
                 }
-                console.log("joueur " + rang + " nom " + elt.nom + " prenom " + elt.prenom + " licence=" + elt.id + " cartons=" + elt.cartons);
+                console.log(elt.place + " joueur " + rang + " nom " + elt.nom + " prenom " + elt.prenom + " licence=" + elt.id + " cartons=" + elt.cartons);
             }
         }, error => {
             console.log("Impossible de trouver en BDD les équipes de la rencontre " + rencontre, error);

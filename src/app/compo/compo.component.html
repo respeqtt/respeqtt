@@ -7,14 +7,14 @@
     </ActionBar>
     
     
-    <FlexboxLayout flexDirection="column" justifyContent="flex-start" backgroundColor="lightblue">
+    <FlexboxLayout flexDirection="column" justifyContent="flex-start" backgroundColor="lightblue" height="100%">
         <Label class="titre" text="COMPOSITION D'EQUIPE"  flexGrow="0" flexShrink="0"></Label>
         <Label class = "sous-titre" [text] = "this.clubChoisi.nom"  flexGrow="0" flexShrink="0"> </Label>
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="SCANNER" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onScanTap($event)" [isenabled]="this.actScanner"></Button>
-            <Button text="FORFAIT" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onForfaitTap($event)" [isenabled]="this.modeRencontre"></Button>
+            <Button text="SCANNER" min-width="100" width="1000" flexGrow="0" flexShrink="1" class="bouton" (tap)="onScanTap($event)" [isenabled]="this.actScanner"></Button>
+            <Button text="FORFAIT" min-width="100" width="1000" flexGrow="0" flexShrink="1" class="bouton" (tap)="onForfaitTap($event)" [isenabled]="this.modeRencontre"></Button>
         </FlexboxLayout>
-        <ListView [items]="listeJoueurs"  rowheight = "50em"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView [items]="listeJoueurs" flexGrow="1" flexShrink="0" rowheight = "35em"  (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <FlexboxLayout flexDirection="column" justifyContent="flex-start" [class.odd]="odd" [class.even]="even">
                     <FlexboxLayout flexDirection="row" justifyContent="flex-start">
@@ -26,7 +26,7 @@
                 </FlexboxLayout>
             </ng-template>
         </ListView>
-        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
+        <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="1" justifyContent="flex-start">
             <Button text="FERMER" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onAnnulerTap($event)"></Button>
             <Button text="VALIDER" min-width="100" width="1000" flexGrow="1" flexShrink="1" class="bouton" (tap)="onValiderTap($event)"></Button>
         </FlexboxLayout>

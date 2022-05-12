@@ -14,14 +14,18 @@
 /*                                                                             */
 /*******************************************************************************/
 
-import { Component, ChangeDetectionStrategy, ElementRef, ViewChild } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { Button, EventData, Switch, ItemEventData, TextField } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
 var dialogs = require("@nativescript/core/ui/dialogs");
 
-import { EltListeLicencie, Club } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club, FormuledeRencontre, ListeFormules } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 
 import { Maintenant } from "../outils/outils";
@@ -40,6 +44,8 @@ export class PreparationComponent{
     modif:boolean=false;
     actValider:boolean=false;
     actReserve:boolean=false;
+    actCompoA:boolean=false;
+    actCompoX:boolean=false;
     switchActif:boolean=false;
     router:RouterExtensions;
     txtBtnResA:string;
@@ -74,13 +80,12 @@ export class PreparationComponent{
         }
     }
 
-    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
 
         // version logicielle
         this.version = SessionAppli.version;
 
         this.router = routerExtensions;
-        this.recoitCoteX=SessionAppli.recoitCoteX;
         this.titreRencontre = SessionAppli.titreRencontre;
         console.log("Rencontre : " + this.titreRencontre);
 
@@ -124,9 +129,14 @@ export class PreparationComponent{
         SessionAppli.modeRencontre = SessionAppli.tab == 0;
 
         // on inverse si besoin
+        this.recoitCoteX=SessionAppli.recoitCoteX;
         if(SessionAppli.recoitCoteX) {
+            console.log("Echange des côtés A/X");
             this.EchangerCotes();
         }
+        
+        // activer les boutons compoA et compoX
+        this.ActiveCompos();
 
         // on valide les boutons QRCode si équipe chargée
         if(SessionAppli.equipeA.length > 0) {
@@ -136,10 +146,11 @@ export class PreparationComponent{
             this.valEqX = true;
         }
 
+
         this.modif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
         this.switchActif = !SessionAppli.compoFigee && !SessionAppli.scoreValide;
-        this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide);
-//                        || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
+        this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide)
+                        || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
         this.actReserve = (SessionAppli.domicile == 1) && !(SessionAppli.listeParties.length > 0);
         this.cartonsActifs = !SessionAppli.scoreValide;
 
@@ -148,6 +159,26 @@ export class PreparationComponent{
 
     ngAfterViewInit(): void {
     }
+
+    ActiveCompos() {
+                         // match à  domicile et recoit coté A et équipe X pas renseignée                
+        this.actCompoA = (SessionAppli.domicile && !this.recoitCoteX && SessionAppli.equipeX.length == 0) 
+                        // match à  domicile et recoit coté X et équipe X renseignée
+                        || (SessionAppli.domicile && SessionAppli.equipeX.length > 0 && this.recoitCoteX) 
+                        // match à l'extérieur
+                        || !SessionAppli.domicile;
+
+                        // match à  domicile et recoit coté X et équipe A pas renseignée                        
+        this.actCompoX = (SessionAppli.domicile &&  this.recoitCoteX && SessionAppli.equipeA.length == 0) 
+                        // match à  domicile et recoit coté A et équipe A renseignée
+                        || (SessionAppli.domicile && SessionAppli.equipeA.length > 0 && !this.recoitCoteX)
+                        // match à l'extérieur 
+                        || !SessionAppli.domicile;
+
+        console.log("Compo A " + this.actCompoA ? "actif" : "inactif")                        
+        console.log("Compo X " + this.actCompoX ? "actif" : "inactif")                        
+    }
+
 
     private EchangerCotes() {
         let s:string=SessionAppli.reserveClubA;
@@ -165,6 +196,18 @@ export class PreparationComponent{
         SessionAppli.recoitCoteX = this.recoitCoteX;
         SessionAppli.reserveClubA = SessionAppli.reserveClubX;
         SessionAppli.reserveClubX = s;
+        // mettre à jour les places des joueurs dans les équipes
+        const f:FormuledeRencontre = ListeFormules.getFormule(SessionAppli.formule);
+        let pos:number;
+        for(let i=0; i < SessionAppli.equipeA.length; i++) {
+            pos = f.joueursX.search(SessionAppli.equipeA[i].place);
+            SessionAppli.equipeA[i].place = f.joueursA.charAt(pos);
+        }
+        for(let i=0; i < SessionAppli.equipeX.length; i++) {
+            pos = f.joueursA.search(SessionAppli.equipeX[i].place);
+            SessionAppli.equipeX[i].place = f.joueursX.charAt(pos);
+        }
+
         // recalculer le libellé des boutons des réserves
         this.MajLibBoutonsReserves();
 
@@ -187,7 +230,6 @@ export class PreparationComponent{
         this.valEqX = v;
 
         console.log("Recoit cote X = " + this.recoitCoteX.toString());
-
     }
 
     onCheckedChange(args: EventData) {
@@ -196,6 +238,9 @@ export class PreparationComponent{
         SessionAppli.recoitCoteX = sw.checked; // boolean
 
         this.EchangerCotes();
+
+        // activer les boutons compoA et compoX
+        this.ActiveCompos();
     }
 
     onBlurLieu(args: EventData) {
@@ -283,43 +328,45 @@ export class PreparationComponent{
             // vérifier que les deux équipes ont été saisies ou forfait
             if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
             || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
-                alert("Les deux équipes n'ont pas été renseignées.");
+                erreur(this.vcRef, "Les deux équipes n'ont pas été renseignées.");
                 return;
             } else {
-                // passer en mode rencontre
-                SessionAppli.modeRencontre = true;
+                // si on est à domicile on complète les infos pour la feuille de match
+                if(SessionAppli.domicile) {
+                    // passer en mode rencontre
+                    SessionAppli.modeRencontre = true;
+                    // mémoriser la date de la rencontre
+                    SessionAppli.date = Maintenant();
+                    console.log("Date heure de la rencontre :" + SessionAppli.date);
+                    // mémoriser le lieu de la rencontre
+                    if(this.tf != null){
+                        this.lieu = this.tf.text;
+                    }
+                    SessionAppli.lieu = this.lieu;
+                    // désactiver les boutons
+                    this.modif = false;
+                    this.switchActif = false;
+                    this.actValider = false;
+                }
                 // figer la composition des deux équipes
                 SessionAppli.compoFigee = true;
-                // mémoriser la date de la rencontre
-                SessionAppli.date = Maintenant();
-                console.log("Date heure de la rencontre :" + SessionAppli.date);
-                // mémoriser le lieu de la rencontre
-                if(this.tf != null){
-                    this.lieu = this.tf.text;
-                }
-                SessionAppli.lieu = this.lieu;
-                // désactiver les boutons
-                this.modif = false;
-                this.switchActif = false;
-                this.actValider = false;
-    }
-
-            // sauvegarder la session en BDD
-            SessionAppli.Persiste().then(cr => {
-                console.log("Session enregistrée");
-                // retourner à la page des actions
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
+                // dans tous les cas sauvegarder la session en BDD
+                SessionAppli.Persiste().then(cr => {
+                    console.log("Session enregistrée");
+                    // retourner à la page des actions
+                    this.router.navigate(["actions"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                }, error => {
+                    console.log("Impossible de persister la session");
                 });
-            }, error => {
-                console.log("Impossible de persister la session");
-            });
+            }
         });
     }
 

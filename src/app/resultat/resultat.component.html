@@ -8,7 +8,7 @@
     </ActionBar>
 
     <FlexboxLayout flexDirection="column" justifyContent="flex-start">
-        <Label class="titre" [text]="this.titre" textWrap="true" flexGrow="0" flexShrink="1"></Label>
+        <Label class="titre-resultat" [text]="this.titre" textWrap="true" flexGrow="0" flexShrink="1"></Label>
         <FlexboxLayout flexDirection="row" justifyContent="space-between" flexGrow="1" flexShrink="1">
             <Button text="QR Code" flexGrow="1" class="bouton" (tap)="onTapQRCode($event)"></Button>
             <Button text="Scan résultat" flexGrow="1" class="bouton" (tap)="onTapScan($event)"></Button>

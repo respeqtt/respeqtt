@@ -24,6 +24,10 @@ import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
 var dialogs = require("@nativescript/core/ui/dialogs");
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
 
 @Component({
     templateUrl: "./compo.component.html",
@@ -41,7 +45,7 @@ export class CompoComponent{
     actScanner:boolean=true;
     version:string;
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
 
         // version logicielle
         this.version = SessionAppli.version;
@@ -148,7 +152,7 @@ export class CompoComponent{
 
         // compter les joueurs
         if(this.equipe.length < SessionAppli.nbJoueurs) {
-            alert("Il manque " + (SessionAppli.nbJoueurs - this.equipe.length) + " joueurs dans l'équipe");
+            erreur(this, "Il manque " + (SessionAppli.nbJoueurs - this.equipe.length) + " joueurs dans l'équipe");
         } else {
             // mémoriser l'équipe sélectionnée
             if(this.cote) {

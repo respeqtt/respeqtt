@@ -18,7 +18,7 @@ import { Component } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { EventData, Switch, Observable } from "@nativescript/core";
-import { Club, EltListeClub, Rencontre } from "../db/RespeqttDAO";
+import { Club, EltListeClub, Rencontre, ListeFormules } from "../db/RespeqttDAO";
 import { DatePicker } from "@nativescript/core/ui/date-picker";
 import { TextField, ListPicker } from "@nativescript/core";
 import { SessionAppli } from "../session/session";
@@ -35,7 +35,7 @@ export class DetailsRencontreComponent extends Observable {
     titreRencontre:string;
     date:Date;
     listeEchelons:Array<string>=["Dép", "Rég", "Nat."];
-    listeFormules:Array<string>=["5", "11", "18", "20"];
+    listeFormules:Array<string>=[];
     listeLigues:Array<string>=["Auvergne Rhône Alpes", "Bourgogne Franche Comté", "Bretagne", "Centre Val de Loire", "Corse", "Grand Est", 
         "Guadeloupe L", "Guyane L", "Hauts de France", "Ile de France", "Ligue Martinique", "Mayotte L", "Normandie", "Nouvelle Aquitaine", "Nouvelle Calédonie", "Occitanie"];
 
@@ -46,14 +46,14 @@ export class DetailsRencontreComponent extends Observable {
     echelon:number=0;
     phase:number=1;
     journee:number=1;
-    nbSets:number=3;
+    nbSets:number;
     formule:number=18;
     feminin:boolean=false;
     ligue:string="";
     version:string;
 
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private router: RouterExtensions) {
 
         super();
 
@@ -62,10 +62,20 @@ export class DetailsRencontreComponent extends Observable {
         // version logicielle
         this.version = SessionAppli.version;
 
-        this.routeur = _routerExtensions;
-
         // init des dates
         this.date = new Date();
+
+        this.nbSets = 3;
+
+
+        // constituer la liste des formules connues
+        let f:string;
+        for(let i:number = 0; i < ListeFormules.tabFormules.length; i++) {
+            f = ListeFormules.tabFormules[i].id.toString();
+            console.log("formule " + f);
+            this.listeFormules.push(f);
+        }
+
 
         // récupérer les clubs passés en paramètre
         num = Number(this._route.snapshot.paramMap.get("club1"));
@@ -82,13 +92,29 @@ export class DetailsRencontreComponent extends Observable {
             }, error =>{
                 console.log("Club2 " + num.toString() + " inconnu : " + error.toString());
                 // retour à la page de choix des clubs
-                this._routerExtensions.navigate(["ajouterRencontre"]);
+                this.router.navigate(["ajouterRencontre"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
             });
         }, error =>{
             console.log("Club1 " + num.toString() + " inconnu : " + error.toString());
             // retour à la page de choix des clubs
-            this._routerExtensions.navigate(["ajouterRencontre"]);
-        });
+            this.router.navigate(["ajouterRencontre"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+    });
     }
 
     ngOnInit(): void {
@@ -190,7 +216,15 @@ export class DetailsRencontreComponent extends Observable {
         Rencontre.AjouteRencontre(r).then(res=>{
             // Afficher la page de choix des rencontres
             console.log("Rencontre ajoutée");
-            this._routerExtensions.navigate(["rencontre"]);
+            this.router.navigate(["rencontre"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationRetour, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
         }, error =>{
             console.log("Impossible d'ajouter la rencontre");
         });   
@@ -198,7 +232,15 @@ export class DetailsRencontreComponent extends Observable {
 
     onFermer(args: EventData) {
         // Afficher la page de choix des rencontres
-        this._routerExtensions.navigate(["rencontre"]);
+        this.router.navigate(["rencontre"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
 

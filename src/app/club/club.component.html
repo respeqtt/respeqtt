@@ -6,9 +6,9 @@
     </GridLayout>
 </ActionBar>
 
-<StackLayout alignment="vertical" backgroundColor="lightblue">
+<StackLayout alignment="vertical" backgroundColor="lightblue" height="100%">
     <Label class="titre" text="Choisir un club"></Label>
-    <ListView [items]="listeClubs"  rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+    <ListView [items]="listeClubs" flexGrow="1" flexShrink="0" rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
         <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
             <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                 <Label [class.odd]="odd" [class.even]="even" [text]="item.numero + ' ' + item.nom"></Label>
@@ -16,6 +16,6 @@
         </ng-template>
     </ListView>
     <Label text="" flexGrow="10" flexShrink="10"></Label>
-    <Button text="Ajouter un club"  class="bouton" flexGrow="0" flexShrink="0"  (tap)="onAddClub($event)"></Button>
-    <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="0" (tap)="onFermer($event)"></Button>
+    <Button text="Ajouter un club"  class="bouton" flexGrow="0" flexShrink="1"  (tap)="onAddClub($event)"></Button>
+    <Button text="FERMER"  class="bouton" flexGrow="0" flexShrink="1" (tap)="onFermer($event)"></Button>
 </StackLayout>

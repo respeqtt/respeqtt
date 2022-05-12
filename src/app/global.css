@@ -37,6 +37,17 @@ TextView {
     font-size: 20em;
 }
 
+TextView.message {
+    font-size: 25em;
+    color: darkslateblue;
+    background-color: lightpink;
+    font-weight: normal;
+    vertical-align: middle;
+    text-align: left;
+    margin: 5px;
+    padding: 5px;
+}
+
 TextField.sets {
     font-size: 25em;
     color: darkblue;
@@ -69,10 +80,34 @@ TextView.init {
     padding: 0px;
 }
 
+switch {
+    padding:5px;
+    margin:5px;
+    height:20em;
+    background-color: grey;
+    color: red;
+}
+
+.switch-notchecked {
+    padding:5px;
+    margin:5px;
+    height:20em;
+    background-color: grey;
+    color: red;
+}
+
+.switch-checked {
+    padding:5px;
+    margin:5px;
+    height:20em;
+    background-color: grey;
+}
 label.switch-label {
+    height:25em;
+    font-size: 20em;
     text-align: center;
     color:darkblue;
-    padding: 50px;
+    padding: 0px;
     margin: 0px;    
 }
 
@@ -183,18 +218,15 @@ label.principal {
     padding: 5px;
 }
 
-TextView.message {
-    color: darkblue;
-    background-color: whitesmoke;
-    margin: 10px;
-    padding: 10px;    
-    font-size: 15em;
-    font-weight: normal;
+label.titre-message {
+    background-color: #6D81FF;
+    color:skyblue;
+    font-size: 25em;
+    font-weight: bold;
     vertical-align: middle;
     text-align: left;
-    margin: 5px;
-    padding: 5px;
 }
+
 
 label.version {
     background-color: #6D81FF;
@@ -212,6 +244,15 @@ label.titre {
     color:white;
     font-size: 25em;
     font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+}
+
+label.titre-resultat {
+    background-color: blue;
+    color:white;
+    font-size: 20em;
+    font-weight: normal;
     vertical-align: middle;
     text-align: center;
 }

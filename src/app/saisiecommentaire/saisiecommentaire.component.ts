@@ -69,7 +69,7 @@ export class SaisieCommentaireComponent {
                         if(SessionAppli.reserveClubA != "") {
                             this.saisie = SessionAppli.reserveClubA;
                         }
-                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "\n";
+                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "PAR " + this.auteur + " ; score = " + SessionAppli.score + "\n";
                     break;
                     case "RESERVE-C" :
                         console.log("Reserve :" + SessionAppli.reserveClubA);
@@ -81,13 +81,13 @@ export class SaisieCommentaireComponent {
                             this.saisie = SessionAppli.reclamationClubA;
                             this.saisie = this.saisie + "\n";
                         }
-                        if(this.retour.substr(0, 7) == "valider") {
+                        if(this.retour.substring(0, 7) == "valider") {
                             this.saisie = this.saisie + "POSEE EN FIN DE RENCONTRE A ";
                         } else {
-                            const partie:number = Number(this.retour.substr(9))+1;
+                            const partie:number = Number(this.retour.substring(9))+1;
                             this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
                         }
-                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "\n";
+                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "PAR " + this.auteur + " ; score = " + SessionAppli.score + "\n";
                     break;
                 }
             break;
@@ -99,7 +99,7 @@ export class SaisieCommentaireComponent {
                         if(SessionAppli.reserveClubX != "") {
                             this.saisie = SessionAppli.reserveClubX;
                         }
-                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "\n";
+                        this.saisie = this.saisie + "POSEE A " + HeureMinCourante(maintenant) + "PAR " + this.auteur + " ; score = " + SessionAppli.score + "\n";
                     break;
                     case "RESERVE-C" :
                         console.log("Reserve :" + SessionAppli.reserveClubX);
@@ -111,13 +111,13 @@ export class SaisieCommentaireComponent {
                             this.saisie = SessionAppli.reclamationClubX;
                             this.saisie = this.saisie + "\n";
                         }
-                        if(this.retour.substr(0, 7) == "valider") {
+                        if(this.retour.substring(0, 7) == "valider") {
                                 this.saisie = this.saisie + "POSEE EN FIN DE RENCONTRE A ";
                         } else {
-                            const partie:number = Number(this.retour.substr(9))+1;
+                            const partie:number = Number(this.retour.substring(9))+1;
                             this.saisie = this.saisie + "POSEE SUR LA PARTIE " + partie.toString() + " A ";
                         }
-                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "\n";
+                        this.saisie = this.saisie + HeureMinCourante(maintenant) + "PAR " + this.auteur + " ; score = " + SessionAppli.score + "\n";
                     break;
                 }
             break;

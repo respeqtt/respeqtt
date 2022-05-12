@@ -22,6 +22,11 @@ import { SessionAppli } from "../session/session";
 import { RouterExtensions } from "@nativescript/angular";
 import { ActivatedRoute } from "@angular/router";
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
+
 
 @Component({
     templateUrl: "./ajouterJoueurs.component.html",
@@ -44,7 +49,7 @@ export class AjouterJoueursComponent{
 
     tf:TextField=null;
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
 
         // récupération du routeur pour naviguer
         this.router = _routerExtensions;
@@ -95,15 +100,15 @@ export class AjouterJoueursComponent{
 
         // vérifier que tout a été saisi : 
         if(this.nom == null || this.nom == "") {
-            alert("Merci de renseigner le nom du joueur");
+            erreur(this, "Merci de renseigner le nom du joueur");
             return;
         }
         if(this.prenom == null || this.prenom == "") {
-            alert("Merci de renseigner le prénom du joueur");
+            erreur(this, "Merci de renseigner le prénom du joueur");
             return;
         }
         if(this.licence == null || this.licence <= 0) {
-            alert("Merci de renseigner le numéro de licence");
+            erreur(this, "Merci de renseigner le numéro de licence");
             return;
         }
         // vérifier que le joueur n'existe pas déjà (n° licence)
@@ -111,7 +116,7 @@ export class AjouterJoueursComponent{
             let joueur:Licencie;
             joueur = lic as Licencie;
             if(joueur != null) {
-                alert(this.licence.toString() + " est déjà présent dans la liste : " + joueur.nom + " " + joueur.prenom);
+                erreur(this, this.licence.toString() + " est déjà présent dans la liste : " + joueur.nom + " " + joueur.prenom);
             } else {
                 this.points = Number(this.tf.text);
                 console.log("Points:"+this.points.toString());

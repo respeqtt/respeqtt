@@ -69,6 +69,8 @@ export class ValiderComponent{
             this.signatureExterieur = "Signature " + SessionAppli.clubX.nom;
         }
 
+        console.log("Réclamations A =" + SessionAppli.reclamationClubA + "<");
+        console.log("Réclamations X =" + SessionAppli.reclamationClubX + "<");
         if(SessionAppli.reclamationClubA == "") {
             this.btnRecA = "0 réclamation club A";
         } else {

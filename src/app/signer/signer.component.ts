@@ -22,7 +22,9 @@ import { RouterExtensions } from "@nativescript/angular";
 import { Respeqtt } from "../db/RespeqttDAO";
 import { toURL, toURLQuote } from "../outils/outils";
 
-var dialogs = require("@nativescript/core/ui/dialogs");
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
 
 @Component({
     templateUrl: "./signer.component.html",
@@ -41,7 +43,7 @@ export class SignerComponent{
     actSigner:boolean=false;
 
 
-    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
         this.router = routerExtensions;
         // version logicielle
         this.version = SessionAppli.version;
@@ -86,7 +88,7 @@ export class SignerComponent{
                     if(SessionAppli.capitaineA) {
                         cap =  SessionAppli.capitaineA.id;
                     } else {
-                        alert("Le capitaine de l'équipe A n'a pas été renseigné (Menu 'Composer son équipe')");
+                        erreur(this.vcRef, "Le capitaine de l'équipe A n'a pas été renseigné (Menu 'Composer son équipe')");
                         this.router.navigate(["actions"],
                         {
                             animated:true,
@@ -102,7 +104,7 @@ export class SignerComponent{
                     if(SessionAppli.capitaineX) {
                         cap =  SessionAppli.capitaineX.id;
                     } else {
-                        alert("Le capitaine de l'équipe X n'a pas été renseigné (Menu 'Composer son équipe')");
+                        erreur(this.vcRef, "Le capitaine de l'équipe X n'a pas été renseigné (Menu 'Composer son équipe')");
                         this.router.navigate(["actions"],
                         {
                             animated:true,
@@ -115,7 +117,7 @@ export class SignerComponent{
                     }
                 }
                 if(cap != Respeqtt.GetLicence()) {
-                    alert("La licence du téléphone (" + Respeqtt.GetLicence().toString() + ") ne correspond pas à celle du capitaine : " + cap);
+                    erreur(this.vcRef, "La licence du téléphone (" + Respeqtt.GetLicence().toString() + ") ne correspond pas à celle du capitaine : " + cap);
                     this.router.navigate(["actions"],
                     {
                         animated:true,

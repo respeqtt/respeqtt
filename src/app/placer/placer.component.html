@@ -6,10 +6,10 @@
         </GridLayout>
     </ActionBar>    
         
-    <FlexboxLayout flexDirection="column" backgroundColor="lightblue">
+    <FlexboxLayout flexDirection="column" backgroundColor="lightblue" height="100%">
         <Label class = "titre"      text="PLACEMENT JOUEURS" flexGrow="0" flexShrink="0"></Label>
         <Label class = "sous-titre" text = "EQUIPE"         flexGrow="0" flexShrink="0"> </Label>
-        <ListView [items]="equipe"   (itemTap)="onJoueurTap($event)"  rowheight = "40em" flexGrow="1" flexShrink="0" (loaded)="onEquipeLoaded($event)">
+        <ListView [items]="equipe"   (itemTap)="onJoueurTap($event)"  rowheight = "30em" flexGrow="1" flexShrink="0" (loaded)="onEquipeLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" height="30" [class.odd]="odd" [class.even]="even">
                     <Label [class.odd]="odd" [class.even]="even" [text]="item.place + '/ ' + item.nom + ' ' + item.prenom + ' ' + item.points"

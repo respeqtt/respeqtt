@@ -12,7 +12,7 @@
             <Label class="sous-titre" text="Liste des parties" flexGrow="1" flexShrink="1" ></Label>
             <Label class="score" [text]="this.score" flexGrow="0" flexShrink="0" ></Label>
         </FlexboxLayout>
-        <ListView [items]="listeLignes" flexGrow="1" flexShrink="1" rowheight = "50em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
+        <ListView [items]="listeLignes" flexGrow="1" flexShrink="1" rowheight = "30em" (itemTap)="onItemTap($event)" (loaded)="onListViewLoaded($event)">
             <ng-template let-item="item" let-i="index" let-odd="odd" let-even="even">
                 <StackLayout orientation="vertical" [class.odd]="odd" [class.even]="even">
                     <FlexboxLayout flexDirection="row" justifyContent="flex-start">

@@ -94,15 +94,16 @@ export class QRMontrerComponent implements OnInit{
 
             if(this.aDessiner) {
 //              alert("Encodage de " + this.contenu);
-                this.qr2 = QrCode.encodeText(this.contenu, Ecc.HIGH);
+                /* ECC LOW pour limiter la complexité du code, augmenter la taille des carrés et supprimer les pb de lecture */
+                this.qr2 = QrCode.encodeText(this.contenu, Ecc.LOW);
                 // afficher le contenu sous le code
                 this.trace = this.contenu;
 
                 // largeur du pinceau
                 paint.strokeWidth = border;
                 // calcul de l'échelle pour remplir la zone (80% de la largeur de l'écran)
-                var scale: number = (dim - 2 * border) / this.qr2.size ;
-//                alert("Dessin du canvas :" + canvas.getWidth() + "x" + canvas.getHeight() + " ; échelle = " + scale );
+                var scale: number = Math.floor(((dim - 2 * border) / this.qr2.size)*10)/10 ;
+                console.log("*** Dessin du canvas :" + canvas.getWidth() + "x" + canvas.getHeight() + " ; échelle = " + scale );
 
                 for (let y = -border; y < this.qr2.size + border; y++) {
                     for (let x = -border; x < this.qr2.size + border; x++) {

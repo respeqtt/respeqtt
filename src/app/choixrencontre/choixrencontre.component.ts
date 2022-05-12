@@ -156,11 +156,19 @@ export class ChoixRencontreComponent {
                     console.log("NbJoueurs = " + SessionAppli.nbJoueurs);
                     // récupérer le club 1 placé en A en attendant de savoir
                     Club.getClub(r.club1).then(club => {
-                        SessionAppli.clubA = club as Club;
-                        console.log("ClubA = " + SessionAppli.clubA.nom);
+                        if(SessionAppli.recoitCoteX) {
+                            SessionAppli.clubX = club as Club;
+                        } else {
+                            SessionAppli.clubA = club as Club;
+                        }
                         // récupérer le club 2 placé en X en attendant de savoir
                         Club.getClub(r.club2).then(club => {
-                            SessionAppli.clubX = club as Club;
+                            if(SessionAppli.recoitCoteX) {
+                                SessionAppli.clubA = club as Club;
+                            } else {
+                                SessionAppli.clubX = club as Club;
+                            }
+                            console.log("ClubA = " + SessionAppli.clubA.nom);
                             console.log("ClubX = " + SessionAppli.clubX.nom);
                             // récupérer le titre de la rencontre
                             Rencontre.getDescriptionRencontre(SessionAppli.rencontreChoisie).then(desc => {

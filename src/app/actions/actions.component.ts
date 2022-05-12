@@ -49,6 +49,7 @@ export class ActionsComponent implements OnInit {
     actEnvoyerSpid:boolean=false;             // si rencontre validée
     actAbandonner:boolean=false;              // si domicile ou extérieur
     actComposerEquipe:boolean=false;          // si extérieur et rencontre choisie
+    actEquipesComposeesExt:boolean=false;     // si compo des équipes validée et extérieur
     actComposerDoubles:boolean=false;         // si extérieur et équipe saisie
     actImporterScores:boolean=false;          // si extérieur et compo des deux équipes renseignée
     actSaisirPartie:boolean=false;            // sauf si à domicile
@@ -152,6 +153,8 @@ export class ActionsComponent implements OnInit {
         this.actEnvoyerSpid = SessionAppli.scoreValide && (SessionAppli.domicile == 1);    
         // on ne consulte la feuille que si les parties ont été lancées
         this.actVoirFeuille = (SessionAppli.listeParties.length > 0)  && (SessionAppli.domicile == 1);
+        // 
+        this.actEquipesComposeesExt = SessionAppli.compoFigee && (SessionAppli.domicile == 0);
 
         // boutons onglet Extérieur
         // choix des rencontres
@@ -522,13 +525,15 @@ export class ActionsComponent implements OnInit {
         let cote:string="";
         let texteEquipe:string="\n";
         const f:FormuledeRencontre=ListeFormules.getFormule(SessionAppli.formule);
-        if(SessionAppli.equipeX.length > 0) {
+        // si on recoit coté A et que l'équipe X est déjà composée
+        if(!SessionAppli.recoitCoteX && SessionAppli.equipeX.length > 0) {
             cote = "X";
             for(let i=0; i < SessionAppli.equipeX.length; i++ ) {
                 texteEquipe = texteEquipe + SessionAppli.equipeX[i].nom + " " + SessionAppli.equipeX[i].prenom + "\n";
             }
         } else {
-            if(SessionAppli.equipeA.length > 0) {
+            // si on recoit coté X et que l'équipe A est déjà composée
+            if(SessionAppli.recoitCoteX && SessionAppli.equipeA.length > 0) {
                 cote = "A";
                 for(let i=0; i < SessionAppli.equipeA.length; i++ ) {
                     texteEquipe = texteEquipe + SessionAppli.equipeA[i].nom + " " + SessionAppli.equipeA[i].prenom + "\n";

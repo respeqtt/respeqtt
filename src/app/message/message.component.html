@@ -1,0 +1,10 @@
+<FlexboxLayout flexDirection="column" alignContent= "center" justifyContent="space-around" backgroundColor="lightpink" height = "100%">
+    <FlexboxLayout flexDirection="row" justifyContent="flex-start" height="50em">
+        <Image src="res://erreur" class="action-image" row="0" col="0"></Image>
+        <Label [text]="titre" class="titre-message" flexGrow="1" flexShrink="0"></Label>
+    </FlexboxLayout>
+    <FlexboxLayout flexDirection="row" justifyContent="center" height="150em">
+    <TextView editable="false" class="message" [text]="texte" flexGrow="1" flexShrink="0"></TextView>
+    </FlexboxLayout>
+    <Button class="bouton" text="OK" (tap)="close('ok')" flexGrow="0" flexShrink="0"></Button>
+</FlexboxLayout>

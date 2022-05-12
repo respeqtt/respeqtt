@@ -119,7 +119,7 @@ export class JoueursComponent{
 
     onLoadTap(args: EventData) {
         let button = args.object as Button;
-        alert("Appel à SPID... ");
+        console.log("Appel à SPID... ");
         Licencie.SIM_LoadListe();
         Licencie.getListe(SessionAppli.clubChoisi).then(liste =>{
             this.listeJoueurs = liste as Array<EltListeLicencie>;

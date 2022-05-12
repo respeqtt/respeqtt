@@ -25,6 +25,10 @@ import { Signature } from "../db/RespeqttDAO";
 import { ListeFormules, Partie, Licencie, EltListeLicencie, FormuledeRencontre, Club } from "../db/RespeqttDAO";
 import { Respeqtt } from "../db/RespeqttDAO";
 
+import { erreur } from "../outils/outils";
+import { ViewContainerRef } from "@angular/core";
+import { ModalDialogService } from "@nativescript/angular";
+
 @Component({
     templateUrl: "./qrscan.component.html",
     moduleId:module.id,
@@ -47,7 +51,7 @@ export class QRScanComponent implements OnInit{
 
 
 
-    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
+    constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions, private modal: ModalDialogService, private vcRef: ViewContainerRef) {
         // version logicielle
         this.version = SessionAppli.version;
 
@@ -78,7 +82,7 @@ export class QRScanComponent implements OnInit{
                     this.cote = false;
                 }
             break;
-            case "DOUBLE" :             // si on scanne une compo de double, on est en mode rencontre
+            case "DOUBLES" :             // si on scanne une compo de double, on est en mode rencontre
                 this.titre = "Scan de la composition des doubles";
                 this.sousTitre = "de l'équipe " + this._route.snapshot.paramMap.get("param");
                 if(this._route.snapshot.paramMap.get("param") == "X") {
@@ -202,7 +206,7 @@ export class QRScanComponent implements OnInit{
                             console.log("Pas trouvé la formule " + nFormule.toString());
                         }
                     } else {
-                        alert("QRCode incorrect");
+                        erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + iClub.toString() + ")");
                     }
                 break;
                 case "DOUBLES" :    // si c'est un double
@@ -233,8 +237,10 @@ export class QRScanComponent implements OnInit{
                     if(this.cote) {
                         SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubX.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeX.length == 0) {
-                            alert("Ce n'est pas l'équipe attendue");
+                            console.log("Ce n'est pas l'équipe attendue");
+                            erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubX.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
                         } else {
+                            console.log("Equipe de " + SessionAppli.equipeA.length.toString() + " joueurs");
                             let licCapitaineX:number;
                             console.log("Equipe X :" + SessionAppli.equipeX.length + " joueurs");
                             licCapitaineX = SessionAppli.JsonToCapitaine(result.text);
@@ -264,8 +270,9 @@ export class QRScanComponent implements OnInit{
                     } else {
                         SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubA.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeA.length == 0) {
-                            alert("Ce n'est pas l'équipe attendue");
+                            erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubA.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
                         } else {
+                            console.log("Equipe de " + SessionAppli.equipeA.length.toString() + " joueurs");
                             let licCapitaineA:number;
                             console.log("Equipe A :" + SessionAppli.equipeA.length + " joueurs");
                             licCapitaineA = SessionAppli.JsonToCapitaine(result.text);

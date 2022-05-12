@@ -1,5 +1,8 @@
 import { Device, Screen, isAndroid, isIOS } from "@nativescript/core/platform";
 
+import { ViewContainerRef } from "@angular/core";
+import { MessageComponent } from "../message/message.component";
+
 export class Mobile {
     largeurEcran:number;
     hauteurEcran:number;
@@ -134,3 +137,16 @@ export function Maintenant():string {
     return Aujourdhui(maintenant) + " " + HeureMinCourante(maintenant);
 
 }
+
+
+export function erreur(objet, texte:string) {
+    let titre:string="Oups !";
+    let options = {
+        context: {titre, texte},
+        fullscreen: true,
+        viewContainerRef: objet.vcRef
+    };
+    objet.modal.showModal(MessageComponent, options).then(res => {
+        console.log(res);
+    });
+}    

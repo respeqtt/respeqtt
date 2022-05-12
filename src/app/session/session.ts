@@ -26,7 +26,7 @@ import { Verso }  from "./verso";           // verso de toutes les feuilles
 
 export class SessionAppli {
 
-    public static version = "ns8-1.092b";
+    public static version = "ns8-1.093b";
     public static presentation:boolean = true;
     public static listeRencontres:Array<EltListeRencontre>=[];
     public static recoitCoteX = false;
@@ -148,21 +148,23 @@ export class SessionAppli {
 
         let numClub:number = data.club;
         let attendu = cote ? SessionAppli.clubX.id : SessionAppli.clubA.id;
+        console.log("Attendu: cote " + (cote ? "X" : "A") + " club=" + attendu);
         if(numClub == attendu) {
             let iDouble = 0;
             // chercher les doubles dans la liste des parties
             for(let p=0; p < SessionAppli.listeParties.length; p++) {
                 if(!SessionAppli.listeParties[p].simple) {
+                    console.log("Trouvé double " + iDouble.toString() + " sur partie " + p.toString());
                     // compléter la compo du double de la session avec le double saisi
                     // si ce sont les doubles X, on complète après vs
                     let finA:number=SessionAppli.listeParties[p].desc.search(" vs ");
                     if(cote) {
-                        SessionAppli.listeParties[p].desc = SessionAppli.listeParties[p].desc.substr(0, finA + 4) + data.doubles[iDouble].double + " = ";
+                        SessionAppli.listeParties[p].desc = SessionAppli.listeParties[p].desc.substring(0, finA + 4) + data.doubles[iDouble].double + " = ";
                     } else {
-                        SessionAppli.listeParties[p].desc = "#" + data.doubles[iDouble].double + " vs " + SessionAppli.listeParties[p].desc.substr(finA + 5);
+                        SessionAppli.listeParties[p].desc = "#" + data.doubles[iDouble].double + " vs " + SessionAppli.listeParties[p].desc.substring(finA + 4);
                     }
-                } else {
-                }
+                    iDouble++;
+                } 
             }
         } else {
             console.log("Le club n°" + numClub.toString() + " n'est pas celui attendu");
@@ -251,8 +253,10 @@ export class SessionAppli {
                 console.log("Cherche place=" + place);
                 cote = f.coteDePlace(place);
                 if (cote != coteAttendu && coteAttendu != null) {
-                    console.log("!!! Ce n'est pas les doubles du coté attendu " + f.desc);
+                    console.log("!!! Ce n'est pas une place du coté attendu " + f.desc);
+                    alert("L'équipe ne correspond pas au côté " + coteAttendu + " attendu");
                     equipe = [];
+                    return equipe;
                 } else {
                     switch(cote){
                         case 'A' :
@@ -273,13 +277,16 @@ export class SessionAppli {
                         default :
                             // controle de la place dans la formule
                             console.log("!!! Place pas connue de la formule " + f.desc);
+                            alert("La place " + place + " n'existe pas dans cette rencontre.");
                             equipe = [];
                     }
                 }
             }
         } else {
-            console.log("!!! Club attendu " + club + " ; club lu : " + data.club);
+            console.log("!!! Club attendu " + club.toString() + " ; club lu : " + data.club);
+            alert("L'équipe ne fait pas partie du club attendu : " + club.toString());
             equipe = [];
+            return equipe;
         }
         return equipe;
     }
@@ -351,7 +358,25 @@ export class SessionAppli {
         // boucler sur les parties
         for(let i = 0; i< SessionAppli.listeParties.length; i++) {
             // encoder les / de la description
-            const desc = ListeFormules.getFormule(SessionAppli.formule).desc.substring(i*3, i*3+2);
+            let desc = ListeFormules.getFormule(SessionAppli.formule).desc.substring(i*3, i*3+2);
+            // encoder les doubles avec les lettres de la compo
+            let descPartie:string = SessionAppli.listeParties[i].desc;
+            let compo:string="";
+            if((desc=="11" || desc == "22") && descPartie.charAt(0) != "*") {
+                let pos:number = descPartie.search("-");
+                if(pos > 0) {
+                    compo = descPartie.substring(pos-2, pos);
+                    console.log("++ trouvé compo équipe double : " + compo);
+                }
+                let finPartie:string = descPartie.substring(pos+1);
+                pos = finPartie.search("-");
+                if(pos > 0) {
+                    compo = compo + finPartie.substring(pos-2, pos);
+                    console.log("++ trouvé compo double : " + compo);
+                }
+                desc = compo;
+                console.log("++ compo double=" + compo);
+            }
             // trop long
 //            const desc = SessionAppli.listeParties[i].joueurA.toString() + "-" + SessionAppli.listeParties[i].joueurX.toString();
             json = json + '{"H":"' + i
@@ -387,12 +412,14 @@ export class SessionAppli {
         // analyse du JSON en entrée
         data = JSON.parse(json);
         console.log("data.parties.length="+ data.parties.length);
+        SessionAppli.listeParties = [];
         for(let i = 0; i < data.parties.length; i++) {
-            // TODO : reconstruire la description de la partie
+            // reconstruire la description de la partie
             console.log("data.parties[" + i + "].desc="+ data.parties[i].desc);
             let partie:Partie = new Partie(f, data.parties[i].desc, SessionAppli.equipeA, SessionAppli.equipeX, SessionAppli.forfaitA, SessionAppli.forfaitX);
             
             let nbSetsA:number=0;
+            let nbSetsX:number=0;
             console.log("data.parties[" + i + "].nbSets="+ data.parties[i].nbSets);
             for(let j=0; j < data.parties[i].nbSets; j++) {
                 console.log("data.parties[" + i + "].sets["+j+"].score="+ data.parties[i].sets[j].score);
@@ -402,7 +429,10 @@ export class SessionAppli {
                 if(Set.AVainqueur(set.score)) {
                     nbSetsA++;
                 }
-            }
+                if(Set.XVainqueur(set.score)) {
+                    nbSetsX++;
+                }
+           }
             // score de la partie
             // TODO : traiter les forfaits
             SessionAppli.scoreA=0;
@@ -415,12 +445,17 @@ export class SessionAppli {
                 }
                 SessionAppli.scoreA++;
             } else {
-                if(SessionAppli.ptsParVictoire == 1) {
-                    partie.scoreAX = "0-1";
+                if(nbSetsX >= SessionAppli.nbSetsGagnants) {                
+                    if(SessionAppli.ptsParVictoire == 1) {
+                        partie.scoreAX = "0-1";
+                    } else {
+                        partie.scoreAX = "1-2";
+                    }
+                    SessionAppli.scoreX++;
                 } else {
-                    partie.scoreAX = "1-2";
+                    // pas encore joué
+                    partie.scoreAX = ""; 
                 }
-                SessionAppli.scoreX++;
             }
             SessionAppli.listeParties.push(partie);
         } 
@@ -486,9 +521,9 @@ export class SessionAppli {
         // Date heure
         let date:string;
         let heure:string;
-        date = SessionAppli.date.substr(0, SessionAppli.date.indexOf(" ")-1);
+        date = SessionAppli.date.substring(0, SessionAppli.date.indexOf(" ")-1);
         feuille = this.CompleteFeuille(feuille, date, "#Date");
-        heure = SessionAppli.date.substr(SessionAppli.date.indexOf(" ")+1);
+        heure = SessionAppli.date.substring(SessionAppli.date.indexOf(" ")+1);
         feuille = this.CompleteFeuille(feuille, heure, "#Heure");
         // Division
         feuille = this.CompleteFeuille(feuille, r.division, "#Division");
@@ -564,9 +599,9 @@ export class SessionAppli {
             }
             if(p < SessionAppli.listeParties.length) {
                 // score équipe A
-                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(0, 1), "#P" + (p+1).toString() + "SA");
+                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substring(0, 1), "#P" + (p+1).toString() + "SA");
                 // score équipe X
-                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substr(2, 1), "#P" + (p+1).toString() + "SX");
+                feuille = this.CompleteFeuille(feuille, SessionAppli.listeParties[p].scoreAX.substring(2, 3), "#P" + (p+1).toString() + "SX");
 
                 // gestion des doubles : remplacer les intitulés
                 if(!SessionAppli.listeParties[p].simple) {
@@ -574,10 +609,12 @@ export class SessionAppli {
                     console.log("Double : " + SessionAppli.listeParties[p].desc);
                     let doubles:string[] = SessionAppli.listeParties[p].desc.split(" vs ");
                     if(doubles[0]) {
-                        feuille = this.CompleteFeuille(feuille, doubles[0].substr(1), "#Double" + (iDouble).toString() + "A");
+                        // enlever le # au début
+                        feuille = this.CompleteFeuille(feuille, doubles[0].substring(1), "#Double" + (iDouble).toString() + "A");
                     }
                     if(doubles[1]) {
-                        feuille = this.CompleteFeuille(feuille, doubles[1].substr(0, doubles[1].length), "#Double" + (iDouble).toString() + "X");
+                        // enlever le = à la fin
+                        feuille = this.CompleteFeuille(feuille, doubles[1].substring(0, doubles[1].length - 1), "#Double" + (iDouble).toString() + "X");
                     }
                 }
 
@@ -1157,7 +1194,7 @@ export class SessionAppli {
                     console.log("Parties de la rencontre " + rencontre + " effacées de la BDD");
                     del = "delete from compo where cpo_ren_kn = " + rencontre;
                     RespeqttDb.db.execSQL(del).then(id => {
-                        console.log("Coposition des équipes de la rencontre " + rencontre + " effacée de la BDD");
+                        console.log("Composition des équipes de la rencontre " + rencontre + " effacée de la BDD");
                         del = "delete from Session where ses_ren_kn = " + rencontre;
                         RespeqttDb.db.execSQL(del).then(id => {
                             console.log("Session de la rencontre " + rencontre + " effacée de la BDD");

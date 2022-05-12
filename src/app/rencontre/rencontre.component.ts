@@ -33,6 +33,7 @@ export class RencontreComponent{
     maListe:ListView;
     version:string;
     router:RouterExtensions;
+    rencontreSel:boolean=false;
 
     constructor(private _route: ActivatedRoute, private _routerExtensions: RouterExtensions) {
         // version logicielle
@@ -106,7 +107,7 @@ export class RencontreComponent{
             else
                 console.log("Liste de rencontres vide");
             // il faudrait appeler SPID à la place
-            alert("Appel à SPID... ");
+            console.log("Appel à SPID... ");
             // rafraichir l'affichage
             this.maListe.refresh();
         }, error =>{
@@ -137,6 +138,11 @@ export class RencontreComponent{
         console.log("listeRencontres:" + this.listeRencontres[index].id.toString());
         this.listeRencontres[index].sel = !this.listeRencontres[index].sel;
         console.log("Rencontre sélectionnée : " + index);
+        if(this.listeRencontres[index].sel)  {
+            this.rencontreSel = true;
+        } else {
+            this.rencontreSel = false;
+        }
 
     }
 

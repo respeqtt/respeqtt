@@ -19,7 +19,7 @@ import { Button, EventData, ListView, ItemEventData, Observable, ObservableArray
 import { ActivatedRoute } from "@angular/router";
 import { ElementRef, ViewChild } from "@angular/core";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre, Respeqtt } from "../db/RespeqttDAO";
+import { EltListeLicencie, Club, Licencie, ListeFormules, FormuledeRencontre, Respeqtt, Compo } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 import { TextField } from "@nativescript/core";
@@ -240,6 +240,7 @@ export class PlacerComponent{
             let equipeFinale:Array<EltListeLicencie> = [];
             for(let i = 0; i < SessionAppli.nbJoueurs; i++) {
                 equipeFinale.push(this.equipe[i]);
+                console.log("Joueur #" + i.toString() + " place " + this.equipe[i].place + " " + this.equipe[i].id);
             }
             // tracer le json
             console.log("Equipe= " + SessionAppli.EquipetoJSon(equipeFinale, this.clubChoisi.id, this.licenceCapitaine, SessionAppli.formule));
@@ -249,6 +250,9 @@ export class PlacerComponent{
             } else {
                 SessionAppli.equipeA = equipeFinale;
             }
+            // sauvegarder la compo de l'équipe en BDD
+            Compo.PersisteEquipe(SessionAppli.rencontreChoisie, this.cote ? SessionAppli.equipeX : SessionAppli.equipeA, this.cote, 0);
+
             this.router.navigate(["preparation"],
             {
                 animated:true,
