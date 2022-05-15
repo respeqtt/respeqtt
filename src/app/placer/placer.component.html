@@ -39,9 +39,9 @@
         </ListView>
 
         <FlexboxLayout flexDirection="row" alignItems="stretch"  flexGrow="0" flexShrink="0" justifyContent="flex-start">
-            <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onAnnulerTap($event)"></Button>
+            <Button text="FERMER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onFermer($event)"></Button>
             <Button text="QR CODE" min-width= "50" width= "1000" flex-grow="1" class="bouton" (tap)="onQRCodeTap($event)"></Button>
-            <Button text="VALIDER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onValiderTap($event)" [isenabled]="actValider"></Button>
+            <Button text="VALIDER" min-width= "50" width= "1000" flex-grow="1" class="bouton"  (tap)="onValider($event)" [isenabled]="actValider"></Button>
         </FlexboxLayout>
         <Label text="" flexGrow="10" flexShrink="10"></Label>
     </FlexboxLayout>

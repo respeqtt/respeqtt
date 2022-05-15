@@ -82,6 +82,8 @@ export class SignerComponent{
             break;
             case "MONTRER" :            // montrer le QRCode de la signature
                 let cap:number;
+                // verrouiller la signature
+                Respeqtt.VerrouilleSignature();
                 // vérifier qu'on est bien le capitaine qui se déplace
                 if(SessionAppli.recoitCoteX) {
                     // capitaine A

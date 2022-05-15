@@ -25,6 +25,13 @@ export class Respeqtt {
         return true;
     }
 
+    public static RAZSignature() {
+        if(!this.SignatureEstVerrouillee()) {
+            this.signature=null;
+        }
+    }
+
+
     public static GetLicence() {
         if(this.signature) {
             return this.signature.GetLicence();
@@ -41,10 +48,23 @@ export class Respeqtt {
         }
     }
 
+    public static VerrouilleSignature() {
+        this.signature.Verrouille();
+    }
+
+
+    public static SignatureEstVerrouillee():boolean {
+        if(this.signature) {
+            return this.signature.EstVerrouillee();
+        } else {
+            return false;
+        }
+    }
+
 
     public static ChargeSignature() {
         // requêtes SQL
-        let sql:string = "select sig_va_signature, sig_vn_licence from Signature where sig_kn = 0";
+        let sql:string = "select sig_va_signature, sig_vn_licence, sig_vn_lock from Signature where sig_kn = 0";
         let promise = new Promise(function(resolve, reject) {
 
             RespeqttDb.db.all(sql).then(rows => {
@@ -54,6 +74,14 @@ export class Respeqtt {
                     console.log("sig=" + rows[0][0]);
                     elt.SetLicence(Number(rows[0][1]));
                     console.log("lic=" + rows[0][1]);
+                    // restaurer le verrou
+                    if(Number(rows[0][2]) > 0) {
+                        elt.Verrouille();
+                        console.log("licence verrouillée :" + rows[0][2]);
+                    } else {
+                        console.log("licence NON verrouillée :" + rows[0][2]);
+                    }
+
                     Respeqtt.signature = elt;
                     console.log("Trouvé licence : " + elt.GetLicence().toString());                    
                 } else {
@@ -108,8 +136,8 @@ export class Respeqtt {
     // calculer la signature
     let s:string = this.CreeSignature();
     Respeqtt.signature.SetSignature(s);
-    let sql ="insert into Signature (sig_kn, sig_va_signature, sig_vn_licence) values (0, '"
-            + s + "', " + lic.toString() + ")";
+    let sql ="insert into Signature (sig_kn, sig_va_signature, sig_vn_licence, sig_vn_lock) values (0, '"
+            + s + "', " + lic.toString() + ", " + (Respeqtt.SignatureEstVerrouillee() ? "1" : "0") + ")";
 
     RespeqttDb.db.execSQL(sql).then(id => {
         console.log("Signature insérée");
@@ -118,11 +146,32 @@ export class Respeqtt {
         });
      
     }
+
+    public static EffaceSignature() {
+
+        let sql ="delete from Signature";
+    
+        RespeqttDb.db.execSQL(sql).then(id => {
+            console.log("Signature effacée");
+            }, error => {
+                console.log("ECHEC DELETE Signature " + error.toString());
+            });
+         
+        }    
 }
 
 export class Signature {
     private signature:string="";
     private licence:number=0;
+    private lock:number=0;
+
+    public Verrouille() {
+        this.lock++;
+    }
+
+    public EstVerrouillee():boolean {
+        return this.lock > 0;
+    }
 
     public SetSignature(s:string) {
         this.signature = s;
@@ -860,7 +909,7 @@ export class Partie{
             n = formule.getNbParties();
             console.log("Nb parties=" + n);
             for(let i:number=0; i < SessionAppli.nbJoueurs; i++) {
-                console.log("J" + (i+1) + " A = " + (forfaitA ? "(forfait)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(forfait)" : eqX[i].nom));
+                console.log("J" + (i+1) + " A = " + (forfaitA ? "(absent)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(absent)" : eqX[i].nom));
             }
             for(let i:number = 0; i<n; i++) {
                 partie = new Partie(formule, formule.getPartie(i+1), eqA, eqX, forfaitA, forfaitX);
@@ -870,6 +919,7 @@ export class Partie{
         }
         return null;
     }
+    
 
     // crée une partie à partir de son modèle p (ex : AW) et des deux équipes
     // p vide -> partie créée vide
@@ -879,6 +929,7 @@ export class Partie{
         const debutA:number=f.debut("A");
         const debutX:number=f.debut("X");
 
+        console.log("Pts par victoire = " + SessionAppli.ptsParVictoire.toString());
         if(p != ""){
             // pas sélectionnée
             this.sel = false;
@@ -889,18 +940,10 @@ export class Partie{
                 this.desc = "*** double" + p.charAt(0) + " *** = ";
                 // mettre le score en cas de forfait
                 if(forfaitA && !forfaitX) {
-                    if(SessionAppli.ptsParVictoire == 2) {
-                        this.scoreAX = "0-2";
-                    } else {
-                        this.scoreAX = "0-1";
-                    }
+                    this.scoreAX = "0-" + SessionAppli.ptsParVictoire.toString();
                 }
                 if(forfaitX && !forfaitA) {
-                    if(SessionAppli.ptsParVictoire == 2) {
-                        this.scoreAX = "2-0";
-                    } else {
-                        this.scoreAX = "1-0";
-                    }
+                    this.scoreAX = SessionAppli.ptsParVictoire.toString() + "-0";
                 }
                 if(forfaitA && forfaitX) {
                     this.scoreAX = "0-0";
@@ -938,6 +981,7 @@ export class Partie{
                     if(!forfaitA) {
                         joueur = eqA[p.charCodeAt(0)-debutA];
                         console.log("Rang A =" + (p.charCodeAt(0)-debutA));
+                        console.log("joueur A =" + joueur.id.toString());
                         this.desc = p.charAt(0) + "/" + joueur.nom + " " + joueur.prenom + " vs ";
                         this.joueurA = joueur.id;
                     }
@@ -946,25 +990,45 @@ export class Partie{
                         this.desc = this.desc + p.charAt(1) + "/";
                         console.log("Rang X =" + (p.charCodeAt(1)-debutX));
                         joueur = eqX[p.charCodeAt(1)-debutX];
+                        console.log("joueur X =" + joueur.id.toString());
                         this.desc = this.desc + joueur.nom + " " + joueur.prenom + " = ";
                         this.joueurX = joueur.id;
                     }
                     // mettre le score en cas de forfait
-                    if(forfaitA || eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
-                        this.scoreAX = "0-2";
+                    if(forfaitA) {
+                        console.log("A forfait");
+                        this.scoreAX = "0-" + SessionAppli.ptsParVictoire.toString();
+                    } else {
+                        console.log("A pas forfait");
+                        if(eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
+                            this.scoreAX = "0-" + SessionAppli.ptsParVictoire.toString();
+                        }
                     }
-                    if(forfaitX || eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
-                        this.scoreAX = "2-0";
-                    }
+                    
+                    if(forfaitX) {
+                        console.log("X forfait");
+                        this.scoreAX = SessionAppli.ptsParVictoire.toString() + "-0";
+                    } else {
+                        console.log("X pas forfait");
+                        if(eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
+                            this.scoreAX = SessionAppli.ptsParVictoire.toString() + "-0";
+                        }
+                    } 
 
                     // corriger si double forfait
-                    if((forfaitA && eqX[p.charCodeAt(1)-debutX].nom == "(absent)")
-                    || (forfaitX && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
-                    || (eqX[p.charCodeAt(1)-debutX].nom == "(absent)" && eqA[p.charCodeAt(0)-debutA].nom == "(absent)")
-                    ) {
+                    if(forfaitA && !forfaitX) {
+                        if(eqX[p.charCodeAt(1)-debutX].nom == "(absent)") {
+                            this.scoreAX = "0-0";
+                        }
+                    }
+                    if(!forfaitA && forfaitX) {
+                        if(eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
+                            this.scoreAX = "0-0";
+                        }
+                    }
+                    if(!forfaitA && !forfaitX && eqX[p.charCodeAt(1)-debutX].nom == "(absent)" && eqA[p.charCodeAt(0)-debutA].nom == "(absent)") {
                         this.scoreAX = "0-0";
                     }
-
                 }
             }
         }
@@ -1012,19 +1076,11 @@ export class Partie{
             return false;
         }
         if(ptsA > ptsX) {
-            if(SessionAppli.ptsParVictoire == 2) {
-                this.scoreAX = "2-1";
-            } else {
-                this.scoreAX = "1-0";
-            }
+            this.scoreAX = SessionAppli.ptsParVictoire.toString() + "-" + (SessionAppli.ptsParVictoire - 1).toString();
             // mettre à jour la description
             console.log("desc:" + this.desc + "; pos = :"+ this.desc.search("=") + "; debut:" + this.desc.substring(0, this.desc.search("=")));
         } else {
-            if(SessionAppli.ptsParVictoire == 2) {
-                this.scoreAX = "1-2";
-            } else {
-                this.scoreAX = "0-1";
-            }
+            this.scoreAX = (SessionAppli.ptsParVictoire - 1).toString() + "-" + SessionAppli.ptsParVictoire.toString();
         }
         console.log("Partie=" + this.desc);
         return true;
@@ -1535,4 +1591,44 @@ export class Compo{
         });
     }
 
-};
+}
+
+export function MajScoreDoubleForfait(iPartie:number){
+    let finA:number = -1;
+    let forfaitA:boolean=false;
+    let forfaitX:boolean=false;
+    let doubleA:string;
+    let doubleX:string;
+
+    finA = SessionAppli.listeParties[iPartie].desc.indexOf("vs");
+
+    // est-ce que doubleA est forfait ?
+    doubleA = SessionAppli.listeParties[iPartie].desc.substring(0, finA);
+    console.log(">>doubleA=" + doubleA + "/" + doubleA.indexOf("(absent)"));
+    if(SessionAppli.forfaitA || doubleA.indexOf("(absent)")>=0) forfaitA = true;
+
+    // est-ce que doubleX est forfait ?
+    doubleX = SessionAppli.listeParties[iPartie].desc.substring(finA);
+    console.log(">>doubleX=" + doubleX + "/" + doubleX.indexOf("(absent)"));
+    if(SessionAppli.forfaitX || doubleX.indexOf("(absent)")>=0) forfaitX = true;
+
+    if(forfaitA) {
+        if(forfaitX) {
+            SessionAppli.listeParties[iPartie].scoreAX = "0-0";
+        } else {
+            if(SessionAppli.ptsParVictoire == 2) {
+                SessionAppli.listeParties[iPartie].scoreAX = "0-" + SessionAppli.ptsParVictoire.toString();
+            } else {
+                SessionAppli.listeParties[iPartie].scoreAX = "0-" + SessionAppli.ptsParVictoire.toString();
+            }
+        }
+    } else {
+        if(forfaitX) {
+            if(SessionAppli.ptsParVictoire == 2) {
+                SessionAppli.listeParties[iPartie].scoreAX = SessionAppli.ptsParVictoire.toString() + "-0";
+            } else {
+                SessionAppli.listeParties[iPartie].scoreAX = SessionAppli.ptsParVictoire.toString() + "-0";
+            }
+        }
+    }
+}

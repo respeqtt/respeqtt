@@ -56,6 +56,7 @@ export class ActionsComponent implements OnInit {
     actAbandonnerExt:boolean=false;           // si extérieur et rencontre choisie
     actSigner:boolean=false;                  // si extérieur et rencontre choisie
     actConsulterScores:boolean=false;         // si extérieur et scores existent
+    cacheRazLicence:boolean=false;              // si licence pas verrouillée (=déjà utilisée)
 
     constructor(private _routerExtensions: RouterExtensions) {
         this.router = _routerExtensions;
@@ -76,11 +77,11 @@ export class ActionsComponent implements OnInit {
                         this.sigOK = true;
                         console.log("signature chargée pour " + sig.GetLicence().toString());
                     } else {
-                        // pas trouvé de licence : il faut ouvrir la popup pour le saisir   
+                        // pas trouvé de licence : il faut ouvrir la popup pour la saisir   
                         this.router.navigate(["init"]);
             }
                 }  else {
-                    // saisir le numéro de licence : il faut ouvrir la popup pour le saisir
+                    // saisir le numéro de licence : il faut ouvrir la popup pour la saisir
                     this.router.navigate(["init"]);
                 }   
             }, error => {
@@ -188,6 +189,10 @@ export class ActionsComponent implements OnInit {
                 this.actSigner = false;
             }
         }
+        // RAZ de la licence si pas verrouillée
+        this.cacheRazLicence = Respeqtt.SignatureEstVerrouillee();
+        console.log("bouton RAZ licence " + (this.cacheRazLicence ? "caché" : "visible"));
+
         // page d'aide
         this.aide = this.pageAide('aide');
 
@@ -541,35 +546,14 @@ export class ActionsComponent implements OnInit {
             }
         }
         if(cote != "" && f.id > 0) {
-            dialogs.prompt({title:"Préférence",
-            message:"Voulez-vous saisir les doubles à partir de l'équipe en cours : " + texteEquipe,
-            okButtonText:"GARDER",
-            cancelButtonText:"SCANNER UNE AUTRE EQUIPE"
-            }).then(r => {
-                if(r.result) {
-                    console.log("!!! On garde l'équipe !!!");
-                    // aller à la page de compo des doubles
-                    this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationAller, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });
-                } else {
-                    // appeler la page de scan des doubles
-                    console.log("-> qrscan/EQUIPE/0");
-                    this.router.navigate(["qrscan/EQUIPE/0"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationAller, 
-                            duration : 380,
-                            curve : "easeIn"
-                        }
-                    });
+            // aller à la page de compo des doubles
+            this.router.navigate(["compoDoubleExt/" + cote + "/1/" + f.nbDoubles.toString()],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
                 }
             });
         }
@@ -704,6 +688,11 @@ export class ActionsComponent implements OnInit {
         });
     }
 
+    onRAZLicence(args:Event) {
+        Respeqtt.RAZSignature();
+        Respeqtt.EffaceSignature();
+        alert("Redémarrer l'application pour effacer la licence");
+    }
 
     pageAide(contexte:string):string {
         let page:string;

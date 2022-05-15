@@ -18,7 +18,7 @@ import { Component } from "@angular/core";
 import { Button, EventData, ListView, ItemEventData, Observable } from "@nativescript/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
-import { EltListeLicencie } from "../db/RespeqttDAO";
+import { EltListeLicencie, MajScoreDoubleForfait } from "../db/RespeqttDAO";
 import { SessionAppli } from "../session/session";
 import { _getStyleProperties } from "@nativescript/core/ui/core/view";
 
@@ -146,7 +146,7 @@ export class CompoDoubleComponent{
         for(var i = 0 ; i < this.nbDoubles; i++) {
             SessionAppli.listeParties[this.iDouble[i]].desc = "#" + this.doublesA[i] + " vs " + this.doublesX[i];
             // mettre à jour le score si un des doubles est forfait
-            this.MajScoreDoubleForfait(this.iDouble[i]);
+            MajScoreDoubleForfait(this.iDouble[i]);
         }
 
 
@@ -302,45 +302,6 @@ export class CompoDoubleComponent{
         }
     }
 
-    private MajScoreDoubleForfait(iPartie:number){
-        let finA:number = -1;
-        let forfaitA:boolean=false;
-        let forfaitX:boolean=false;
-        let doubleA:string;
-        let doubleX:string;
-
-        finA = SessionAppli.listeParties[iPartie].desc.indexOf("vs");
-
-        // est-ce que doubleA est forfait ?
-        doubleA = SessionAppli.listeParties[iPartie].desc.substring(0, finA);
-        console.log(">>doubleA=" + doubleA + "/" + doubleA.indexOf("(absent)"));
-        if(SessionAppli.forfaitA || doubleA.indexOf("(absent)")>0) forfaitA = true;
-
-        // est-ce que doubleX est forfait ?
-        doubleX = SessionAppli.listeParties[iPartie].desc.substring(finA);
-        console.log(">>doubleX=" + doubleX + "/" + doubleX.indexOf("(absent)"));
-        if(SessionAppli.forfaitX || doubleX.indexOf("(absent)")>0) forfaitX = true;
-
-        if(forfaitA) {
-            if(forfaitX) {
-                SessionAppli.listeParties[iPartie].scoreAX = "0-0";
-            } else {
-                if(SessionAppli.ptsParVictoire == 2) {
-                    SessionAppli.listeParties[iPartie].scoreAX = "0-2";
-                } else {
-                    SessionAppli.listeParties[iPartie].scoreAX = "0-1";
-                }
-            }
-        } else {
-            if(forfaitX) {
-                if(SessionAppli.ptsParVictoire == 2) {
-                    SessionAppli.listeParties[iPartie].scoreAX = "2-0";
-                } else {
-                    SessionAppli.listeParties[iPartie].scoreAX = "1-0";
-                }
-            }
-        }
-    }
 
     onScanTap(args: EventData) {
         // mémoriser les doubles déjà saisis
@@ -351,7 +312,7 @@ export class CompoDoubleComponent{
                 + (this.doublesX.length > 0 ? this.doublesX[i] : "")
                 + " = ";
             // mettre à jour le score si un des doubles est forfait
-            this.MajScoreDoubleForfait(this.iDouble[i]);
+            MajScoreDoubleForfait(this.iDouble[i]);
             console.log("Double[" + this.iDouble[i].toString() + "] = " + SessionAppli.listeParties[this.iDouble[i]].desc);
         }
 

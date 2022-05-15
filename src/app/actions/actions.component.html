@@ -40,6 +40,7 @@
             <Button text="Rencontres"  class="bouton" flexGrow="0" (tap)="onDownloadRencontre($event)"></Button>
             <Button text="Joueurs"     class="bouton" flexGrow="0" (tap)="onJoueurs($event)" [isenabled]="!this.modeRencontre"></Button>
             <Button text="Clubs"       class="bouton" flexGrow="0" (tap)="onAjouterClub($event)"></Button>       
+            <Button text="RAZ licence" class="bouton" flexGrow="0" (tap)="onRAZLicence($event)" [hidden]="cacheRazLicence"></Button>       
         </FlexboxLayout>
     </StackLayout>
     <StackLayout *tabItem="{title: 'Aide', iconSource: 'res://aide'}">    

@@ -33,7 +33,7 @@ export class RespeqttDb {
     private static creeTableClub:string = `create table if not exists Club (clu_kn integer PRIMARY KEY, clu_va_nom text)`;
 
     private static creeTableSignature:string = `create table if not exists Signature (sig_kn PRIMARY KEY, 
-        sig_va_signature text, sig_vn_licence integer)`;
+        sig_va_signature text, sig_vn_licence integer, sig_vn_lock integer)`;
 
     private static creeTableLicencie:string = `create table if not exists Licencie (lic_kn integer PRIMARY KEY, lic_va_nom text, lic_va_prenom text,
                 lic_vn_points integer, lic_clu_kn integer, lic_vn_mute integer, lic_vn_etranger integer, lic_vn_feminin integer,

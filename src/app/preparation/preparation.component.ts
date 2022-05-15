@@ -152,7 +152,7 @@ export class PreparationComponent{
         this.actValider = (SessionAppli.domicile == 1 && !SessionAppli.compoFigee && !SessionAppli.scoreValide)
                         || (SessionAppli.domicile == 0 && SessionAppli.equipeA.length > 0 && SessionAppli.equipeX.length > 0);
         this.actReserve = (SessionAppli.domicile == 1) && !(SessionAppli.listeParties.length > 0);
-        this.cartonsActifs = !SessionAppli.scoreValide;
+        this.cartonsActifs = !(SessionAppli.scoreValide || (SessionAppli.domicile != 1));
 
         console.log("actValider=" + this.actValider.toString());
     }
@@ -325,47 +325,50 @@ export class PreparationComponent{
         okButtonText:"VALIDER",
         cancelButtonText:"ANNULER"
         }).then(r => {
-            // vérifier que les deux équipes ont été saisies ou forfait
-            if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
-            || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
-                erreur(this.vcRef, "Les deux équipes n'ont pas été renseignées.");
-                return;
-            } else {
-                // si on est à domicile on complète les infos pour la feuille de match
-                if(SessionAppli.domicile) {
-                    // passer en mode rencontre
-                    SessionAppli.modeRencontre = true;
-                    // mémoriser la date de la rencontre
-                    SessionAppli.date = Maintenant();
-                    console.log("Date heure de la rencontre :" + SessionAppli.date);
-                    // mémoriser le lieu de la rencontre
-                    if(this.tf != null){
-                        this.lieu = this.tf.text;
-                    }
-                    SessionAppli.lieu = this.lieu;
-                    // désactiver les boutons
-                    this.modif = false;
-                    this.switchActif = false;
-                    this.actValider = false;
-                }
-                // figer la composition des deux équipes
-                SessionAppli.compoFigee = true;
-                // dans tous les cas sauvegarder la session en BDD
-                SessionAppli.Persiste().then(cr => {
-                    console.log("Session enregistrée");
-                    // retourner à la page des actions
-                    this.router.navigate(["actions"],
-                    {
-                        animated:true,
-                        transition: {
-                            name : SessionAppli.animationRetour, 
-                            duration : 380,
-                            curve : "easeIn"
+            // si OK
+            if(r.result) {
+                // vérifier que les deux équipes ont été saisies ou forfait
+                if((SessionAppli.equipeA.length == 0 && !SessionAppli.forfaitA)
+                || (SessionAppli.equipeX.length == 0 && !SessionAppli.forfaitX)) {
+                    erreur(this.vcRef, "Les deux équipes n'ont pas été renseignées.");
+                    return;
+                } else {
+                    // si on est à domicile on complète les infos pour la feuille de match
+                    if(SessionAppli.domicile) {
+                        // passer en mode rencontre
+                        SessionAppli.modeRencontre = true;
+                        // mémoriser la date de la rencontre
+                        SessionAppli.date = Maintenant();
+                        console.log("Date heure de la rencontre :" + SessionAppli.date);
+                        // mémoriser le lieu de la rencontre
+                        if(this.tf != null){
+                            this.lieu = this.tf.text;
                         }
+                        SessionAppli.lieu = this.lieu;
+                        // désactiver les boutons
+                        this.modif = false;
+                        this.switchActif = false;
+                        this.actValider = false;
+                    }
+                    // figer la composition des deux équipes
+                    SessionAppli.compoFigee = true;
+                    // dans tous les cas sauvegarder la session en BDD
+                    SessionAppli.Persiste().then(cr => {
+                        console.log("Session enregistrée");
+                        // retourner à la page des actions
+                        this.router.navigate(["actions"],
+                        {
+                            animated:true,
+                            transition: {
+                                name : SessionAppli.animationRetour, 
+                                duration : 380,
+                                curve : "easeIn"
+                            }
+                        });
+                    }, error => {
+                        console.log("Impossible de persister la session");
                     });
-                }, error => {
-                    console.log("Impossible de persister la session");
-                });
+                }                
             }
         });
     }
@@ -403,8 +406,19 @@ export class PreparationComponent{
     }
 
     private cartons(couleurCarton:couleur) {
-        alert("Cliquer sur un joueur pour lui donner un carton");
-        this.carton = couleurCarton;
+
+        // Permettre d'annuler si fausse manip
+        dialogs.prompt({title:"Aide",
+        message:"Cliquer sur un joueur pour lui donner un carton.",
+        okButtonText:"OK",
+        cancelButtonText:"ANNULER"
+        }).then(r => {
+            // si OK
+            if(r.result) {
+                this.carton = couleurCarton;
+            }
+        });
+
     }
 
     // choisir un carton jaune

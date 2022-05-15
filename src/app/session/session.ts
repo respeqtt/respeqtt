@@ -15,7 +15,7 @@
 /*******************************************************************************/
 
 import { RespeqttDb } from "../db/dbRespeqtt";
-import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules, Signature } from "../db/RespeqttDAO";
+import { Club, EltListeLicencie, Compo, Partie, Rencontre, EltListeRencontre, Set, Licencie, FormuledeRencontre, ListeFormules, MajScoreDoubleForfait } from "../db/RespeqttDAO";
 import { toSQL, bool2SQL, SQL2bool, toHTML, toURL } from "../outils/outils";
 
 import { Feuille18 } from "./feuille18";    // championnat par équipes départemental Rhone etc
@@ -163,6 +163,8 @@ export class SessionAppli {
                     } else {
                         SessionAppli.listeParties[p].desc = "#" + data.doubles[iDouble].double + " vs " + SessionAppli.listeParties[p].desc.substring(finA + 4);
                     }
+                    // mettre à jour les scores en cas de forfait
+                    MajScoreDoubleForfait(p);
                     iDouble++;
                 } 
             }
@@ -254,7 +256,6 @@ export class SessionAppli {
                 cote = f.coteDePlace(place);
                 if (cote != coteAttendu && coteAttendu != null) {
                     console.log("!!! Ce n'est pas une place du coté attendu " + f.desc);
-                    alert("L'équipe ne correspond pas au côté " + coteAttendu + " attendu");
                     equipe = [];
                     return equipe;
                 } else {
@@ -277,7 +278,6 @@ export class SessionAppli {
                         default :
                             // controle de la place dans la formule
                             console.log("!!! Place pas connue de la formule " + f.desc);
-                            alert("La place " + place + " n'existe pas dans cette rencontre.");
                             equipe = [];
                     }
                 }

@@ -159,6 +159,10 @@ export class ValiderComponent{
                 SessionAppli.signatureA = Respeqtt.GetSignature();
             }
             alert("Feuille signée");
+            
+            // verrouiller la signature
+            Respeqtt.VerrouilleSignature();
+
         }       
 
         // Vérifier la présence des signatures
@@ -173,22 +177,24 @@ export class ValiderComponent{
         okButtonText:"VALIDER",
         cancelButtonText:"ANNULER"
         }).then(r => {
-            SessionAppli.scoreValide = true;
-            // mémoriser la session
-            SessionAppli.Persiste().then(cr => {
-                // retour à la page des actions
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
+            if(r.result) {
+                SessionAppli.scoreValide = true;
+                // mémoriser la session
+                SessionAppli.Persiste().then(cr => {
+                    // retour à la page des actions
+                    this.router.navigate(["actions"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
+                }, error => {
+                    console.log("Impossible de persister la session : " + error);
                 });
-            }, error => {
-                console.log("Impossible de persister la session : " + error);
-            });
+            }
         });
     }
 

@@ -39,7 +39,7 @@ export class CompoComponent{
     maListe:Observable;
     cote:boolean;
     clubChoisi:Club;
-    routerExt: RouterExtensions;
+    router: RouterExtensions;
     equipe:Array<EltListeLicencie> = [];
     modeRencontre:boolean = SessionAppli.modeRencontre;
     actScanner:boolean=true;
@@ -60,7 +60,7 @@ export class CompoComponent{
         console.log("Choix joueurs coté " + this._route.snapshot.paramMap.get("cote"));
 
         // récupération du routeur pour naviguer
-        this.routerExt = _routerExtensions;
+        this.router = _routerExtensions;
 
         // recherche du club correspondant
         if(this.cote) {
@@ -113,12 +113,28 @@ export class CompoComponent{
 
     onAnnulerTap(args: EventData) {
         let button = args.object as Button;
-        this.routerExt.navigate(["preparation"]);
+        this.router.navigate(["preparation"],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationRetour, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onScanTap(args: EventData) {
         // appeler la page de scan
-        this.routerExt.navigate(["/qrscan/COMPO/" + this._route.snapshot.paramMap.get("cote")]);
+        this.router.navigate(["/qrscan/COMPO/" + this._route.snapshot.paramMap.get("cote")],
+        {
+            animated:true,
+            transition: {
+                name : SessionAppli.animationAller, 
+                duration : 380,
+                curve : "easeIn"
+            }
+        });
     }
 
     onForfaitTap($event){
@@ -136,7 +152,15 @@ export class CompoComponent{
                         console.log("FORFAIT EQUIPE " + SessionAppli.clubA.nom);
                     }
                     // Revenir à la page de préparation de la feuille
-                    this.routerExt.navigate(["preparation"]);
+                    this.router.navigate(["preparation"],
+                    {
+                        animated:true,
+                        transition: {
+                            name : SessionAppli.animationRetour, 
+                            duration : 380,
+                            curve : "easeIn"
+                        }
+                    });
                 } else {
                     console.log("FORFAIT ANNULE");
                 }
@@ -163,13 +187,15 @@ export class CompoComponent{
                 SessionAppli.equipeA = this.equipe;
                 console.log("Joueurs équipe A choisis");
             }
-            // sauvegarder la session en BDD
-            SessionAppli.Persiste().then(cr => {
-                console.log("Session enregistrée");
-                // passer à la page de placement des joueurs sur la feuille de match
-                this.routerExt.navigate(["placer/" + this._route.snapshot.paramMap.get("cote")]);
-            }, error => {
-                console.log("Impossible de persister la session");
+            // passer à la page de placement des joueurs sur la feuille de match
+            this.router.navigate(["placer/" + this._route.snapshot.paramMap.get("cote")],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
             });
 
         }

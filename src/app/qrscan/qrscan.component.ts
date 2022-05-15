@@ -206,7 +206,7 @@ export class QRScanComponent implements OnInit{
                             console.log("Pas trouvé la formule " + nFormule.toString());
                         }
                     } else {
-                        erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + iClub.toString() + ")");
+                        erreur(this, "Ce n'est pas l'équipe attendue, vérifiez le club (" + iClub.toString() + ")");
                     }
                 break;
                 case "DOUBLES" :    // si c'est un double
@@ -238,7 +238,7 @@ export class QRScanComponent implements OnInit{
                         SessionAppli.equipeX = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubX.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeX.length == 0) {
                             console.log("Ce n'est pas l'équipe attendue");
-                            erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubX.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
+                            erreur(this, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubX.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
                         } else {
                             console.log("Equipe de " + SessionAppli.equipeA.length.toString() + " joueurs");
                             let licCapitaineX:number;
@@ -270,7 +270,7 @@ export class QRScanComponent implements OnInit{
                     } else {
                         SessionAppli.equipeA = SessionAppli.JsonToEquipe(result.text, SessionAppli.clubA.id, this.cote ? "X" : "A");
                         if(SessionAppli.equipeA.length == 0) {
-                            erreur(this.vcRef, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubA.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
+                            erreur(this, "Ce n'est pas l'équipe attendue, vérifiez le club (" + SessionAppli.clubA.id.toString() + ") et le côté (" + (this.cote ? "X)" : "A)"));
                         } else {
                             console.log("Equipe de " + SessionAppli.equipeA.length.toString() + " joueurs");
                             let licCapitaineA:number;

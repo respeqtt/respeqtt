@@ -214,8 +214,19 @@ export class PlacerComponent{
         }
     }
 
-    onAnnulerTap(args: EventData) {
+    onFermer(args: EventData) {
         let button = args.object as Button;
+        // on efface la compo d'équipe
+        this.equipe = [];
+        if(this.cote) {
+            SessionAppli.equipeX = this.equipe;
+            SessionAppli.capitaineX = null;
+        } else {
+            SessionAppli.equipeA = this.equipe;
+            SessionAppli.capitaineA = null;
+        }
+        
+
         this.router.navigate(["preparation"],
         {
             animated:true,
@@ -227,7 +238,7 @@ export class PlacerComponent{
         });
     }
 
-    onValiderTap(args: EventData) {
+    onValider(args: EventData) {
 
         // vérifier que le capitaine a été saisi
         if(this.tf.text == "") {
@@ -252,15 +263,21 @@ export class PlacerComponent{
             }
             // sauvegarder la compo de l'équipe en BDD
             Compo.PersisteEquipe(SessionAppli.rencontreChoisie, this.cote ? SessionAppli.equipeX : SessionAppli.equipeA, this.cote, 0);
-
-            this.router.navigate(["preparation"],
-            {
-                animated:true,
-                transition: {
-                    name : SessionAppli.animationRetour, 
-                    duration : 380,
-                    curve : "easeIn"
-                }
+            // sauvegarder la session en BDD
+            SessionAppli.Persiste().then(cr => {
+                console.log("Session enregistrée");
+                // retourner à la page de préparation
+                this.router.navigate(["preparation"],
+                {
+                    animated:true,
+                    transition: {
+                        name : SessionAppli.animationRetour, 
+                        duration : 380,
+                        curve : "easeIn"
+                    }
+                });
+                }, error => {
+                console.log("Impossible de persister la session");
             });
         }
 
