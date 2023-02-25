@@ -317,6 +317,11 @@ export class QRScanComponent implements OnInit{
                     // retour à la page de consultation des scores
                     this.destination = "lancement";
                 break;
+                case "RENCONTRE" :
+                    SessionAppli.JSonToRencontre(result.text);
+                    // retour à la page de consultation des actions
+                    this.destination = "actions";
+                break;
             }
             // retour à la page appelante
             this.router.navigate([this.destination],

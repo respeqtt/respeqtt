@@ -15,14 +15,14 @@
 /*******************************************************************************/
 import { RespeqttDb } from "../db/dbRespeqtt";
 import { SessionAppli} from "../session/session";
-import { bool2SQL, SQL2bool, toSQL, toURL, URLtoString, URLtoStringSansQuote } from "../outils/outils";
+import { bool2SQL, SQL2bool, toSQL, toURL, Mobile, URLtoStringSansQuote } from "../outils/outils";
 
 
 export class Respeqtt {
     private static signature:Signature=null;
 
     public static isTest() {
-        return true;
+        return false;
     }
 
     public static RAZSignature() {
@@ -103,27 +103,29 @@ export class Respeqtt {
         let s: string = "";
         let d:Date = new Date();
         let inOptions: string = '{[(abcdefghijklmnopqrstuvwxyz+-§*%$_.;:#<>&|0123456789)]}';
+
+        let mobile=new Mobile();
     
         // génération aléatoire de la signature
-        for (let i = 0; i < 20; i++) {
-              s += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
-            }
-        // ajout de la licence et de la date courante
-        let mois = d.getMonth()+1;
-        let jour = d.getDate();
-        let heure = d.getHours();
-        let min = d.getMinutes();
-        let sec = d.getSeconds();
-        let ms = d.getMilliseconds();
+        // for (let i = 0; i < 20; i++) {
+        //       s += inOptions.charAt(Math.floor(Math.random() * inOptions.length));
+        //     }
+        // ajout de la licence et de l'id du téléphone
+        // let mois = d.getMonth()+1;
+        // let jour = d.getDate();
+        // let heure = d.getHours();
+        // let min = d.getMinutes();
+        // let sec = d.getSeconds();
+        // let ms = d.getMilliseconds();
 
-        s += Respeqtt.signature.GetLicence().toString() + "@" 
-            + d.getFullYear().toString()
-            + (mois < 10 ? "0" + mois.toString() : mois.toString())
-            + (jour < 10 ? "0" + jour.toString() : jour.toString())
-            + (heure < 10 ? "0" + heure.toString() : heure.toString())
-            + (min < 10 ? "0" + min.toString() : min.toString())
-            + (sec < 10 ? "0" + sec.toString() : sec.toString())
-            + (ms < 10 ? "00" + ms.toString() : (ms < 100 ? "0" + ms.toString() : ms.toString()));
+        s = Respeqtt.signature.GetLicence().toString() + "@" + mobile.uuid;
+            // + d.getFullYear().toString()
+            // + (mois < 10 ? "0" + mois.toString() : mois.toString())
+            // + (jour < 10 ? "0" + jour.toString() : jour.toString())
+            // + (heure < 10 ? "0" + heure.toString() : heure.toString())
+            // + (min < 10 ? "0" + min.toString() : min.toString())
+            // + (sec < 10 ? "0" + sec.toString() : sec.toString())
+            // + (ms < 10 ? "00" + ms.toString() : (ms < 100 ? "0" + ms.toString() : ms.toString()));
         console.log("Signature=" + s); 
         return s;       
     }
@@ -321,6 +323,8 @@ export class Rencontre{
                     elt.journee = Number(rows[row][2]);
                     console.log("li" + n, "journee=" + elt.journee + "/" + rows[row][2]);
                     elt.date = rows[row][3];
+                    // temp
+                    elt.date = elt.date.replace(/\//g, "-")
                     console.log("li" + n, "date=" + elt.date + "/" + rows[row][3]);
                     elt.phase = rows[row][5];
                     console.log("li" + n, "phase=" + elt.phase.toString() + "/" + rows[row][5]);
@@ -362,6 +366,8 @@ export class Rencontre{
                     elt.journee = Number(rows[row][2]);
                     console.log("li" + n, "journee=" + elt.journee + "/" + rows[row][2]);
                     elt.date = rows[row][3];
+                    // temp
+                    elt.date = elt.date.replace(/\//g, "-")
                     console.log("li" + n, "date=" + elt.date + "/" + rows[row][3]);
                     elt.phase = rows[row][5];
                     console.log("li" + n, "phase=" + elt.phase.toString() + "/" + rows[row][5]);
@@ -438,6 +444,8 @@ export class Rencontre{
                     rencontre.club1= Number(row[0]);
                     rencontre.club2 = Number(row[1]);
                     rencontre.date= row[2];
+                    // temp
+                    rencontre.date = rencontre.date.replace(/\//g, "-")
                     rencontre.phase= Number(row[3]);
                     rencontre.journee= Number(row[4]);
                     rencontre.formule= Number(row[5]);
@@ -485,7 +493,7 @@ export class Rencontre{
         return promise;
     }
 
-    private static getNextId() {
+    public static getNextId() {
         const select = "select max(ren_kn) as kn from Rencontre";
         let promise = new Promise(function(resolve, reject) {
             RespeqttDb.db.get(select).then(row => {
@@ -615,7 +623,7 @@ export class Club{
                     resolve(club);
                 }
                 else {
-                    resolve("(pas de club sélectionné)");
+                    resolve(null);
                 }
             }, error => {
                 reject(error);
@@ -643,25 +651,33 @@ export class Club{
     }
 
     public static ajouteClub(numero:number, nom:string) {
-        let sqlClub ="insert into Club (clu_kn, clu_va_nom) values (" + numero + ", " + toSQL(nom) + ")";
+        let promise = new Promise(function(resolve, reject) {
+            let sqlClub ="insert into Club (clu_kn, clu_va_nom) values (" + numero + ", " + toSQL(nom) + ")";
 
-        RespeqttDb.db.execSQL(sqlClub).then(id => {
-            console.log("Club " + nom + " ajouté");
+            RespeqttDb.db.execSQL(sqlClub).then(id => {
+                console.log("Club " + nom + " ajouté");
+                resolve(numero);
             }, error => {
                 console.log("ECHEC INSERT Club " + error.toString());
+                reject(error);
             });
-
+        });
+        return promise;
     }
 
     public static supprimeClub(numero:number) {
-        let sqlClub ="delete from Club where clu_kn=" + numero;
+        let promise = new Promise(function(resolve, reject) {
+            let sqlClub ="delete from Club where clu_kn=" + numero;
 
-        RespeqttDb.db.execSQL(sqlClub).then(id => {
-            console.log("Club " + numero + " supprimé");
+            RespeqttDb.db.execSQL(sqlClub).then(id => {
+                console.log("Club " + numero + " supprimé");
+                resolve("ok");
             }, error => {
                 console.log("ECHEC DELETE Club " + error.toString());
+                reject(error);
             });
-
+        });
+        return promise;
     }
 
 
@@ -888,10 +904,11 @@ export class Partie{
     joueurX:number;             // numéro de licence joueur de l'équipe X
     simple:boolean;             // VRAI si c'est un simple
 //    score:number;               // 2 si A a gagné, 1 si X a gagné, -2 si X forfait, -1 si A forfait, 0 si pas joué
-    scoreAX:string="";             // score de A et X séparé par un -
+    scoreAX:string="";          // score de A et X séparé par un -
     sets:Array<Set>=[];         // liste des sets disputés
     desc:string;                // description pour la liste
     sel:boolean;                // sélection si dans une liste
+    validee:boolean=false;      // vrai si les scores ont été validés
 
     // crée la liste des parties
     static InitListeParties(eqA:Array<EltListeLicencie>, eqX:Array<EltListeLicencie>, forfaitA:boolean, forfaitX:boolean):Array<Partie> {
@@ -907,12 +924,13 @@ export class Partie{
         if(formule) {
             // mettre en forme les parties
             n = formule.getNbParties();
-            console.log("Nb parties=" + n);
-            for(let i:number=0; i < SessionAppli.nbJoueurs; i++) {
+            console.log("Nb parties= " + n);
+            for(var i:number=0; i < SessionAppli.nbJoueurs; i++) {
                 console.log("J" + (i+1) + " A = " + (forfaitA ? "(absent)" : eqA[i].nom) + "/ J" + (i+1) + " X = " + (forfaitX ? "(absent)" : eqX[i].nom));
             }
-            for(let i:number = 0; i<n; i++) {
+            for(var i:number = 0; i<n; i++) {
                 partie = new Partie(formule, formule.getPartie(i+1), eqA, eqX, forfaitA, forfaitX);
+                partie.validee = false;
                 liste.push(partie);
             }
             return liste;
@@ -928,6 +946,8 @@ export class Partie{
         let joueur:EltListeLicencie;
         const debutA:number=f.debut("A");
         const debutX:number=f.debut("X");
+
+        this.validee = false;
 
         console.log("Pts par victoire = " + SessionAppli.ptsParVictoire.toString());
         if(p != ""){
@@ -1183,7 +1203,7 @@ export class Partie{
     private static PersistePartie(rencontre:number, partie:Partie, rang:number) {
         let update:string;
         let insertP: string  = `insert into Partie (par_ren_kn, par_vn_num, par_va_desc,
-                               par_vn_jouA, par_vn_jouX, par_vn_double, par_va_score) values (`;
+                               par_vn_jouA, par_vn_jouX, par_vn_double, par_va_score, par_vn_validee) values (`;
         let insertS: string  = "insert into Set_ren (set_par_kn, set_vn_num, set_vn_score) values (";
         let values:string;
 
@@ -1195,7 +1215,8 @@ export class Partie{
             + "par_vn_jouA = " + (double ? 0 : partie.joueurA) + ", "
             + "par_vn_jouX = " + (double ? 0 : partie.joueurX) + ", "
             + "par_vn_double = " + bool2SQL(double) + ", "
-            + "par_va_score = " + toSQL(partie.scoreAX) + " "
+            + "par_va_score = " + toSQL(partie.scoreAX) + ", "
+            + "par_vn_validee = " + bool2SQL(partie.validee) + " "
             + "where par_ren_kn = " + rencontre
             + " and par_vn_num = " + rang;
 
@@ -1212,7 +1233,9 @@ export class Partie{
                             + (double ? 0 : partie.joueurA) + ", "
                             + (double ? 0 : partie.joueurX) + ", "
                             + bool2SQL(double) + ", "
-                            + toSQL(partie.scoreAX) + ")";
+                            + toSQL(partie.scoreAX) + ", "
+                            + bool2SQL(partie.validee)
+                            + ")";
 
                     RespeqttDb.db.execSQL(insertP + values).then(id => {
                         console.log("Partie " + rang + " | " + insertP + values);
@@ -1359,6 +1382,9 @@ export class Set{
 
     // écrit la liste des sets d'une rencontre en BDD ; essaie update, si ne marche pas essaie insert
     public static PersisteSets(rencontre:number, parties:Array<Partie>, debutPartie:number=0, debutSet:number=0) {
+
+console.log("PersisteSets " + parties.length.toString() + "/" + parties[debutPartie].sets.length.toString())
+
             if(parties.length==0 || parties[debutPartie].sets.length==0) {
                 return;
             }

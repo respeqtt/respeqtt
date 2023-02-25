@@ -20,7 +20,7 @@ import { SessionAppli } from "../session/session";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
 import { toURL } from "../outils/outils";
-import { EltListeLicencie, Respeqtt, Signature } from "../db/RespeqttDAO";
+import { EltListeLicencie, Respeqtt, Set } from "../db/RespeqttDAO";
 
 var dialogs = require("@nativescript/core/ui/dialogs");
 
@@ -146,6 +146,24 @@ export class ValiderComponent{
     onValider(args: EventData) {
         let button = args.object as Button;
         let alerte:string="";
+        
+
+        // vérifier si les scores de toutes les parties ont bien été validés
+        var msg:string = "Les scores des parties :\n";
+        var ok:boolean = true;
+        for(var i:number=0; i < SessionAppli.listeParties.length; i++) {
+            if(SessionAppli.listeParties[i].validee == false) {
+                // partie non validée
+               msg = msg  + "\t" + SessionAppli.listeParties[i].desc + "\n";
+               ok = false;
+            }
+        }
+        // si au moins une partie n'a pas été validée
+        if (!ok) {
+            msg = msg +  "n'ont pas été validés.";
+            alert(msg);
+            return;
+        }        
 
         // signature du club qui reçoit
         let cap:EltListeLicencie = SessionAppli.recoitCoteX ? SessionAppli.capitaineX : SessionAppli.capitaineA;

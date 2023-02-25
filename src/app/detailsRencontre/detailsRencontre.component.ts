@@ -188,9 +188,9 @@ export class DetailsRencontreComponent extends Observable {
         r.poule = this.poule;
         r.club1 = this.clubADomicile.numero;
         r.club2 = this.clubVisiteur.numero;
-        r.date = this.date.getDate().toString() + "/" + (this.date.getMonth()+1).toString() + "/" +  this.date.getFullYear().toString();
-        r.date = this.date.getFullYear().toString() + "/"
-               + ((this.date.getMonth()+1) > 9 ? (this.date.getMonth()+1).toString() : "0" + (this.date.getMonth()+1)).toString() + "/"
+        r.date = this.date.getDate().toString() + "-" + (this.date.getMonth()+1).toString() + "-" +  this.date.getFullYear().toString();
+        r.date = this.date.getFullYear().toString() + "-"
+               + ((this.date.getMonth()+1) > 9 ? (this.date.getMonth()+1).toString() : "0" + (this.date.getMonth()+1)).toString() + "-"
                + ((this.date.getDate() > 9 ? this.date.getDate().toString() : "0" + this.date.getDate().toString()))
         r.echelon = this.echelon;
         r.nbSets = this.nbSets;

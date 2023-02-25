@@ -73,16 +73,10 @@ export class ChoixRencontreComponent {
                     console.log("Impossible de lire la liste des rencontres : " + error.toString());
                 });
             } else {
-                SessionAppli.tab = 2; 
-                alert("Vous n'avez renseigné aucune rencontre à " + (dom ? "domicile." : "l'extérieur."));
-                this.router.navigate(["actions"],
-                {
-                    animated:true,
-                    transition: {
-                        name : SessionAppli.animationRetour, 
-                        duration : 380,
-                        curve : "easeIn"
-                    }
+                Rencontre.getListe().then(liste => {
+                    this.listeRencontres = liste as Array<EltListeRencontre>;
+                }, error => {
+                    console.log("Impossible de lire la liste des rencontres : " + error.toString());
                 });
             }
         }, error => {

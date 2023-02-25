@@ -97,6 +97,8 @@ export class ResultatComponent{
         if(SessionAppli.listeParties[this.numPartie].sets) {
             if(SessionAppli.listeParties[this.numPartie].sets.length > 0)
                 this.set1 = SessionAppli.listeParties[this.numPartie].sets[0].score;
+            else
+                console.log("Nb sets = 0");
             if(SessionAppli.listeParties[this.numPartie].sets.length > 1)
                 this.set2 = SessionAppli.listeParties[this.numPartie].sets[1].score;
             if(SessionAppli.listeParties[this.numPartie].sets.length > 2)
@@ -105,6 +107,8 @@ export class ResultatComponent{
                 this.set4 = SessionAppli.listeParties[this.numPartie].sets[3].score;
             if(SessionAppli.listeParties[this.numPartie].sets.length > 4)
                 this.set5 = SessionAppli.listeParties[this.numPartie].sets[4].score;
+        } else {
+            console.log("Pas de set enregistré");
         }
     }
 
@@ -310,6 +314,9 @@ export class ResultatComponent{
         if(this.ConstruitScore()) {
             // Afficher le résultat
             console.log("Résultat = " + this.quoi);
+            // valider la partie
+            SessionAppli.listeParties[this.numPartie].validee = true;
+            console.log("Partie validée");
             // Comptabiliser les cartons
             for(var i = 0; i < SessionAppli.nbJoueurs; i++) {
                 if(SessionAppli.listeParties[this.numPartie].joueurX == SessionAppli.equipeX[i].id) {
@@ -348,11 +355,36 @@ export class ResultatComponent{
                 console.log("Impossible de persister la session");
             });           
         } else {
+            // invalider la partie
+            SessionAppli.listeParties[this.numPartie].validee = false;
             alert("Score incorrect ou incomplet, merci de corriger");
         }
     }
 
-    onTapFermer(args: EventData) {  
+    onTapFermer(args: EventData) {
+        let button = args.object as Button;
+        var resPartie:Array<Set>=[];
+
+
+        if(this.tf1.text) this.set1 = this.tf1.text;
+        if(this.tf2.text) this.set2 = this.tf2.text;
+        if(this.tf3.text) this.set3 = this.tf3.text;
+        if(this.tf4.text) this.set4 = this.tf4.text;
+        if(this.tf5.text) this.set5 = this.tf5.text;
+
+        this.AjouteRes(resPartie, this.set1);
+        this.AjouteRes(resPartie, this.set2);
+        this.AjouteRes(resPartie, this.set3);
+        this.AjouteRes(resPartie, this.set4);
+        this.AjouteRes(resPartie, this.set5);
+
+        // invalider la partie
+        SessionAppli.listeParties[this.numPartie].validee = false;
+        SessionAppli.listeParties[this.numPartie].sets = resPartie;
+        // sauvegarder la session en BDD
+        SessionAppli.Persiste().then(cr => {
+            console.log("Session enregistrée");
+        // retour à l'onglet d'appel
         if(SessionAppli.domicile == 1) {
             this.router.navigate(["lancement"],
             {
@@ -374,7 +406,12 @@ export class ResultatComponent{
                 }
             });
         }
+        }, error => {
+            console.log("Impossible de persister la session");
+        });           
     }
+
+ 
 
     onTapScan(args: EventData) {
         // appeler la page de scan

@@ -12,6 +12,7 @@ export class Mobile {
     langue: string;
     api: string;
     estTablette: boolean;
+    uuid:string;
 
     public constructor() {
         // The absolute height of the screen in density independent pixels.
@@ -31,6 +32,9 @@ export class Mobile {
         this.api = Device.sdkVersion;
         // Tablette ou téléphone ? pas retrouvé l'enum correspondant : DeviceType.Tablet
         this.estTablette = Device.deviceType == "Tablet";
+        // Quel IMEI ?
+        this.uuid = Device.uuid;
+
         /* pour changer le style, à placer dans les paramètres de @Component
             styleUrls: ["./home.component.css",
         (device.deviceType == DeviceType.Tablet ? "./home.tablet.css" : "./home.phone.css")]

@@ -12,6 +12,7 @@
         <FlexboxLayout flexDirection="column" justifyContent="flex-start"  height="100%">
             <Button [text]="(this.actGererParties ? 'Consulter les équipes' : 'Choisir une rencontre')" class="bouton" flexGrow="0" flexShrink="1" (tap)="onPreparer($event)" [isenabled]="actChoisirRencontre"></Button>
             <Button text="Gérer les parties"                class="bouton" flexGrow="0" flexShrink="1" (tap)="onLancement($event)" [isenabled]="actGererParties"></Button>
+            <Button text="Partager la rencontre"            class="bouton" flexGrow="0" flexShrink="1" (tap)="onPartagerRencontre($event)" [isenabled]="actGererParties"></Button>
             <Button text="Partager les scores"              class="bouton" flexGrow="0" flexShrink="1" (tap)="onPartager($event)" [isenabled]="actGererParties"></Button>
             <Button text="Valider le score de la rencontre" class="bouton" flexGrow="0" flexShrink="1" (tap)="onValiderScore($event)" [isenabled]="actValider"></Button>
             <Button text="Feuille de match"                 class="bouton" flexGrow="0" flexShrink="1" (tap)="onFeuille($event)" [isenabled]="actVoirFeuille"></Button>
@@ -26,6 +27,7 @@
             <Button text="Choisir une rencontre"   class="bouton" flexGrow="0" flexShrink="1" (tap)="onRencontre($event)" [isenabled]="actChoisirRencontreExt"></Button>
             <Button [text]="(this.actEquipesComposeesExt ? 'Consulter les équipes' : 'Composer son équipe')" class="bouton" flexGrow="0" flexShrink="1" (tap)="onCompo($event)" [isenabled]="actComposerEquipe"></Button>
             <Button text="Composer les doubles"    class="bouton" flexGrow="0" flexShrink="1" (tap)="onCompoDoubles($event)" [isenabled]="actComposerDoubles"></Button>
+            <Button text="Importer la rencontre"   class="bouton" flexGrow="0" flexShrink="1" (tap)="onImporterRencontre($event)" [isenabled]="actSaisirPartie"></Button>
             <Button text="Importer les scores"     class="bouton" flexGrow="0" flexShrink="1" (tap)="onImporter($event)" [isenabled]="actImporterScores"></Button>
             <Button text="Consulter les scores"    class="bouton" flexGrow="0" flexShrink="1" (tap)="onConsulter($event)" [isenabled]="actConsulterScores"></Button>
             <Button text="Saisir une partie"       class="bouton" flexGrow="0" flexShrink="1" (tap)="onPartie($event)" [isenabled]="actSaisirPartie"></Button>

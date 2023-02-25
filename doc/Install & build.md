@@ -74,3 +74,7 @@ ns build android --release --key-store-path _fichier-keystore-avec-son-chemin_ -
 ### Mettre à jour Nativescript
 npm i -g nativescript
 ns migrate
+
+
+https://play.google.com/store/apps/details?id=org.nativescript.respeqtt
+

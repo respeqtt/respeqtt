@@ -120,7 +120,7 @@ export class ActionsComponent implements OnInit {
         let mobile:Mobile= new Mobile;
         SessionAppli.dimEcran = mobile.largeurEcran < mobile.hauteurEcran ? mobile.largeurEcran : mobile.hauteurEcran;
         this.dim = SessionAppli.dimEcran;
-        console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api);
+        console.log("OS : " + mobile.OS() + ", modèle : " + mobile.modele, ", API : " + mobile.api + ", UUID:" + mobile.uuid);
 
         // positionnement sur un onglet
         console.log("Tab=" + SessionAppli.tab.toString());
@@ -161,7 +161,8 @@ export class ActionsComponent implements OnInit {
         // choix des rencontres
         this.actChoisirRencontreExt =  (SessionAppli.listeRencontres != null) 
                                     && (SessionAppli.listeRencontres.length > 0) 
-                                    && (SessionAppli.rencontreChoisie == -1);     
+                                    && (SessionAppli.rencontreChoisie == -1);
+        console.log("lg liste rencontres = " + SessionAppli.listeRencontres.length.toString() + " rencontre choisie = " + SessionAppli.rencontreChoisie.toString());
         // composer équipe
         this.actComposerEquipe = (SessionAppli.domicile == 0) && SessionAppli.rencontreChoisie != -1;
         // composer les doubles
@@ -611,6 +612,33 @@ export class ActionsComponent implements OnInit {
 
     }
 
+    onPartagerRencontre(args: EventData) {
+        
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        Rencontre.getRencontre(SessionAppli.rencontreChoisie).then(renc => {
+            let r:Rencontre = renc as Rencontre;
+            const quoi:string= SessionAppli.RencontreToJson(r);
+            const titre:string="Rencontre " + SessionAppli.titreRencontre;
+            const dim:number = SessionAppli.dimEcran - 40;
+
+            // appeler la page d'affichage du QRCode des scores
+
+            this.router.navigate(["attente/" + quoi + "/" + dim + "/" + titre + "/actions/aucun"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+        });
+    }
+
     onImporter(args: EventData) {
         
         // préparation de la session
@@ -621,6 +649,27 @@ export class ActionsComponent implements OnInit {
         if(this.actImporterScores) {
             // appeler la page de scan des scores
             this.router.navigate(["qrscan/SCORES/0"],
+            {
+                animated:true,
+                transition: {
+                    name : SessionAppli.animationAller, 
+                    duration : 380,
+                    curve : "easeIn"
+                }
+            });
+        }
+    }
+
+    onImporterRencontre(args: EventData) {
+        
+        // préparation de la session
+        if(SessionAppli.rencontreChoisie < 0) {
+            SessionAppli.tab = 1;
+            SessionAppli.rencontreChoisie = 0;
+        }
+        if(this.actSaisirPartie) {
+            // appeler la page de scan de la rencontre
+            this.router.navigate(["qrscan/RENCONTRE/0"],
             {
                 animated:true,
                 transition: {

@@ -26,7 +26,7 @@ import { Verso }  from "./verso";           // verso de toutes les feuilles
 
 export class SessionAppli {
 
-    public static version = "ns8-1.093b";
+    public static version = "ns8.1-1.01r";
     public static presentation:boolean = true;
     public static listeRencontres:Array<EltListeRencontre>=[];
     public static recoitCoteX = false;
@@ -114,10 +114,9 @@ export class SessionAppli {
                         scoreA = scoreA + 2;
                     break;
                     default:
-                        console.log("Score incorrect :" + SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].scoreAX);
+                        console.log("Score incorrect :" + i.toString() + ": " + SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].scoreAX);
                 }
             } else {
-                console.log(SessionAppli.listeParties[i].desc + SessionAppli.listeParties[i].scoreAX);
                 scoreComplet = false;
             }
         }
@@ -172,6 +171,91 @@ export class SessionAppli {
             console.log("Le club n°" + numClub.toString() + " n'est pas celui attendu");
         }
 
+    }
+
+    // encode la rencontre en JSON
+    public static RencontreToJson(r:Rencontre):string {
+        let json:string="";
+        json = json + '{"rencontre":{"id":"0",';
+        json = json +  '"club1":"1",';
+        json = json +  '"club2":"2",';
+        json = json +  '"date":"'      + r.date + '",';
+        json = json +  '"phase":"'     + r.phase + '",';
+        json = json +  '"journee":"'   + r.journee + '",';
+        json = json +  '"nbJoueurs":"' + r.nbJoueurs + '",';
+        json = json +  '"formule":"'   + r.formule + '",';
+        json = json +  '"nbSets":"'    + r.nbSets + '",';
+        json = json +  '"echelon":"'   + r.echelon + '",';
+        json = json +  '"feminin":"'   + r.feminin + '",';
+        json = json +  '"division":"'  + r.division + '",';
+        json = json +  '"ligue":"'     + r.ligue + '",';
+        json = json +  '"poule":"'     + r.poule + '"';
+        json = json +  '},';
+        json = json +  '"club1":{"id":"'+ SessionAppli.clubA.id + '",';
+        json = json +  '"nom":"'       + SessionAppli.clubA.nom + '"},';
+        json = json +  '"club2":{"id":"'+ SessionAppli.clubX.id + '",';
+        json = json +  '"nom":"'       + SessionAppli.clubX.nom + '"}';
+        json = json +  '}';
+        return json;
+    }
+
+    public static JSonToRencontre(s:string){
+        let data;
+
+        // analyse du JSON en entrée
+        data = JSON.parse(s);
+        let r:Rencontre = new Rencontre();
+        let c1:Club = new Club();
+        let c2:Club = new Club();
+
+        r.date = data.rencontre.date;
+        r.phase = data.rencontre.phase;
+        r.journee = data.rencontre.journee;
+        r.division = data.rencontre.division;
+        r.echelon = data.rencontre.echelon;
+        r.feminin = data.rencontre.feminin;
+        r.formule = data.rencontre.formule;
+        r.ligue = data.rencontre.ligue;
+        r.nbJoueurs = data.rencontre.nbJoueurs;
+        r.nbSets = data.rencontre.nbSets;
+        r.poule = data.rencontre.poule;
+
+    
+        c1.id = data.club1.id;
+        c1.nom = data.club1.nom;
+        Club.getClub(c1.id).then(c => {
+            if(c != null) {
+                console.log("Le club " + (c as number).toString() + " existe déjà");
+            } else {
+                // ajouter le club
+                Club.ajouteClub(c1.id, c1.nom).then(id=>{
+                    console.log("Club " + c1.nom + " ajouté");                        
+                });
+            }
+        });
+
+
+        c2.id = data.club2.id;
+        c2.nom = data.club2.nom;
+        Club.getClub(c2.id).then(c => {
+            if(c != null) {
+                console.log("Le club " + (c as number).toString() + " existe déjà");
+            } else {
+                // ajouter le club
+                Club.ajouteClub(c2.id, c2.nom).then(id=>{
+                    console.log("Club " + c2.nom + " ajouté");                        
+                });
+            }
+        })
+
+        // persister la rencontre
+        r.club1 = c1.id;
+        r.club2 = c2.id;
+        Rencontre.AjouteRencontre(r).then(id => {
+            r.id = id as number;
+            SessionAppli.rencontreChoisie = -1;
+            console.log("Rencontre " + r.id.toString() + " ajoutée");
+        });
     }
 
 

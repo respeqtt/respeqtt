@@ -58,7 +58,7 @@ export class RespeqttDb {
                 )`;
 
     private static creeTablePartie:string = `create table if not exists Partie (par_vn_num integer, par_ren_kn integer, par_va_desc text,
-                par_vn_jouA integer, par_vn_jouX integer, par_vn_double integer, par_va_score text,
+                par_vn_jouA integer, par_vn_jouX integer, par_vn_double integer, par_va_score text, par_vn_validee,
                 PRIMARY KEY(par_ren_kn, par_vn_num)
                 FOREIGN KEY (par_ren_kn) REFERENCES Rencontre (ren_kn) ON DELETE CASCADE ON UPDATE NO ACTION
                 )`;

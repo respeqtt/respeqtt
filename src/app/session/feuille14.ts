@@ -36,7 +36,35 @@ export class Feuille14 {
                 <table id="tabEntete" style="min-width:1500px">
                     <tr max-height="50px">
                         <td rowspan="2" style="width:5%">
-                            <img src="fftt.png" width="50px" height="50px"></img>
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+                        jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAXASURBVGhD7ZlZbFRVGMfbUlAR1LqhYmwARY27
+                        VgVMQEl8cHkwaiKCVE0MIkQN8uiCViJGjcuDUXlQCQaMhLgFY9wI1iBIVVwrKsUSRQS12CjWlnb8
+                        /WbulJnpdHpn2pkumX/yyzf39pxzz3fW75yWFFVUUUNPlbNXlMEJwWNUZYEdNMKBgzH3x572a9A5
+                        gl6ATxqXz9wee4xpMDoSgdGxn/tVGtgBrY+rTtU4pI5pKRsxoa20vHJ0+95/ef4NGmDbgHWEyo/C
+                        TA2YBO3wJWyETXMmLpzWPGzkGoaYzgycHgla/Vi4Aq6FKvgMXoc3YfvkunpMdMIPw2yCZTjylO/6
+                        3REcsA6TYT7ohJP4eXjV31TeOZEkHDkXczMswJF9vus3R3CgHHMp3A22/tvwONSmq3yicORETANO
+                        dMTe9JMjOHEW5lG4BN6AxbC5JwcyqaCOBBP4HlgAjv+FsD4+9nujgjmCE87m5XAy3AvP4kALtk+U
+                        d0eCyXwVuCP/ANU40PsuSFEhdvZbYSU4F6bnwwmVtx4JesK58DAsgQdwonOV6Wvls0eqQSfug7w6
+                        oUL1COv24RiHho4/DatZw7udqPSGy+oaeAwW4UTOy2pYhe2RZrgTvgUn7TqcOwPbRThhmPEi6HhN
+                        IZxQWc8RHDgPsxTcXWeCgRsm6oQNsxpOgUk48ZfvC6Gs5wiV/hRzMayCFaBjcV0Nl8MdhXRC5bxq
+                        0TM2gsPtBpj6cv2DPn8OdTXNrTO27OvIupGQwzCXOkVydkThjGYWlOPIodgnoWrWny069AjYQ2H1
+                        NdwENWCvhpWhzo29ciQuHBq3sn7x2NKSiAegJxhW7ePHjzuI38ZVFaYJZHgyHdaBC0dcroBLGhq2
+                        7SafJ8FFYFwW12ngAesD2OKLQP/AQ+RrijpCZs0ECDMcPKk1ktnKHsjv4yFMg1hZl+VlMJf8z/ky
+                        jPjOXMwzUE0+47UuKiORB3mX1B/h+x5wok8BndB7W9b4KV3aRDxrjIG8yR6YAY5Nw4iJcFIGXFZf
+                        olUw0TPEmeDamy5tIlXkqcPmTToyPPazxBY2NrorDb4fQ2V2BE6oEeAx06U4XR6ZB63kacLmVYlz
+                        wq53vKfD4bEBUuUlwFhIl+c4eAeSLtJ6qe7jNcb6PIiAwya0SL8KGsGeCSXSVoPfMrQPLdLPD/Jd
+                        H7zqolw2rf5Qj/U0gfdGLovZDgEvkq+D6HVMSL0F7jVe9WSjV8B8DtWhrS4bGePQ+6ZDwIm1B4az
+                        6rTx3t4zfTQe4p0bY2iR/wCMu7ar2N/Rl32odI5cgDGM+AisrLv3F+AlmulHgufueGWOgh3gBYMX
+                        yqZ11foO3EN+p+K/UK77jWGLV502kkvyEbAVDF0ag2e/6fnH1XAvOHRt2Fbw4noU5X2FTZLLZ5Iq
+                        KioqMeeAH7gFTgfDl1/hfDBs91Dlx3+GK0EnjRDsTRvCirjRuqJNa2raU0u55rWiOuAFnadOA07L
+                        3wkGmF4ZudS70Tr/DgPz2EiODuszhbI2UKZxVqfSrQa2gJPLlrNC68GP+xFb/j94H3aDTruh7gLV
+                        BraaQZ4fNsAznfLD3un+BLa+lTX+Mt034PnFCNoD29lgWf7tDzC9Dvu8OXiXpB6DPecGXdm5EfFs
+                        L9rSEd5ndcFGXk1qeTam88e5ZwNY9kbTpH47k7p1hEIs0N35IlgLbRRqmG1LenPuCdFA095wDFsR
+                        582RoINHgy3ncHMI2gD+A9Og813ooLxdlGdP3w4uyQ4re8Zh+Rq45NaCw3Yn6bttuEyOzMY4tOxm
+                        54Ot4wf8mydDh8yF4IT0A07k+DCwwjp4Gawl31LyOOadyJZlY5Tz/hqs5d2GMUKeAw4pG9G6eWZx
+                        0juftpLeUD6tMu2YFuiNiK3svEjdjHxnmvfAnjGa1KEPwXnjkPA/TPHblnh5zhXnkb2SKNO5Qvo3
+                        e8+GUX7HxvLIUFRRRRU1JFRS8j/wjeYQkyRkkAAAAABJRU5ErkJggg==" 
+                        alt="logo FFTT" width="50px" height="50px"></img>
                         </td>
                         <td style="width:90%;font-size:30px;padding-top:10;padding-bottom:0;margin-top:0;margin-bottom:0;text-align:center;vertical-align:middle">
                             <b>FEDERATION FRANÇAISE DE TENNIS DE TABLE</b>
@@ -400,7 +428,46 @@ export class Feuille14 {
                     <tr>
                         <td style="width:30%;text-align:center">
                             <p>Abonnez vous à</p>
-                            <img src="pub.jpg" height="30px" width="50px"></img>
+                            <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBoRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
+                            AAABAAAARgEoAAMAAAABAAIAAAExAAIAAAARAAAATgAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQu
+                            bmV0IDQuMi4xNQAA/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0O
+                            EQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQU
+                            FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAHgAyAwEhAAIRAQMRAf/E
+                            AB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAE
+                            EQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZH
+                            SElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1
+                            tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEB
+                            AQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXET
+                            IjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFla
+                            Y2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG
+                            x8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A5n/gm54M0zwz8F9e
+                            8cX1pCt7eX0wF6yAutpDGuQG6gb/ADc464Geldbp/wC3VY6p4Z1jxBB4Kvv7M0qWCG4ke9iVt0xY
+                            IFGOT8jE46AV/MOZ5DW4ozvH13X5I05wpq6b1b5UlbazWvrc/SMNjYZbg6EOS7knL7tS4f24dGkm
+                            8I29v4V1Ka78RIrxQ+fGDEWuZIFB9ctGT24Ip3h/9ujwprmta7YPpN3Zx6dZ3d3BcSTIRd+QpbYo
+                            7M6qSM+lcM/DfGKnOca8W43drPpJx/GzZus/pOSTg1f/ACuULj9vfQLXwlYa1J4W1IPe3c9tDaie
+                            PO2JYy0hb0JlCgY/hb0r0Dwz8f8AV9b+IVp4VvfhzrmmGY4fUtyzWsX7vflpFG3j7pweDx14rkx3
+                            AksvoTq18XBNKbSaa5vZuzSfdvZGtHOlXmowpN7X8uY9kwPSivyy7PpD5k8D6bp/wz/YN0y11W/k
+                            0S1utAzPdxW/nyRNesWyI9y7mzPjGRj8K8q+EepfA74X+DYD4rtbvxVbazeySWurah4dUJsjCI6o
+                            pkfOwkknP8WK/fMtjm2YUsdHLWoOtiJe/wA/K9PeaStrpruup8TXeGoSovEa8lNaWutdL/efX3xa
+                            /Yo+F99pyfEnQ9a1DRtS0TThf2sUSRm0EUMBaNVt9qFCCAwAYc5B68fBth8P/hPJ8EdWvT42vWuY
+                            dct4/wC0f7D2zx7oZNsXk+d8yMBI27cOU6cc/puYU8yyiNCngKftY/u4tynZ6Se+jvzX1fR9GfOY
+                            eVDFOcq8uV+87JabdNeltibUvAPgO6vPAOgab4z1a81e3sY5Y7GHw005uGmke5RmTz12kxyRgqC3
+                            yqDkdB6p+yp4V8L+Kfjdr3jbT/FFxrOqxJNcS2b6EbCKN52ILIfNcYA3Lt689eDXx+d5hmUcoxNS
+                            thoxvCV7VbtRqzdny8uvZa9H6Hr4Ohh3iqcYVG9V9nrFd7nWeL/23vD3hPxZreiTeT52m309k+WP
+                            3o5GQ9/VaK+IoeH2IrUoVF9pJ/ej1555TjJx7Hc/tFfBvW/iZ8JtP8G+FLjT7BILiDzDqEjohgiR
+                            gqjYjc7th6fw1g+CP2RPBP8AwhHhuy8S2x8RanpMJVtup3BtBKzeZII03ABSx5+UZ7ivHwfFtXLc
+                            ohhsDeNZVJTlJxi0uZNaXvrbyWlzrq5XHEYp1K2sOVJK76a6+R6B8VPhv8Rvih4B1zw34Q1GOG9v
+                            YvLka4umCLbEgSrlYieV+X6Ma+b9e/4Jt+PrrQ/CtroV1psVzc2e7UI7ieZY7m4R5GEseIzkCOUL
+                            lgvT/aNfrGV8bYzHUKNavhZTTlq4RVmtIq15b+0a7b6bHy2IyijQnOEKqVl1bv36LblTOif9hX4p
+                            aP8AFnWdf0waHcRQWk0FnHc3txbSWsT2zW8LsUiIBRMHhudvUdvS/gV8HfG3wA0fxNJ8SdebVLyY
+                            JcJ/ps1ykEEaOSQZQMEktnA/hFfN8TY+OMyiUJ4ScajVOnzSjC0XCTvZqTlq01tbQ9HLqXs8Umqq
+                            a96Vk3qmlbS1tNGfj74m1ybxN4k1XWLj/j41C7lu5P8Aekcuf1NFf0RTgqUI01slb7j4GUnKTk+p
+                            +62saK2tIEa/uraEjDRwbAG9ckqTyOMZxirVjZCxjZBLLKGII81yxGFAwM/TP1Jr+A5Yi9FUVBK3
+                            Xr/XofuKh73Nc6Pw34qu/C/2w2aRmW4QR+Y4JKD25/ziteT4oalIozbWvnC2+zLLtYlVP3iOcZOB
+                            +Qr7TLOMsbleChgaVOLhG9r33bcr77ptW9EePicno4qs68pO7/ytb+u4svxPvZ3umexsyblI45MB
+                            xkITj+L3NfNf7dHxoHg34LeKNQksyl5rVq+k2y2ahY4WljMe85OQACx4yc4+texR4gxPFONwuX1a
+                            UIXqRd1e/wAUpNat78z9XY5JYCnllGpiIybtFq2nZL9D8ZqK/rQ/Lz//2Q==" 
+                            alt="pub" width="50px" height="30px"></img>
                         </td>
                         <td style="width:30%;text-align:center">
                             <p style="font-size:8px;padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;">Toutes les informations</p>

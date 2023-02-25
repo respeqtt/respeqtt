@@ -82,16 +82,17 @@ export class AjouterClubComponent {
                     }
                     // si pas trouvé on l'ajoute
                     if(!trouve) {
-                        Club.ajouteClub(this.numeroClub, this.nomClub);
-                        alert("Club " + this.numeroClub.toString() + "(" + this.nomClub + ") ajouté.");
-                        this.router.navigate(["actions"],
-                        {
-                            animated:true,
-                            transition: {
-                                name : SessionAppli.animationRetour, 
-                                duration : 380,
-                                curve : "easeIn"
-                            }
+                        Club.ajouteClub(this.numeroClub, this.nomClub).then(id=>{
+                            alert("Club " + this.numeroClub.toString() + "(" + this.nomClub + ") ajouté.");
+                            this.router.navigate(["actions"],
+                            {
+                                animated:true,
+                                transition: {
+                                    name : SessionAppli.animationRetour, 
+                                    duration : 380,
+                                    curve : "easeIn"
+                                }
+                            });    
                         });
                     } else {
                         // sinon on le refuse
@@ -139,18 +140,19 @@ export class AjouterClubComponent {
                             cancelButtonText:"ANNULER"
                             }).then(r => {
                                 if(r.result) {
-                                    Club.supprimeClub(this.numeroClub);
-                                    // retour à la page actions
-                                    this.router.navigate(["actions"],
-                                    {
-                                        animated:true,
-                                        transition: {
-                                            name : SessionAppli.animationRetour, 
-                                            duration : 380,
-                                            curve : "easeIn"
-                                        }
+                                    Club.supprimeClub(this.numeroClub).then(cr =>{
+                                        // retour à la page actions
+                                        this.router.navigate(["actions"],
+                                        {
+                                            animated:true,
+                                            transition: {
+                                                name : SessionAppli.animationRetour, 
+                                                duration : 380,
+                                                curve : "easeIn"
+                                            }
+                                        });
+                                        SessionAppli.tab = 0;            
                                     });
-                                    SessionAppli.tab = 0;            
                                 } else {
                                 return;
                                 }

@@ -138,6 +138,8 @@ export class FeuilleComponent {
                 console.log('La permission READ_EXTERNAL_STORAGE a été accordée pour le RECTO');
                 alert("La feuille a été enregistrée dans le dossier Téléchargements/RESPEQTT.");
                 Utils.openFile(htmlFile.path, "Feuille de match");
+
+                alert("Le fichier est enregistré dans : " + myAppFolder.path);
             });
         })
         .catch(err => {
